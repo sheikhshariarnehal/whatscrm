@@ -35,33 +35,25 @@
         </div>
     @endif
 
-    <!-- Segment Navigation Tabs -->
-    <x-segment>
-        <x-segment-item wire:click="setTab('flows')" :active="$activeTab === 'flows'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                <span>Visual Flows ({{ $flows->total() }})</span>
-            </span>
-        </x-segment-item>
-        <x-segment-item wire:click="setTab('rules')" :active="$activeTab === 'rules'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                <span>Keyword Chatbots ({{ $rules->total() }})</span>
-            </span>
-        </x-segment-item>
-        <x-segment-item wire:click="setTab('quick_replies')" :active="$activeTab === 'quick_replies'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
-                <span>Quick Replies ({{ $quickReplies->total() }})</span>
-            </span>
-        </x-segment-item>
-        <x-segment-item wire:click="setTab('ai')" :active="$activeTab === 'ai'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                <span>AI Assistant (LLM)</span>
-            </span>
-        </x-segment-item>
-    </x-segment>
+    <!-- Sub-Navbar Tabs -->
+    <x-tabs>
+        <x-tab-item wire:click="setTab('flows')" :active="$activeTab === 'flows'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>Visual Flows ({{ $flows->total() }})</span>
+        </x-tab-item>
+        <x-tab-item wire:click="setTab('rules')" :active="$activeTab === 'rules'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            <span>Keyword Chatbots ({{ $rules->total() }})</span>
+        </x-tab-item>
+        <x-tab-item wire:click="setTab('quick_replies')" :active="$activeTab === 'quick_replies'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+            <span>Quick Replies ({{ $quickReplies->total() }})</span>
+        </x-tab-item>
+        <x-tab-item wire:click="setTab('ai')" :active="$activeTab === 'ai'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            <span>AI Assistant (LLM)</span>
+        </x-tab-item>
+    </x-tabs>
 
     <!-- TAB 1: VISUAL FLOWS -->
     @if($activeTab === 'flows')

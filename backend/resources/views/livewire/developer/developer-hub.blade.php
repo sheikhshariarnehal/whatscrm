@@ -43,33 +43,25 @@
         </div>
     @endif
 
-    <!-- Segment Navigation Tabs -->
-    <x-segment>
-        <x-segment-item wire:click="setTab('tokens')" :active="$activeTab === 'tokens'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-                <span>API Keys ({{ count($tokens) }})</span>
-            </span>
-        </x-segment-item>
-        <x-segment-item wire:click="setTab('webhooks')" :active="$activeTab === 'webhooks'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                <span>Event Webhooks ({{ count($webhooks) }})</span>
-            </span>
-        </x-segment-item>
-        <x-segment-item wire:click="setTab('logs')" :active="$activeTab === 'logs'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                <span>Webhook Logs ({{ $logs->total() }})</span>
-            </span>
-        </x-segment-item>
-        <x-segment-item wire:click="setTab('docs')" :active="$activeTab === 'docs'">
-            <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <span>REST API Docs</span>
-            </span>
-        </x-segment-item>
-    </x-segment>
+    <!-- Sub-Navbar Tabs -->
+    <x-tabs>
+        <x-tab-item wire:click="setTab('tokens')" :active="$activeTab === 'tokens'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            <span>API Keys ({{ count($tokens) }})</span>
+        </x-tab-item>
+        <x-tab-item wire:click="setTab('webhooks')" :active="$activeTab === 'webhooks'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>Event Webhooks ({{ count($webhooks) }})</span>
+        </x-tab-item>
+        <x-tab-item wire:click="setTab('logs')" :active="$activeTab === 'logs'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            <span>Webhook Logs ({{ $logs->total() }})</span>
+        </x-tab-item>
+        <x-tab-item wire:click="setTab('docs')" :active="$activeTab === 'docs'">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span>REST API Docs</span>
+        </x-tab-item>
+    </x-tabs>
 
     <!-- TAB 1: API KEYS -->
     @if($activeTab === 'tokens')

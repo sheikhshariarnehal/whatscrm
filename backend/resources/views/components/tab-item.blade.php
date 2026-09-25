@@ -18,14 +18,17 @@
         @if ($disabled) disabled @endif
         {{ $attributes->merge(['class' => trim($baseClass)]) }}>
     @if ($icon)
-        <x-nav-icon :name="$icon" class="tab-nav-icon w-4 h-4" />
+        <x-nav-icon :name="$icon" class="tab-nav-icon w-4 h-4 shrink-0" />
     @endif
 
-    <span>{{ $slot }}</span>
+    <span class="inline-flex items-center gap-2">
+        {{ $slot }}
+    </span>
 
     @if ($badge !== null)
-        <span class="ml-2">
+        <span class="ml-2 shrink-0">
             <x-badge :content="$badge" :color="$badgeColor" />
         </span>
     @endif
 </button>
+
