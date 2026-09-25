@@ -1,0 +1,17 @@
+@layer components {
+  .badge-wrapper {
+    @apply relative inline-flex;
+  }
+
+  .badge {
+    @apply inline-flex items-center justify-center rounded-full text-[10px] font-bold px-2 py-0.5 min-w-[20px] shadow-sm;
+  }
+
+  .badge-dot {
+    @apply w-2.5 h-2.5 rounded-full border-2 border-white dark:border-gray-900;
+  }
+
+  .badge-inner {
+    @apply absolute z-10 transform -top-1 -right-1 ltr:translate-x-1/3 rtl:-translate-x-1/3 -translate-y-1/3;
+  }
+}

@@ -1,0 +1,17 @@
+@layer components {
+  .tag {
+    @apply rounded-lg py-1 px-2.5 border items-center inline-flex text-xs font-semibold whitespace-nowrap gap-1.5 transition-colors;
+  }
+  
+  .tag-affix {
+    @apply h-1.5 w-1.5 rounded-full;
+  }
+  
+  .tag-prefix {
+    @apply -ml-0.5;
+  }
+  
+  .tag-suffix {
+    @apply -mr-0.5;
+  }
+}

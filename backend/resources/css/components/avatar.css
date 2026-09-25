@@ -1,0 +1,59 @@
+@layer components {
+  .avatar {
+    @apply inline-flex relative items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 overflow-hidden font-bold select-none shrink-0;
+  }
+
+  .avatar-xs {
+    @apply w-6 h-6 text-[10px];
+  }
+
+  .avatar-sm {
+    @apply w-8 h-8 text-xs;
+  }
+
+  .avatar-md {
+    @apply w-10 h-10 text-sm;
+  }
+
+  .avatar-lg {
+    @apply w-12 h-12 text-base;
+  }
+
+  .avatar-xl {
+    @apply w-16 h-16 text-xl;
+  }
+
+  .avatar-round {
+    @apply rounded-xl;
+  }
+
+  .avatar-square {
+    @apply rounded-none;
+  }
+
+  .avatar-circle {
+    @apply rounded-full;
+  }
+
+  .avatar-img {
+    @apply block w-full h-full object-cover;
+  }
+
+  .avatar-string {
+    @apply uppercase tracking-wider font-bold;
+  }
+
+  .avatar-group {
+    @apply inline-flex items-center;
+  }
+
+  .avatar-group-chained {
+    > .avatar {
+      @apply -ml-2 rtl:-mr-2 ring-2 ring-white dark:ring-gray-900;
+    }
+
+    > .avatar:first-child {
+      @apply ml-0 rtl:mr-0;
+    }
+  }
+}

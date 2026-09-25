@@ -1,0 +1,42 @@
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl transition-shadow duration-200;
+  }
+  
+  .card-border {
+    @apply border border-gray-200 dark:border-gray-700;
+  }
+  
+  .card-shadow {
+    @apply shadow-sm dark:shadow-md border border-gray-100 dark:border-gray-800;
+  }
+  
+  .card-header-border {
+    @apply border-b border-gray-200 dark:border-gray-700 rounded-t-2xl;
+  }
+  
+  .card-header-extra {
+    @apply flex justify-between items-center gap-4;
+  }
+  
+  .card-footer {
+    @apply rounded-b-2xl;
+  }
+  
+  .card-footer-border {
+    @apply border-t border-gray-200 dark:border-gray-700;
+  }
+  
+  .card-header,
+  .card-footer {
+    @apply py-4 px-6;
+  }
+  
+  .card-body {
+    @apply p-6;
+  }
+  
+  .card-gutterless {
+    @apply p-0;
+  }
+}
