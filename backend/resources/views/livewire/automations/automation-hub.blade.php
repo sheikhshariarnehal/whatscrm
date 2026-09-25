@@ -35,25 +35,33 @@
         </div>
     @endif
 
-    <!-- Sub-Navbar Tabs -->
-    <div class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800">
-        <button wire:click="setTab('flows')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'flows' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            <span>Visual Flows ({{ $flows->total() }})</span>
-        </button>
-        <button wire:click="setTab('rules')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'rules' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-            <span>Keyword Chatbots ({{ $rules->total() }})</span>
-        </button>
-        <button wire:click="setTab('quick_replies')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'quick_replies' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
-            <span>Quick Replies ({{ $quickReplies->total() }})</span>
-        </button>
-        <button wire:click="setTab('ai')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'ai' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            <span>AI Assistant (LLM)</span>
-        </button>
-    </div>
+    <!-- Segment Navigation Tabs -->
+    <x-segment>
+        <x-segment-item wire:click="setTab('flows')" :active="$activeTab === 'flows'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Visual Flows ({{ $flows->total() }})</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('rules')" :active="$activeTab === 'rules'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                <span>Keyword Chatbots ({{ $rules->total() }})</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('quick_replies')" :active="$activeTab === 'quick_replies'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                <span>Quick Replies ({{ $quickReplies->total() }})</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('ai')" :active="$activeTab === 'ai'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                <span>AI Assistant (LLM)</span>
+            </span>
+        </x-segment-item>
+    </x-segment>
 
     <!-- TAB 1: VISUAL FLOWS -->
     @if($activeTab === 'flows')
@@ -132,7 +140,7 @@
 
     <!-- TAB 2: KEYWORD CHATBOTS -->
     @if($activeTab === 'rules')
-        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm overflow-hidden">
+        <x-card gutterless class="overflow-hidden">
             @if($rules->isEmpty())
                 <div class="p-12 text-center">
                     <div class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
@@ -142,72 +150,70 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
                         Automate replies to common queries like pricing, catalog, business hours, and support.
                     </p>
-                    <button wire:click="openNewRuleModal" class="mt-4 px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90">
+                    <x-button wire:click="openNewRuleModal" variant="solid" size="sm" class="mt-4">
                         Add Chatbot Rule
-                    </button>
+                    </x-button>
                 </div>
             @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50/50 dark:bg-gray-800/40 text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
+                <x-table hoverable>
+                    <thead>
+                        <tr>
+                            <th>Trigger Keywords</th>
+                            <th>Match Type</th>
+                            <th>Automated Response</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($rules as $rule)
                             <tr>
-                                <th class="px-6 py-4">Trigger Keywords</th>
-                                <th class="px-6 py-4">Match Type</th>
-                                <th class="px-6 py-4">Automated Response</th>
-                                <th class="px-6 py-4">Priority</th>
-                                <th class="px-6 py-4">Status</th>
-                                <th class="px-6 py-4 text-right">Actions</th>
+                                <td>
+                                    <div class="flex flex-wrap gap-1 max-w-xs">
+                                        @foreach(explode(',', $rule->keywords) as $kw)
+                                            <x-tag color="primary" class="font-mono font-semibold">
+                                                {{ trim($kw) }}
+                                            </x-tag>
+                                        @endforeach
+                                    </div>
+                                </td>
+                                <td>
+                                    <x-tag color="gray" class="font-mono capitalize">
+                                        {{ $rule->match_type }}
+                                    </x-tag>
+                                </td>
+                                <td class="text-xs text-gray-700 dark:text-gray-300 max-w-md">
+                                    {{ Str::limit($rule->reply_content['text'] ?? '', 100) }}
+                                </td>
+                                <td class="text-xs font-mono text-gray-500">
+                                    {{ $rule->priority }}
+                                </td>
+                                <td>
+                                    <button wire:click="toggleRule({{ $rule->id }})" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{ $rule->is_active ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50' : 'bg-gray-100 dark:bg-gray-800 text-gray-500' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $rule->is_active ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                        {{ $rule->is_active ? 'Active' : 'Disabled' }}
+                                    </button>
+                                </td>
+                                <td class="text-right">
+                                    <button wire:click="deleteRule({{ $rule->id }})" wire:confirm="Delete this chatbot rule?" class="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            @foreach($rules as $rule)
-                                <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30">
-                                    <td class="px-6 py-4">
-                                        <div class="flex flex-wrap gap-1 max-w-xs">
-                                            @foreach(explode(',', $rule->keywords) as $kw)
-                                                <span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-xs font-semibold">
-                                                    {{ trim($kw) }}
-                                                </span>
-                                            @endforeach
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex px-2 py-0.5 rounded text-xs font-mono font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 capitalize">
-                                            {{ $rule->match_type }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-xs text-gray-700 dark:text-gray-300 max-w-md">
-                                        {{ Str::limit($rule->reply_content['text'] ?? '', 100) }}
-                                    </td>
-                                    <td class="px-6 py-4 text-xs font-mono text-gray-500">
-                                        {{ $rule->priority }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button wire:click="toggleRule({{ $rule->id }})" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold {{ $rule->is_active ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50' : 'bg-gray-100 dark:bg-gray-800 text-gray-500' }}">
-                                            <span class="w-1.5 h-1.5 rounded-full {{ $rule->is_active ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
-                                            {{ $rule->is_active ? 'Active' : 'Disabled' }}
-                                        </button>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button wire:click="deleteRule({{ $rule->id }})" wire:confirm="Delete this chatbot rule?" class="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </x-table>
                 <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-800">
                     {{ $rules->links() }}
                 </div>
             @endif
-        </div>
+        </x-card>
     @endif
 
     <!-- TAB 3: QUICK REPLIES -->
     @if($activeTab === 'quick_replies')
-        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm overflow-hidden">
+        <x-card gutterless class="overflow-hidden">
             @if($quickReplies->isEmpty())
                 <div class="p-12 text-center">
                     <div class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
@@ -217,50 +223,48 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
                         Speed up human agent replies by creating shortcuts like <code class="text-primary font-bold">/pricing</code> or <code class="text-primary font-bold">/welcome</code>.
                     </p>
-                    <button wire:click="openNewQuickReplyModal" class="mt-4 px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90">
+                    <x-button wire:click="openNewQuickReplyModal" variant="solid" size="sm" class="mt-4">
                         Add Quick Reply
-                    </button>
+                    </x-button>
                 </div>
             @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50/50 dark:bg-gray-800/40 text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
+                <x-table hoverable>
+                    <thead>
+                        <tr>
+                            <th>Shortcut</th>
+                            <th>Category</th>
+                            <th>Canned Message Content</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($quickReplies as $qr)
                             <tr>
-                                <th class="px-6 py-4">Shortcut</th>
-                                <th class="px-6 py-4">Category</th>
-                                <th class="px-6 py-4">Canned Message Content</th>
-                                <th class="px-6 py-4 text-right">Actions</th>
+                                <td class="font-mono font-bold text-primary">
+                                    {{ $qr->shortcut }}
+                                </td>
+                                <td>
+                                    <x-tag color="gray">
+                                        {{ $qr->category ?: 'General' }}
+                                    </x-tag>
+                                </td>
+                                <td class="text-xs text-gray-700 dark:text-gray-300 max-w-lg">
+                                    {{ $qr->message }}
+                                </td>
+                                <td class="text-right">
+                                    <button wire:click="deleteQuickReply({{ $qr->id }})" wire:confirm="Delete this quick reply?" class="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            @foreach($quickReplies as $qr)
-                                <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30">
-                                    <td class="px-6 py-4 font-mono font-bold text-primary">
-                                        {{ $qr->shortcut }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                                            {{ $qr->category ?: 'General' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-xs text-gray-700 dark:text-gray-300 max-w-lg">
-                                        {{ $qr->message }}
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button wire:click="deleteQuickReply({{ $qr->id }})" wire:confirm="Delete this quick reply?" class="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </x-table>
                 <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-800">
                     {{ $quickReplies->links() }}
                 </div>
             @endif
-        </div>
+        </x-card>
     @endif
 
     <!-- TAB 4: AI ASSISTANT -->
