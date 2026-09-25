@@ -1,30 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      x-data="{ 
-          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-          sideNavCollapse: localStorage.getItem('sideNavCollapse') === 'true',
-          mobileNavOpen: false,
-          searchOpen: false,
-          searchQuery: '',
-          toggleDark() {
-              this.darkMode = !this.darkMode;
-              localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
-              if (this.darkMode) {
-                  document.documentElement.classList.add('dark');
-              } else {
-                  document.documentElement.classList.remove('dark');
-              }
-          },
-          toggleSideNav() {
-              this.sideNavCollapse = !this.sideNavCollapse;
-              localStorage.setItem('sideNavCollapse', this.sideNavCollapse);
-          }
-      }"
-      x-init="
-          if (darkMode) { document.documentElement.classList.add('dark'); }
-          else { document.documentElement.classList.remove('dark'); }
-      "
-      :class="{ 'dark': darkMode }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,7 +28,32 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="bg-gray-50/70 dark:bg-gray-950 text-gray-800 dark:text-gray-200 antialiased font-sans flex h-screen overflow-hidden">
+<body x-data="{ 
+          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+          sideNavCollapse: localStorage.getItem('sideNavCollapse') === 'true',
+          mobileNavOpen: false,
+          searchOpen: false,
+          searchQuery: '',
+          toggleDark() {
+              this.darkMode = !this.darkMode;
+              localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
+              if (this.darkMode) {
+                  document.documentElement.classList.add('dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+              }
+          },
+          toggleSideNav() {
+              this.sideNavCollapse = !this.sideNavCollapse;
+              localStorage.setItem('sideNavCollapse', this.sideNavCollapse);
+          }
+      }"
+      x-init="
+          if (darkMode) { document.documentElement.classList.add('dark'); }
+          else { document.documentElement.classList.remove('dark'); }
+      "
+      :class="{ 'dark': darkMode }"
+      class="bg-gray-50/70 dark:bg-gray-950 text-gray-800 dark:text-gray-200 antialiased font-sans flex h-screen overflow-hidden">
 
     <!-- ========================================== -->
     <!-- 1. MOBILE DRAWER NAVIGATION (For < lg)     -->

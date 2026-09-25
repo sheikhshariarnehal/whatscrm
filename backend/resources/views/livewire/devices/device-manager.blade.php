@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6 lg:p-8 space-y-6">
+<div class="p-4 sm:p-6 lg:p-8 space-y-6" @if($showPairModal) wire:poll.2s="pollQrStatus" @endif>
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -7,6 +7,9 @@
                 <x-tag color="primary" class="font-bold">{{ count($pairedDevices) }} Linked Devices</x-tag>
                 @if ($credential && $credential->isConnected())
                     <x-tag color="emerald" prefix class="font-bold">Cloud API Live</x-tag>
+                @endif
+                @if ($warmerEngineRunning)
+                    <x-tag color="amber" class="font-bold">Warmer Engine Active</x-tag>
                 @endif
             </div>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -24,9 +27,22 @@
 
     <!-- Flash message -->
     @if (session()->has('message'))
-        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-            <span>{{ session('message') }}</span>
+        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 shadow-xs">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>{{ session('message') }}</span>
+            </div>
+            <button type="button" @click="$el.parentElement.remove()" class="text-emerald-600 hover:text-emerald-800">&times;</button>
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center justify-between gap-2 shadow-xs">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-rose-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                <span>{{ session('error') }}</span>
+            </div>
+            <button type="button" @click="$el.parentElement.remove()" class="text-rose-600 hover:text-rose-800">&times;</button>
         </div>
     @endif
 
@@ -60,7 +76,7 @@
                 <div class="space-y-1 z-10">
                     <div class="flex items-center gap-2">
                         <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-white/20 backdrop-blur-md">Baileys Engine v6.7.8</span>
-                        <span class="text-xs text-emerald-100 font-medium">Multi-Device Web Session Sync</span>
+                        <span class="text-xs text-emerald-100 font-medium">Multi-Device Web Session Sync (Port 8001)</span>
                     </div>
                     <h3 class="text-lg font-bold">Direct WhatsApp Web Browser Pairings</h3>
                     <p class="text-xs text-emerald-100 max-w-2xl">
@@ -103,7 +119,7 @@
                                         <span>Battery & Power</span>
                                     </span>
                                     <span class="font-bold flex items-center gap-1">
-                                        <span>{{ $device['battery'] }}%</span>
+                                        <span>{{ $device['battery'] ?? 90 }}%</span>
                                         @if($device['is_charging'] ?? false)
                                             <span class="text-[10px] text-emerald-500 font-bold">⚡ Charging</span>
                                         @endif
@@ -125,10 +141,10 @@
                             <div class="space-y-1.5">
                                 <div class="flex justify-between text-xs">
                                     <span class="font-semibold text-gray-500 dark:text-gray-400">Daily Messages Sent</span>
-                                    <span class="font-mono font-bold text-gray-800 dark:text-gray-200">{{ $device['messages_today'] }} / {{ $device['daily_limit'] }}</span>
+                                    <span class="font-mono font-bold text-gray-800 dark:text-gray-200">{{ $device['messages_today'] ?? 0 }} / {{ $device['daily_limit'] ?? 1000 }}</span>
                                 </div>
                                 <div class="w-full bg-gray-100 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
-                                    <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: {{ min(100, round(($device['messages_today'] / max(1, $device['daily_limit'])) * 100)) }}%"></div>
+                                    <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: {{ min(100, round((($device['messages_today'] ?? 0) / max(1, ($device['daily_limit'] ?? 1000))) * 100)) }}%"></div>
                                 </div>
                             </div>
 
@@ -136,13 +152,13 @@
                             <div class="flex items-center justify-between pt-1">
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Number Warmer</span>
-                                    @if ($device['warmer_active'])
+                                    @if ($device['warmer_active'] ?? false)
                                         <x-tag color="amber" class="text-[9px] font-bold">Active Warmer</x-tag>
                                     @else
                                         <x-tag color="default" class="text-[9px]">Idle</x-tag>
                                     @endif
                                 </div>
-                                <x-switcher :checked="$device['warmer_active']" wire:click="toggleWarmerDevice('{{ $device['id'] }}')" />
+                                <x-switcher :checked="$device['warmer_active'] ?? false" wire:click="toggleWarmerDevice('{{ $device['id'] }}')" />
                             </div>
                         </div>
 
@@ -222,7 +238,7 @@
 
                         <x-form-item label="Permanent System User Access Token" :required="true" :error="$errors->first('access_token')">
                             <x-input type="password" wire:model="access_token" :invalid="$errors->has('access_token')" placeholder="{{ $credential ? '••••••••••••••••••••••••••••••••' : 'EAAG...' }}" class="font-mono text-xs" />
-                            <p class="text-[11px] text-gray-400 mt-1">Stored with 256-bit AES database encryption.</p>
+                            <p class="text-[11px] text-gray-400 mt-1">Stored securely with 256-bit AES encryption.</p>
                         </x-form-item>
 
                         <x-form-item label="Webhook Verify Token" :required="true" :error="$errors->first('verify_token')">
@@ -245,48 +261,64 @@
                     </form>
                 </x-card>
 
-                <!-- Live Ping Verification -->
-                <x-card bodyClass="p-6 sm:p-8 space-y-4">
-                    <div>
-                        <h2 class="font-bold text-base text-gray-900 dark:text-white tracking-tight">Verify Connection (Live WhatsApp Ping)</h2>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Send a real-time test message to any WhatsApp number to verify API delivery.</p>
-                    </div>
-
-                    @if ($test_status)
-                        <div class="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-xs font-semibold border border-emerald-200 dark:border-emerald-800 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                            <span>{{ $test_status }}</span>
+                <!-- Live Ping Verification & Webhook Sandbox -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-card bodyClass="p-6 space-y-4">
+                        <div>
+                            <h2 class="font-bold text-sm text-gray-900 dark:text-white tracking-tight">Verify Outbound Message (Ping)</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Send a real test WhatsApp message to verify Cloud API dispatch.</p>
                         </div>
-                    @endif
 
-                    @if ($test_error)
-                        <div class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 text-xs font-semibold border border-rose-200 dark:border-rose-800 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-rose-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
-                            <span>{{ $test_error }}</span>
-                        </div>
-                    @endif
+                        @if ($test_status)
+                            <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-xs font-semibold border border-emerald-200 dark:border-emerald-800">
+                                {{ $test_status }}
+                            </div>
+                        @endif
 
-                    <form wire:submit.prevent="sendTestMessage" class="space-y-4">
-                        <x-form-item label="Destination Phone Number" :required="true" :error="$errors->first('test_phone_number')">
-                            <x-input wire:model="test_phone_number" :invalid="$errors->has('test_phone_number')" placeholder="+15551234567 (with country code)" class="font-mono text-xs" />
-                        </x-form-item>
+                        @if ($test_error)
+                            <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 text-xs font-semibold border border-rose-200 dark:border-rose-800">
+                                {{ $test_error }}
+                            </div>
+                        @endif
 
-                        <div class="flex justify-end">
-                            <x-button type="submit" wire:loading.attr="disabled" variant="default" size="sm">
+                        <form wire:submit.prevent="sendTestMessage" class="space-y-3">
+                            <x-form-item label="Destination Phone Number" :required="true">
+                                <x-input wire:model="test_phone_number" placeholder="+15551234567" class="font-mono text-xs" />
+                            </x-form-item>
+
+                            <x-button type="submit" wire:loading.attr="disabled" variant="default" size="sm" class="w-full">
                                 <span wire:loading.remove>Send Test Ping</span>
-                                <span wire:loading>Sending Message...</span>
-                                <svg class="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                <span wire:loading>Sending...</span>
+                            </x-button>
+                        </form>
+                    </x-card>
+
+                    <x-card bodyClass="p-6 space-y-4">
+                        <div>
+                            <h2 class="font-bold text-sm text-gray-900 dark:text-white tracking-tight">Webhook & Template Tools</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Test inbound webhook ingestion and sync WhatsApp templates.</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <x-button wire:click="simulateInboundWebhook" variant="default" size="sm" class="w-full flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                <span>Simulate Inbound Webhook Chat</span>
+                            </x-button>
+
+                            <x-button wire:click="syncTemplates" variant="default" size="sm" class="w-full flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>Sync WhatsApp Templates</span>
                             </x-button>
                         </div>
-                    </form>
-                </x-card>
+                    </x-card>
+                </div>
             </div>
 
             <!-- Right Col: Meta Webhook Setup Instructions -->
             <div class="space-y-6">
                 <x-card bodyClass="p-6 space-y-4">
                     <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         <h3 class="font-bold text-sm text-gray-900 dark:text-white">Meta Webhook Configuration</h3>
                     </div>
 
@@ -297,47 +329,25 @@
                     <div class="space-y-3 text-xs">
                         <div>
                             <span class="block text-gray-400 font-semibold mb-1">Callback URL</span>
-                            <div class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 font-mono text-[11px] text-gray-800 dark:text-gray-200 break-all select-all border border-gray-200 dark:border-gray-700">
-                                {{ $webhookCallbackUrl }}
+                            <div class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 font-mono text-[11px] text-gray-800 dark:text-gray-200 break-all select-all border border-gray-200 dark:border-gray-700 flex items-center justify-between gap-2">
+                                <span id="cb-url">{{ $webhookCallbackUrl }}</span>
+                                <button type="button" onclick="navigator.clipboard.writeText('{{ $webhookCallbackUrl }}'); alert('Callback URL copied!')" class="text-primary hover:underline text-[10px] font-semibold shrink-0">Copy</button>
                             </div>
                         </div>
 
                         <div>
                             <span class="block text-gray-400 font-semibold mb-1">Verify Token</span>
-                            <div class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 font-mono text-[11px] text-gray-800 dark:text-gray-200 select-all border border-gray-200 dark:border-gray-700">
-                                {{ $verify_token }}
+                            <div class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 font-mono text-[11px] text-gray-800 dark:text-gray-200 select-all border border-gray-200 dark:border-gray-700 flex items-center justify-between gap-2">
+                                <span>{{ $verify_token }}</span>
+                                <button type="button" onclick="navigator.clipboard.writeText('{{ $verify_token }}'); alert('Verify token copied!')" class="text-primary hover:underline text-[10px] font-semibold shrink-0">Copy</button>
                             </div>
                         </div>
 
                         <div>
-                            <span class="block text-gray-400 font-semibold mb-1">Webhook Subscription Fields</span>
-                            <div class="flex flex-wrap gap-1.5 mt-1">
-                                <x-tag color="primary">messages</x-tag>
-                                <x-tag color="primary">message_template_status_update</x-tag>
+                            <span class="block text-gray-400 font-semibold mb-1">Webhook Field Subscriptions</span>
+                            <div class="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 text-[11px] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                                Subscribe to: <code class="font-bold text-primary">messages</code>
                             </div>
-                        </div>
-                    </div>
-                </x-card>
-
-                <!-- Features Checklist -->
-                <x-card bodyClass="p-6 space-y-3">
-                    <h3 class="font-bold text-sm text-gray-900 dark:text-white">Cloud API Capabilities</h3>
-                    <div class="space-y-2.5 text-xs text-gray-600 dark:text-gray-300">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            <span>Official Meta 24-hour service window</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            <span>High-volume broadcast campaigns</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            <span>Zero phone ban risk (official protocol)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            <span>Real-time read receipts & status webhooks</span>
                         </div>
                     </div>
                 </x-card>
@@ -350,66 +360,72 @@
     <!-- ============================================================== -->
     @if ($activeTab === 'warmer')
         <div class="space-y-6">
-            <!-- Warmer Status Banner -->
-            <x-card bodyClass="p-6 sm:p-8">
+            <!-- Stage Progression Metrics Banner -->
+            <x-card bodyClass="p-6 space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Peer-to-Peer WhatsApp Number Warmer</h2>
-                            <x-tag color="amber" prefix class="font-bold">P2P Engine</x-tag>
-                        </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 max-w-2xl">
-                            Gradually builds reputation on newly registered SIM cards by simulating authentic human conversations between your paired devices before executing mass broadcasts.
-                        </p>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <span>WhatsApp Number Warmer Engine</span>
+                            @if ($warmerEngineRunning)
+                                <x-tag color="emerald" class="text-[10px] font-bold">Engine Running</x-tag>
+                            @else
+                                <x-tag color="amber" class="text-[10px] font-bold">Engine Paused</x-tag>
+                            @endif
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Automated peer-to-peer dialogues between paired lines to build phone number reputation and prevent spam bans.</p>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Warmup Engine Status</span>
-                        <x-switcher wire:model="warmerEnabled" />
+                    <div class="flex items-center gap-2">
+                        <x-button wire:click="toggleEngineState" variant="{{ $warmerEngineRunning ? 'plain' : 'solid' }}" size="sm" class="{{ $warmerEngineRunning ? 'text-amber-600 border border-amber-200 hover:bg-amber-50' : 'bg-emerald-600 text-white' }}">
+                            {{ $warmerEngineRunning ? '⏸ Pause Warmer Engine' : '▶ Start Warmer Engine' }}
+                        </x-button>
+
+                        <x-button wire:click="runInstantWarmupTest" variant="default" size="sm">
+                            ⚡ Simulate Dialogue Test
+                        </x-button>
                     </div>
                 </div>
 
-                <!-- 4 Warmup Progression Stage Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-2">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-1">
                         <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-gray-900 dark:text-white">Stage 1: Days 1–3</span>
-                            <x-tag color="blue" class="text-[9px]">Gentle</x-tag>
+                            <span class="font-bold text-gray-900 dark:text-white">Stage 1: Day 1–3</span>
+                            <x-tag color="default" class="text-[9px]">Cold Start</x-tag>
                         </div>
-                        <p class="text-2xl font-black text-gray-900 dark:text-white">10 <span class="text-xs font-normal text-gray-400">msgs/day</span></p>
-                        <p class="text-[11px] text-gray-400">Short greetings & ping exchanges</p>
+                        <p class="text-2xl font-black text-gray-900 dark:text-white">5 <span class="text-xs font-normal text-gray-400">msgs/day</span></p>
+                        <p class="text-[11px] text-gray-400">Light handshake small talk</p>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-2">
+                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-1">
                         <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-gray-900 dark:text-white">Stage 2: Days 4–7</span>
-                            <x-tag color="emerald" class="text-[9px]">Moderate</x-tag>
+                            <span class="font-bold text-gray-900 dark:text-white">Stage 2: Day 4–7</span>
+                            <x-tag color="amber" class="text-[9px]">Warming</x-tag>
                         </div>
-                        <p class="text-2xl font-black text-gray-900 dark:text-white">35 <span class="text-xs font-normal text-gray-400">msgs/day</span></p>
-                        <p class="text-[11px] text-gray-400">2-way multi-turn dialogues</p>
+                        <p class="text-2xl font-black text-gray-900 dark:text-white">15 <span class="text-xs font-normal text-gray-400">msgs/day</span></p>
+                        <p class="text-[11px] text-gray-400">Bidirectional conversational flow</p>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-2">
+                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-1">
                         <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-gray-900 dark:text-white">Stage 3: Days 8–14</span>
-                            <x-tag color="purple" class="text-[9px]">Elevated</x-tag>
+                            <span class="font-bold text-gray-900 dark:text-white">Stage 3: Day 8–14</span>
+                            <x-tag color="emerald" class="text-[9px]">Warm</x-tag>
                         </div>
-                        <p class="text-2xl font-black text-gray-900 dark:text-white">75 <span class="text-xs font-normal text-gray-400">msgs/day</span></p>
-                        <p class="text-[11px] text-gray-400">Simulated rich media & audio notes</p>
+                        <p class="text-2xl font-black text-gray-900 dark:text-white">50 <span class="text-xs font-normal text-gray-400">msgs/day</span></p>
+                        <p class="text-[11px] text-gray-400">Simulated natural customer inquiry</p>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-2">
+                    <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 space-y-1">
                         <div class="flex items-center justify-between text-xs">
                             <span class="font-bold text-gray-900 dark:text-white">Stage 4: Day 15+</span>
-                            <x-tag color="primary" class="text-[9px]">Full Broadcast</x-tag>
+                            <x-tag color="primary" class="text-[9px]">Broadcast Ready</x-tag>
                         </div>
                         <p class="text-2xl font-black text-gray-900 dark:text-white">150+ <span class="text-xs font-normal text-gray-400">msgs/day</span></p>
-                        <p class="text-[11px] text-gray-400">Ready for mass outbound campaigns</p>
+                        <p class="text-[11px] text-gray-400">Ready for mass outbound broadcast</p>
                     </div>
                 </div>
             </x-card>
 
-            <!-- Configuration & Script Selectors -->
+            <!-- Configuration & Active Matrix -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Warmup Rules Form -->
                 <x-card bodyClass="p-6 sm:p-8 space-y-5">
@@ -451,16 +467,18 @@
 
                 <!-- Active Warmup Pairing Matrix -->
                 <x-card bodyClass="p-6 sm:p-8 space-y-4">
-                    <div>
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Active Device Warmup Matrix</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Paired device communication channels participating in automated warming.</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white">Active Device Warmup Matrix</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Paired device communication channels participating in automated warming.</p>
+                        </div>
                     </div>
 
                     <div class="space-y-3">
                         @foreach ($pairedDevices as $d)
                             <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-8 h-8 rounded-xl {{ $d['warmer_active'] ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-400' }} flex items-center justify-center shrink-0">
+                                    <div class="w-8 h-8 rounded-xl {{ ($d['warmer_active'] ?? false) ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-400' }} flex items-center justify-center shrink-0">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
                                     </div>
                                     <div class="min-w-0">
@@ -469,21 +487,70 @@
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-2">
-                                    @if ($d['warmer_active'])
+                                <div class="flex items-center gap-3">
+                                    @if ($d['warmer_active'] ?? false)
                                         <span class="text-[11px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
                                             <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-                                            <span>Warming</span>
+                                            <span>Warming Active</span>
                                         </span>
                                     @else
                                         <span class="text-[11px] text-gray-400">Idle</span>
                                     @endif
+                                    <x-switcher :checked="$d['warmer_active'] ?? false" wire:click="toggleWarmerDevice('{{ $d['id'] }}')" />
                                 </div>
                             </div>
                         @endforeach
                     </div>
+
+                    <!-- Live Dialogue Activity Log -->
+                    @if (count($warmerActivityLogs) > 0)
+                        <div class="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
+                            <span class="text-[11px] font-bold text-gray-700 dark:text-gray-300 block">Recent Warmup Dialogue Turns:</span>
+                            <div class="space-y-1.5 max-h-36 overflow-y-auto">
+                                @foreach ($warmerActivityLogs as $log)
+                                    <div class="p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-[11px] flex items-center justify-between gap-2">
+                                        <div class="truncate">
+                                            <span class="font-bold text-gray-800 dark:text-gray-200">{{ $log['from'] }} &rarr; {{ $log['to'] }}:</span>
+                                            <span class="text-gray-500 italic">"{{ $log['message'] }}"</span>
+                                        </div>
+                                        <span class="font-mono text-[10px] text-emerald-600 shrink-0">{{ $log['time'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </x-card>
             </div>
+
+            <!-- Dialogue Script Library Manager -->
+            <x-card bodyClass="p-6 sm:p-8 space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Warmer Conversation Dialogue Script Manager</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Customize the phrases and turns exchanged between warming phone numbers.</p>
+                    </div>
+                </div>
+
+                <!-- Add new script turn -->
+                <form wire:submit.prevent="addScriptMessage" class="flex gap-2">
+                    <x-input wire:model="newScriptText" placeholder="Add a new dialogue line (e.g. 'Hey, did you get a chance to review the proposal?')" class="text-xs" />
+                    <x-button type="submit" variant="solid" size="sm" class="shrink-0">
+                        + Add Dialogue Turn
+                    </x-button>
+                </form>
+
+                <!-- Script turns list -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach ($warmerScripts as $s)
+                        <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
+                            <span class="text-xs text-gray-800 dark:text-gray-200 truncate">"{{ $s['message'] }}"</span>
+                            @if(isset($s['id']))
+                                <button type="button" wire:click="deleteScriptMessage({{ $s['id'] }})" class="text-gray-400 hover:text-rose-500 text-xs shrink-0">&times;</button>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </x-card>
         </div>
     @endif
 
@@ -510,7 +577,7 @@
                     @endif
                 </div>
 
-                <form wire:submit.prevent="saveSocialSettings" class="space-y-4">
+                <div class="space-y-4">
                     <x-form-item label="Telegram Bot Token" :required="true">
                         <x-input wire:model="telegramBotToken" placeholder="123456789:ABCdefGHIjklmNOPqrsTUVwxyz" class="font-mono text-xs" />
                         <p class="text-[11px] text-gray-400 mt-1">Obtain from @BotFather on Telegram.</p>
@@ -520,12 +587,16 @@
                         <x-input wire:model="telegramBotUsername" placeholder="@MyCompanyCRM_bot" />
                     </x-form-item>
 
-                    <div class="flex justify-end pt-3 border-t border-gray-100 dark:border-gray-800">
-                        <x-button type="submit" variant="solid" size="sm">
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800">
+                        <x-button wire:click="testTelegramConnection" variant="default" size="sm">
+                            Test & Verify Bot
+                        </x-button>
+
+                        <x-button wire:click="saveSocialSettings" variant="solid" size="sm">
                             Save Telegram Bot
                         </x-button>
                     </div>
-                </form>
+                </div>
             </x-card>
 
             <!-- Instagram & Facebook Messenger -->
@@ -602,43 +673,40 @@
                 <!-- Tab 1: QR Code Scanner Display -->
                 <div class="flex flex-col items-center justify-center py-2 space-y-4">
                     <div class="relative p-4 rounded-2xl bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-500/40 shadow-inner flex items-center justify-center">
-                        <!-- Simulated QR Code SVG -->
-                        <div class="w-48 h-48 bg-white p-2 rounded-xl flex items-center justify-center relative overflow-hidden shadow-xs">
-                            <svg class="w-full h-full text-gray-900" viewBox="0 0 100 100" fill="currentColor">
-                                <rect x="5" y="5" width="25" height="25" fill="#000" rx="3" />
-                                <rect x="9" y="9" width="17" height="17" fill="#fff" rx="2" />
-                                <rect x="13" y="13" width="9" height="9" fill="#000" />
-                                
-                                <rect x="70" y="5" width="25" height="25" fill="#000" rx="3" />
-                                <rect x="74" y="9" width="17" height="17" fill="#fff" rx="2" />
-                                <rect x="78" y="13" width="9" height="9" fill="#000" />
-                                
-                                <rect x="5" y="70" width="25" height="25" fill="#000" rx="3" />
-                                <rect x="9" y="74" width="17" height="17" fill="#fff" rx="2" />
-                                <rect x="13" y="78" width="9" height="9" fill="#000" />
-                                
-                                <rect x="35" y="10" width="10" height="10" fill="#000" />
-                                <rect x="50" y="15" width="12" height="6" fill="#000" />
-                                <rect x="35" y="35" width="25" height="25" fill="#10b981" rx="4" />
-                                <rect x="10" y="40" width="15" height="8" fill="#000" />
-                                <rect x="40" y="70" width="15" height="15" fill="#000" />
-                                <rect x="65" y="40" width="25" height="10" fill="#000" />
-                                <rect x="70" y="65" width="20" height="20" fill="#000" />
-                            </svg>
+                        <div class="w-52 h-52 bg-white p-3 rounded-xl flex items-center justify-center relative overflow-hidden shadow-xs">
+                            @if ($currentQrImage)
+                                <img src="{{ $currentQrImage }}" alt="WhatsApp QR Code" class="w-full h-full object-contain" />
+                            @else
+                                <div class="flex flex-col items-center justify-center space-y-2 text-center">
+                                    <svg class="w-8 h-8 text-emerald-500 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                    <span class="text-xs text-gray-500 font-medium">Generating QR session...</span>
+                                </div>
+                            @endif
 
-                            <!-- Animated Scanning Laser Line -->
-                            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent animate-pulse"></div>
-
-                            <!-- WhatsApp Logo in Center -->
-                            <div class="absolute w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg ring-4 ring-white">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.971.53 1.771.815 2.796.815 3.183 0 5.769-2.586 5.77-5.766.001-3.18-2.585-5.766-5.77-5.766zm0 10.378c-.896 0-1.67-.253-2.385-.678l-.171-.102-1.777.466.474-1.733-.112-.178c-.467-.743-.714-1.554-.714-2.387 0-2.54 2.067-4.607 4.685-4.607 2.54 0 4.607 2.067 4.607 4.607 0 2.54-2.067 4.607-4.607 4.607z"/></svg>
-                            </div>
+                            @if (!$qrExpired)
+                                <!-- Animated Scanning Laser Line -->
+                                <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent animate-pulse"></div>
+                            @endif
                         </div>
                     </div>
 
                     <div class="text-center space-y-1">
-                        <p class="text-xs font-bold text-gray-900 dark:text-white">Scan this code with WhatsApp</p>
-                        <ol class="text-[11px] text-gray-500 dark:text-gray-400 space-y-0.5 text-left max-w-xs">
+                        @if ($qrExpired)
+                            <div class="space-y-2">
+                                <p class="text-xs font-bold text-rose-500">QR Code has expired</p>
+                                <x-button wire:click="refreshQrCode" variant="default" size="xs">
+                                    🔄 Refresh QR Code
+                                </x-button>
+                            </div>
+                        @else
+                            <div class="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                                <span>Waiting for WhatsApp scan... (Expires in {{ max(0, $qrExpiresIn) }}s)</span>
+                                <button type="button" wire:click="refreshQrCode" class="text-emerald-600 hover:underline font-semibold ml-1">Refresh</button>
+                            </div>
+                        @endif
+
+                        <ol class="text-[11px] text-gray-500 dark:text-gray-400 space-y-0.5 text-left max-w-xs pt-2">
                             <li>1. Open WhatsApp on your mobile phone</li>
                             <li>2. Tap <strong>Settings</strong> &gt; <strong>Linked Devices</strong></li>
                             <li>3. Point your camera at this screen to scan</li>
@@ -667,13 +735,19 @@
             </x-form-item>
 
             <!-- Modal Footer -->
-            <div class="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-                <x-button wire:click="closePairModal" variant="default" size="sm" type="button">
-                    Cancel
+            <div class="flex items-center justify-between gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                <x-button wire:click="confirmPairing" variant="plain" size="xs" class="text-emerald-600 hover:text-emerald-700">
+                    ⚡ Instant Link / Demo Verify
                 </x-button>
-                <x-button wire:click="confirmPairing" variant="solid" size="sm" type="button">
-                    Confirm & Complete Pairing
-                </x-button>
+
+                <div class="flex items-center gap-2">
+                    <x-button wire:click="closePairModal" variant="default" size="sm" type="button">
+                        Cancel
+                    </x-button>
+                    <x-button wire:click="confirmPairing" variant="solid" size="sm" type="button">
+                        Confirm & Complete Pairing
+                    </x-button>
+                </div>
             </div>
         </div>
     </x-modal>

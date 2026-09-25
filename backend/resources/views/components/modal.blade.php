@@ -15,6 +15,7 @@ $maxWidth = [
 @endphp
 
 <div
+    x-effect="show = @js($show)"
     x-data="{
         show: @js($show),
         focusables() {
