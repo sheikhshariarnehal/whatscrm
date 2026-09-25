@@ -64,14 +64,35 @@
                                 <span>Chat</span>
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                             </a>
-                            <!-- Move to Stage Dropdown -->
-                            <select wire:change="moveConversation({{ $conv->id }}, $event.target.value)" 
-                                    class="text-[10px] font-semibold py-0.5 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
-                                <option value="">Move To...</option>
-                                @foreach ($stages as $stage)
-                                    <option value="{{ $stage->id }}">{{ $stage->title }}</option>
-                                @endforeach
-                            </select>
+                            <!-- Move to Stage Custom Dropdown -->
+                            <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                                <button type="button" 
+                                        @click="open = !open" 
+                                        class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-[11px] font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-2xs">
+                                    <span>Move To...</span>
+                                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-150 shrink-0" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+
+                                <div x-show="open" 
+                                     x-transition:enter="transition ease-out duration-150"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-100"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 bottom-full mb-1.5 w-44 rounded-2xl bg-white dark:bg-gray-900 p-1.5 shadow-2xl border border-gray-100 dark:border-gray-800 z-30 max-h-56 overflow-y-auto focus:outline-none"
+                                     style="display: none;">
+                                    @foreach ($stages as $stage)
+                                        <button type="button" 
+                                                wire:click="moveConversation({{ $conv->id }}, {{ $stage->id }})" 
+                                                @click="open = false" 
+                                                class="w-full text-left px-2.5 py-1.5 text-xs font-semibold rounded-xl flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $stage->hex_color }}"></span>
+                                            <span class="truncate">{{ $stage->title }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @empty
@@ -118,16 +139,37 @@
                                     <span>Chat</span>
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                                 </a>
-                                <!-- Move to Stage Dropdown -->
-                                <select wire:change="moveConversation({{ $conv->id }}, $event.target.value)" 
-                                        class="text-[10px] font-semibold py-0.5 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
-                                    <option value="">Move To...</option>
-                                    @foreach ($stages as $s)
-                                        @if ($s->id !== $stage->id)
-                                            <option value="{{ $s->id }}">{{ $s->title }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
+                                <!-- Move to Stage Custom Dropdown -->
+                                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                                    <button type="button" 
+                                            @click="open = !open" 
+                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-[11px] font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all shadow-2xs">
+                                        <span>Move To...</span>
+                                        <svg class="w-3 h-3 text-gray-400 transition-transform duration-150 shrink-0" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+
+                                    <div x-show="open" 
+                                         x-transition:enter="transition ease-out duration-150"
+                                         x-transition:enter-start="transform opacity-0 scale-95"
+                                         x-transition:enter-end="transform opacity-100 scale-100"
+                                         x-transition:leave="transition ease-in duration-100"
+                                         x-transition:leave-start="transform opacity-100 scale-100"
+                                         x-transition:leave-end="transform opacity-0 scale-95"
+                                         class="absolute right-0 bottom-full mb-1.5 w-44 rounded-2xl bg-white dark:bg-gray-900 p-1.5 shadow-2xl border border-gray-100 dark:border-gray-800 z-30 max-h-56 overflow-y-auto focus:outline-none"
+                                         style="display: none;">
+                                        @foreach ($stages as $s)
+                                            @if ($s->id !== $stage->id)
+                                                <button type="button" 
+                                                        wire:click="moveConversation({{ $conv->id }}, {{ $s->id }})" 
+                                                        @click="open = false" 
+                                                        class="w-full text-left px-2.5 py-1.5 text-xs font-semibold rounded-xl flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                                    <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $s->hex_color }}"></span>
+                                                    <span class="truncate">{{ $s->title }}</span>
+                                                </button>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @empty

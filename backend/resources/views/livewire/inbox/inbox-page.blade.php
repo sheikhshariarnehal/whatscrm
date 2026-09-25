@@ -128,12 +128,73 @@
 
                 <!-- Status Selector & Sidebar Toggle -->
                 <div class="flex items-center gap-2">
-                    <select wire:change="updateStatus($event.target.value)" 
-                            class="text-xs font-semibold py-1.5 px-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary">
-                        <option value="open" {{ $selectedConversation->status === 'open' ? 'selected' : '' }}>🟢 Open</option>
-                        <option value="pending" {{ $selectedConversation->status === 'pending' ? 'selected' : '' }}>🟡 Pending</option>
-                        <option value="closed" {{ $selectedConversation->status === 'closed' ? 'selected' : '' }}>⚪ Closed</option>
-                    </select>
+                    <!-- Custom Status Dropdown -->
+                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                        <button type="button" 
+                                @click="open = !open" 
+                                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/80 transition-all shadow-2xs">
+                            @if ($selectedConversation->status === 'open')
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20"></span>
+                                <span>Open</span>
+                            @elseif ($selectedConversation->status === 'pending')
+                                <span class="w-2 h-2 rounded-full bg-amber-500 ring-2 ring-amber-500/20"></span>
+                                <span>Pending</span>
+                            @else
+                                <span class="w-2 h-2 rounded-full bg-gray-400 ring-2 ring-gray-400/20"></span>
+                                <span>Closed</span>
+                            @endif
+                            <svg class="w-3.5 h-3.5 text-gray-400 transition-transform duration-150 shrink-0" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute right-0 mt-1.5 w-36 rounded-2xl bg-white dark:bg-gray-900 p-1.5 shadow-2xl border border-gray-100 dark:border-gray-800 z-30 focus:outline-none"
+                             style="display: none;">
+                            <button type="button" 
+                                    wire:click="updateStatus('open')" 
+                                    @click="open = false" 
+                                    class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ $selectedConversation->status === 'open' ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <span>Open</span>
+                                </div>
+                                @if ($selectedConversation->status === 'open')
+                                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                @endif
+                            </button>
+
+                            <button type="button" 
+                                    wire:click="updateStatus('pending')" 
+                                    @click="open = false" 
+                                    class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ $selectedConversation->status === 'pending' ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                    <span>Pending</span>
+                                </div>
+                                @if ($selectedConversation->status === 'pending')
+                                    <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                @endif
+                            </button>
+
+                            <button type="button" 
+                                    wire:click="updateStatus('closed')" 
+                                    @click="open = false" 
+                                    class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ $selectedConversation->status === 'closed' ? 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                                    <span>Closed</span>
+                                </div>
+                                @if ($selectedConversation->status === 'closed')
+                                    <svg class="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                @endif
+                            </button>
+                        </div>
+                    </div>
 
                     <button @click="sidebarDetailsOpen = !sidebarDetailsOpen" 
                             class="p-2 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -251,13 +312,37 @@
                     <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tags / Pipeline</span>
                     
                     <!-- Tag Picker Dropdown -->
-                    <select wire:change="attachTag($event.target.value)" 
-                            class="text-[11px] font-semibold py-1 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
-                        <option value="">+ Add Tag</option>
-                        @foreach ($availableTags as $tag)
-                            <option value="{{ $tag->id }}">{{ $tag->title }}</option>
-                        @endforeach
-                    </select>
+                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                        <button type="button" 
+                                @click="open = !open" 
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/80 transition-all shadow-2xs">
+                            <svg class="w-3 h-3 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                            <span>Add Tag</span>
+                            <svg class="w-3 h-3 text-gray-400 transition-transform duration-150 shrink-0" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute right-0 mt-1.5 w-48 rounded-2xl bg-white dark:bg-gray-900 p-1.5 shadow-2xl border border-gray-100 dark:border-gray-800 z-30 max-h-56 overflow-y-auto focus:outline-none"
+                             style="display: none;">
+                            @forelse ($availableTags as $tag)
+                                <button type="button" 
+                                        wire:click="attachTag({{ $tag->id }})" 
+                                        @click="open = false" 
+                                        class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                    <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $tag->hex_color }}"></span>
+                                    <span class="truncate">{{ $tag->title }}</span>
+                                </button>
+                            @empty
+                                <div class="px-3 py-2 text-xs text-gray-400 italic">No tags created</div>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap gap-1.5">

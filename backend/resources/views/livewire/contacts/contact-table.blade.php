@@ -58,21 +58,58 @@
                     @endif
                 </div>
 
-                <!-- Phonebook Group Filter Dropdown -->
-                <div class="relative flex items-center">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 z-10">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-                    </div>
-                    <select wire:model.live="phonebookFilter" 
-                            style="padding-left: 2.25rem; padding-right: 2.25rem;"
-                            class="select select-sm appearance-none">
-                        <option value="">All Phonebooks ({{ $phonebooks->count() }})</option>
+                <!-- Phonebook Group Filter Custom Dropdown -->
+                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                    <button type="button" 
+                            @click="open = !open" 
+                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/80 transition-all shadow-2xs">
+                        <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                        <span>
+                            @if($phonebookFilter && ($currentPb = $phonebooks->firstWhere('id', $phonebookFilter)))
+                                {{ $currentPb->name }}
+                            @else
+                                All Phonebooks ({{ $phonebooks->count() }})
+                            @endif
+                        </span>
+                        <svg class="w-3.5 h-3.5 text-gray-400 transition-transform duration-150 shrink-0" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute left-0 mt-1.5 w-56 rounded-2xl bg-white dark:bg-gray-900 p-1.5 shadow-2xl border border-gray-100 dark:border-gray-800 z-30 focus:outline-none"
+                         style="display: none;">
+                        <button type="button" 
+                                wire:click="$set('phonebookFilter', '')" 
+                                @click="open = false" 
+                                class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ empty($phonebookFilter) ? 'text-primary bg-primary-subtle font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                            <div class="flex items-center gap-2 truncate">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                <span>All Phonebooks</span>
+                            </div>
+                            @if(empty($phonebookFilter))
+                                <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </button>
+
                         @foreach ($phonebooks as $pb)
-                            <option value="{{ $pb->id }}">{{ $pb->name }}</option>
+                            <button type="button" 
+                                    wire:click="$set('phonebookFilter', '{{ $pb->id }}')" 
+                                    @click="open = false" 
+                                    class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ $phonebookFilter == $pb->id ? 'text-primary bg-primary-subtle font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                                <div class="flex items-center gap-2 truncate">
+                                    <svg class="w-4 h-4 text-primary/70 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                    <span class="truncate">{{ $pb->name }}</span>
+                                </div>
+                                @if($phonebookFilter == $pb->id)
+                                    <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                @endif
+                            </button>
                         @endforeach
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-gray-400 z-10">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
                 </div>
 

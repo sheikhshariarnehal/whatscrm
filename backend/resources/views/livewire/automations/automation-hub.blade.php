@@ -399,7 +399,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Match Type</label>
-                            <select wire:model="ruleMatchType" class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                            <select wire:model="ruleMatchType" class="select select-md w-full">
                                 <option value="contains">Contains Keyword</option>
                                 <option value="exact">Exact Match</option>
                                 <option value="starts_with">Starts With</option>
