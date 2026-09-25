@@ -153,14 +153,13 @@
     <!-- ========================================== -->
     <!-- 2. DESKTOP COLLAPSIBLE SIDENAV             -->
     <!-- ========================================== -->
-    <aside :class="sideNavCollapse ? 'w-[80px]' : 'w-[280px]'"
-           style="width: 280px;"
+    <aside :style="sideNavCollapse ? 'width: 80px; min-width: 80px;' : 'width: 280px; min-width: 280px;'"
            class="side-nav side-nav-bg hidden lg:flex flex-col flex-none flex-shrink-0 transition-[width] duration-200 ease-in-out">
         
         <!-- SideNav Header with Template Logos -->
         <div class="h-16 flex items-center border-b border-gray-100 dark:border-gray-800 overflow-hidden"
-             :class="sideNavCollapse ? 'justify-center px-2' : 'justify-start px-6'">
-            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center">
+             :class="sideNavCollapse ? 'justify-center px-0' : 'justify-start px-6'">
+            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center justify-center">
                 <!-- Expanded Mode Logos -->
                 <div x-show="!sideNavCollapse" class="flex items-center">
                     <img x-show="!darkMode" src="/img/logo/logo-light-full.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
@@ -184,7 +183,7 @@
             <a href="{{ route('dashboard') }}" 
                wire:navigate
                title="Dashboard"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('dashboard') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="dashboard" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Dashboard</span>
@@ -194,20 +193,21 @@
             <a href="{{ route('inbox') }}" 
                wire:navigate
                title="Live Chat Inbox"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5 justify-between'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto relative' : 'w-full px-3.5 py-2.5 justify-between'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('inbox') ? 'menu-item-active' : '' }}">
-                <div class="flex items-center gap-3 min-w-0">
+                <div class="flex items-center gap-3 min-w-0" :class="sideNavCollapse ? 'justify-center' : ''">
                     <x-nav-icon name="inbox" class="w-5 h-5 flex-shrink-0 text-xl" />
                     <span x-show="!sideNavCollapse" class="truncate">Inbox</span>
                 </div>
                 <span x-show="!sideNavCollapse" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white shadow-xs">Live</span>
+                <span x-show="sideNavCollapse" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-white dark:ring-gray-900" title="Live"></span>
             </a>
 
             <!-- CRM Pipeline -->
             <a href="{{ route('crm') }}" 
                wire:navigate
                title="CRM Pipeline"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('crm') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="crm" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">CRM Pipeline</span>
@@ -221,7 +221,7 @@
             <a href="{{ route('contacts') }}" 
                wire:navigate
                title="Contacts Directory"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('contacts') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="contacts" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Contacts</span>
@@ -231,7 +231,7 @@
             <a href="{{ route('campaigns') }}" 
                wire:navigate
                title="Broadcast Campaigns"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('campaigns') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="campaigns" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Campaigns</span>
@@ -241,7 +241,7 @@
             <a href="{{ route('automations') }}" 
                wire:navigate
                title="Automations & Bots"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('automations') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="automations" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Automations</span>
@@ -251,7 +251,7 @@
             <a href="{{ route('devices') }}" 
                wire:navigate
                title="WhatsApp Cloud API Accounts"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="devices" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">WhatsApp API</span>
@@ -265,7 +265,7 @@
             <a href="{{ route('team') }}" 
                wire:navigate
                title="Team & RBAC"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('team') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="team" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Team & Agents</span>
@@ -275,7 +275,7 @@
             <a href="{{ route('developer') }}" 
                wire:navigate
                title="Developer Hub & Webhooks"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('developer') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="developer" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Developer API</span>
@@ -285,7 +285,7 @@
             <a href="{{ route('settings') }}" 
                wire:navigate
                title="Workspace Settings"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('settings') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="settings" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Settings</span>
@@ -294,9 +294,9 @@
             <!-- SuperAdmin Filament Portal -->
             <a href="/admin" target="_blank"
                title="Filament SuperAdmin Portal"
-               :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5 justify-between'"
+               :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto relative' : 'w-full px-3.5 py-2.5 justify-between'"
                class="menu-item menu-item-hoverable text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30">
-                <div class="flex items-center gap-3 min-w-0">
+                <div class="flex items-center gap-3 min-w-0" :class="sideNavCollapse ? 'justify-center' : ''">
                     <x-nav-icon name="admin" class="w-5 h-5 flex-shrink-0 text-xl" />
                     <span x-show="!sideNavCollapse" class="truncate font-semibold">SuperAdmin</span>
                 </div>
@@ -307,8 +307,9 @@
         <!-- SideNav Footer / Current Tenant Status -->
         @if (isset($currentWorkspace))
             <div class="p-3 border-t border-gray-100 dark:border-gray-800">
-                <div :class="sideNavCollapse ? 'justify-center px-2' : 'px-3'"
-                     class="py-2.5 rounded-xl bg-gray-50/80 dark:bg-gray-800/60 flex items-center justify-between transition-all">
+                <div :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'px-3 py-2.5 justify-between'"
+                     class="rounded-xl bg-gray-50/80 dark:bg-gray-800/60 flex items-center transition-all"
+                     :title="sideNavCollapse ? '{{ $currentWorkspace->name }}' : ''">
                     <div x-show="!sideNavCollapse" class="flex flex-col min-w-0">
                         <span class="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{{ $currentWorkspace->name }}</span>
                         <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 truncate">{{ $currentWorkspace->plan?->name ?? 'Standard Plan' }}</span>

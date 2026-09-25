@@ -103,7 +103,7 @@
     }
 
     .menu-item {
-        @apply cursor-pointer font-semibold px-3 py-2.5 rounded-xl flex items-center w-full whitespace-nowrap gap-x-3 transition-colors duration-150 text-gray-600 dark:text-gray-400;
+        @apply cursor-pointer font-semibold rounded-xl flex items-center whitespace-nowrap gap-x-3 transition-colors duration-150 text-gray-600 dark:text-gray-400;
     }
 
     .menu-item-hoverable {
