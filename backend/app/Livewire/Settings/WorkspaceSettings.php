@@ -9,15 +9,20 @@ use App\Models\Workspace;
 use App\Models\WorkspaceMember;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class WorkspaceSettings extends Component
 {
+    use WithFileUploads;
+
     public string $activeTab = 'company'; // 'company', 'security', 'notifications', 'billing'
 
     // Company profile
     public string $companyName = '';
     public string $timezone = 'UTC';
     public string $countryCode = '+1';
+    public $logo;
+    public ?string $existingLogoUrl = null;
 
     // Security
     public string $currentPassword = '';
@@ -36,6 +41,7 @@ class WorkspaceSettings extends Component
             $this->companyName = $workspace->name;
             $this->timezone = $workspace->timezone ?? 'UTC';
             $this->countryCode = $workspace->settings['country_code'] ?? '+1';
+            $this->existingLogoUrl = $workspace->settings['logo_url'] ?? null;
 
             $notifs = $workspace->settings['notifications'] ?? [];
             $this->soundEnabled = $notifs['sound'] ?? true;
@@ -55,12 +61,19 @@ class WorkspaceSettings extends Component
             'companyName' => 'required|string|max:100',
             'timezone' => 'required|string|max:100',
             'countryCode' => 'required|string|max:10',
+            'logo' => 'nullable|image|max:2048',
         ]);
 
         $workspace = auth()->user()->currentWorkspace();
         if ($workspace) {
             $settings = $workspace->settings ?? [];
             $settings['country_code'] = $this->countryCode;
+
+            if ($this->logo) {
+                $path = $this->logo->store('logos', 'public');
+                $settings['logo_url'] = '/storage/' . $path;
+                $this->existingLogoUrl = $settings['logo_url'];
+            }
 
             $workspace->update([
                 'name' => $this->companyName,

@@ -38,42 +38,36 @@ new class extends Component
     }
 }; ?>
 
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Update Password') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+<x-card bodyClass="p-6 sm:p-8 space-y-6">
+    <div>
+        <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('Update Security Password') }}</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </p>
-    </header>
+    </div>
 
-    <form wire:submit="updatePassword" class="mt-6 space-y-6">
-        <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input wire:model="current_password" id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('current_password')" class="mt-2" />
-        </div>
+    <form wire:submit="updatePassword" class="space-y-5">
+        <x-form-item label="Current Password" :required="true" :error="$errors->first('current_password')">
+            <x-input wire:model="current_password" id="update_password_current_password" name="current_password" type="password" :invalid="$errors->has('current_password')" autocomplete="current-password" placeholder="••••••••••••" />
+        </x-form-item>
 
-        <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input wire:model="password" id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <x-form-item label="New Password" :required="true" :error="$errors->first('password')">
+            <x-input wire:model="password" id="update_password_password" name="password" type="password" :invalid="$errors->has('password')" autocomplete="new-password" placeholder="At least 8 characters" />
+        </x-form-item>
 
-        <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input wire:model="password_confirmation" id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+        <x-form-item label="Confirm New Password" :required="true" :error="$errors->first('password_confirmation')">
+            <x-input wire:model="password_confirmation" id="update_password_password_confirmation" name="password_confirmation" type="password" :invalid="$errors->has('password_confirmation')" autocomplete="new-password" placeholder="Confirm your new password" />
+        </x-form-item>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            <x-action-message class="me-3" on="password-updated">
-                {{ __('Saved.') }}
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+            <x-action-message class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5" on="password-updated">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>{{ __('Password updated securely.') }}</span>
             </x-action-message>
+
+            <x-button type="submit" variant="solid" size="sm">
+                {{ __('Update Password') }}
+            </x-button>
         </div>
     </form>
-</section>
+</x-card>

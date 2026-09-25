@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto">
+<div class="p-4 sm:p-6 lg:p-8 space-y-6">
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -42,72 +42,127 @@
 
     <!-- TAB 1: COMPANY PROFILE -->
     @if($activeTab === 'company')
-        <div class="max-w-3xl space-y-6">
-            <x-card bodyClass="p-6 sm:p-8 space-y-6">
-                <!-- Workspace Avatar & Identity -->
-                <div class="flex items-center gap-4 pb-6 border-b border-gray-100 dark:border-gray-800">
-                    <x-avatar :name="$companyName ?: 'Workspace'" size="lg" />
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Workspace Overview Card -->
+            <div class="space-y-6">
+                <x-card bodyClass="p-6 space-y-5">
+                    <div class="flex items-center gap-4">
+                        <x-avatar :name="$companyName ?: 'Workspace'" size="lg" />
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white truncate">{{ $companyName ?: 'My Workspace' }}</h3>
+                            <div class="flex items-center gap-2 mt-1">
+                                <x-tag color="emerald" prefix class="text-[10px] font-bold">Active</x-tag>
+                                <span class="text-xs text-gray-400 font-mono truncate">{{ $currentPlan->name ?? 'Standard Plan' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-3 text-xs">
+                        <div class="flex items-center justify-between text-gray-500 dark:text-gray-400">
+                            <span>Workspace Identifier</span>
+                            <span class="font-mono font-semibold text-gray-800 dark:text-gray-200">{{ $workspace->slug ?? 'ws-'.($workspace->id ?? 1) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-gray-500 dark:text-gray-400">
+                            <span>Timezone</span>
+                            <span class="font-semibold text-gray-800 dark:text-gray-200">{{ $timezone }}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-gray-500 dark:text-gray-400">
+                            <span>Dial Code</span>
+                            <span class="font-mono font-semibold text-gray-800 dark:text-gray-200">{{ $countryCode }}</span>
+                        </div>
+                    </div>
+                </x-card>
+            </div>
+
+            <!-- Right Column: Edit Profile Form -->
+            <div class="lg:col-span-2">
+                <x-card bodyClass="p-6 sm:p-8 space-y-6">
                     <div>
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ $companyName ?: 'My Workspace' }}</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">Workspace ID: {{ $workspace->slug ?? 'ws-'.($workspace->id ?? 1) }}</p>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Workspace Details</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Update your business title and international regional defaults.</p>
                     </div>
-                </div>
 
-                <form wire:submit.prevent="saveCompanySettings" class="space-y-5">
-                    <x-form-item label="Company / Workspace Name" :required="true" :error="$errors->first('companyName')">
-                        <x-input wire:model="companyName" :invalid="$errors->has('companyName')" placeholder="e.g. Acme Corporation" />
-                    </x-form-item>
+                    <form wire:submit.prevent="saveCompanySettings" class="space-y-5">
+                        <!-- Workspace Logo Uploader -->
+                        <div class="p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 flex items-center gap-4">
+                            <div class="shrink-0">
+                                @if($logo)
+                                    <img src="{{ $logo->temporaryUrl() }}" class="w-14 h-14 rounded-2xl object-cover border border-gray-200 dark:border-gray-700 shadow-xs" alt="Logo preview">
+                                @elseif($existingLogoUrl)
+                                    <img src="{{ $existingLogoUrl }}" class="w-14 h-14 rounded-2xl object-cover border border-gray-200 dark:border-gray-700 shadow-xs" alt="Workspace Logo">
+                                @else
+                                    <x-avatar :name="$companyName ?: 'Workspace'" size="lg" />
+                                @endif
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-bold text-gray-800 dark:text-gray-200 mb-1">Company Brand Logo</label>
+                                <div class="flex items-center gap-3">
+                                    <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-200 transition-colors shadow-2xs">
+                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                        <span>Change Logo</span>
+                                        <input type="file" wire:model="logo" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="sr-only">
+                                    </label>
+                                    <span class="text-[11px] text-gray-400">PNG, JPG or WEBP (Max 2MB)</span>
+                                </div>
+                                @error('logo') <span class="text-xs text-rose-500 mt-1 block font-medium">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <x-form-item label="Default Country Code" :required="true">
-                            <x-select wire:model="countryCode">
-                                <option value="+1">+1 (United States / Canada)</option>
-                                <option value="+44">+44 (United Kingdom)</option>
-                                <option value="+91">+91 (India)</option>
-                                <option value="+880">+880 (Bangladesh)</option>
-                                <option value="+971">+971 (United Arab Emirates)</option>
-                                <option value="+61">+61 (Australia)</option>
-                                <option value="+49">+49 (Germany)</option>
-                                <option value="+33">+33 (France)</option>
-                                <option value="+65">+65 (Singapore)</option>
-                                <option value="+55">+55 (Brazil)</option>
-                            </x-select>
+                        <x-form-item label="Company / Workspace Name" :required="true" :error="$errors->first('companyName')">
+                            <x-input wire:model="companyName" :invalid="$errors->has('companyName')" placeholder="e.g. Acme Corporation" />
                         </x-form-item>
 
-                        <x-form-item label="Timezone" :required="true">
-                            <x-select wire:model="timezone">
-                                <option value="UTC">UTC (Universal Coordinated Time)</option>
-                                <option value="America/New_York">America/New York (EST/EDT)</option>
-                                <option value="America/Chicago">America/Chicago (CST/CDT)</option>
-                                <option value="America/Los_Angeles">America/Los Angeles (PST/PDT)</option>
-                                <option value="Europe/London">Europe/London (GMT/BST)</option>
-                                <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
-                                <option value="Asia/Dubai">Asia/Dubai (GST +4)</option>
-                                <option value="Asia/Dhaka">Asia/Dhaka (GMT +6)</option>
-                                <option value="Asia/Kolkata">Asia/Kolkata (IST +5:30)</option>
-                                <option value="Asia/Singapore">Asia/Singapore (SGT +8)</option>
-                                <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
-                            </x-select>
-                        </x-form-item>
-                    </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <x-form-item label="Default Country Dial Code" :required="true">
+                                <x-select wire:model="countryCode">
+                                    <option value="+1">+1 (United States / Canada)</option>
+                                    <option value="+44">+44 (United Kingdom)</option>
+                                    <option value="+91">+91 (India)</option>
+                                    <option value="+880">+880 (Bangladesh)</option>
+                                    <option value="+971">+971 (United Arab Emirates)</option>
+                                    <option value="+61">+61 (Australia)</option>
+                                    <option value="+49">+49 (Germany)</option>
+                                    <option value="+33">+33 (France)</option>
+                                    <option value="+65">+65 (Singapore)</option>
+                                    <option value="+55">+55 (Brazil)</option>
+                                </x-select>
+                            </x-form-item>
 
-                    <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
-                        <x-button type="submit" variant="solid" size="md">
-                            Save Changes
-                        </x-button>
-                    </div>
-                </form>
-            </x-card>
+                            <x-form-item label="System Timezone" :required="true">
+                                <x-select wire:model="timezone">
+                                    <option value="UTC">UTC (Universal Coordinated Time)</option>
+                                    <option value="America/New_York">America/New York (EST/EDT)</option>
+                                    <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+                                    <option value="America/Los_Angeles">America/Los Angeles (PST/PDT)</option>
+                                    <option value="Europe/London">Europe/London (GMT/BST)</option>
+                                    <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+                                    <option value="Asia/Dubai">Asia/Dubai (GST +4)</option>
+                                    <option value="Asia/Dhaka">Asia/Dhaka (GMT +6)</option>
+                                    <option value="Asia/Kolkata">Asia/Kolkata (IST +5:30)</option>
+                                    <option value="Asia/Singapore">Asia/Singapore (SGT +8)</option>
+                                    <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+                                </x-select>
+                            </x-form-item>
+                        </div>
+
+                        <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
+                            <x-button type="submit" variant="solid" size="sm">
+                                Save Profile Changes
+                            </x-button>
+                        </div>
+                    </form>
+                </x-card>
+            </div>
         </div>
     @endif
 
     <!-- TAB 2: SECURITY & PASSWORD -->
     @if($activeTab === 'security')
-        <div class="max-w-2xl space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Password Update Card -->
             <x-card bodyClass="p-6 sm:p-8 space-y-5">
                 <div>
-                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Change Password</h3>
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Change Account Password</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ensure your account is using a secure, random password to stay protected.</p>
                 </div>
 
@@ -116,89 +171,111 @@
                         <x-input type="password" wire:model="currentPassword" :invalid="$errors->has('currentPassword')" placeholder="••••••••••••" />
                     </x-form-item>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <x-form-item label="New Password" :required="true" :error="$errors->first('newPassword')">
-                            <x-input type="password" wire:model="newPassword" :invalid="$errors->has('newPassword')" placeholder="At least 8 characters" />
-                        </x-form-item>
+                    <x-form-item label="New Password" :required="true" :error="$errors->first('newPassword')">
+                        <x-input type="password" wire:model="newPassword" :invalid="$errors->has('newPassword')" placeholder="At least 8 characters" />
+                    </x-form-item>
 
-                        <x-form-item label="Confirm Password" :required="true">
-                            <x-input type="password" wire:model="newPassword_confirmation" placeholder="Confirm new password" />
-                        </x-form-item>
-                    </div>
+                    <x-form-item label="Confirm New Password" :required="true">
+                        <x-input type="password" wire:model="newPassword_confirmation" placeholder="Confirm new password" />
+                    </x-form-item>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
-                        <x-button type="submit" variant="solid" size="md">
+                        <x-button type="submit" variant="solid" size="sm">
                             Update Password
                         </x-button>
                     </div>
                 </form>
             </x-card>
 
-            <!-- Two-Factor Authentication Info Card -->
-            <x-card bodyClass="p-6 sm:p-8 flex items-center justify-between gap-4">
-                <div class="space-y-1">
-                    <div class="flex items-center gap-2">
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Two-Factor Authentication (2FA)</h3>
-                        <x-tag color="amber" class="font-bold text-[10px]">Optional</x-tag>
-                    </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security to your WhatsApp CRM account via Authenticator App.</p>
-                </div>
-                <x-button variant="default" size="sm">
-                    Configure 2FA
-                </x-button>
-            </x-card>
-
-            <!-- Active Sessions Card -->
-            <x-card bodyClass="p-6 sm:p-8 space-y-4">
-                <h3 class="text-base font-bold text-gray-900 dark:text-white">Active Browser Sessions</h3>
-                <div class="divide-y divide-gray-100 dark:divide-gray-800">
-                    <div class="py-3 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <!-- 2FA & Sessions -->
+            <div class="space-y-6">
+                <!-- Two-Factor Authentication Card -->
+                <x-card bodyClass="p-6 sm:p-8 space-y-4">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-base font-bold text-gray-900 dark:text-white">Two-Factor Authentication (2FA)</h3>
+                                <x-tag color="amber" class="font-bold text-[10px]">Optional</x-tag>
                             </div>
-                            <div>
-                                <div class="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <span>Current Windows Session</span>
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                </div>
-                                <div class="text-[11px] text-gray-400 font-mono">Chrome / Windows • Active Now</div>
-                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security to your WhatsApp CRM account via Authenticator App.</p>
                         </div>
-                        <x-tag color="emerald" class="font-bold text-[10px]">This Device</x-tag>
+                        <x-button variant="default" size="xs">
+                            Configure 2FA
+                        </x-button>
                     </div>
-                </div>
-            </x-card>
+                </x-card>
+
+                <!-- Active Sessions Card -->
+                <x-card bodyClass="p-6 sm:p-8 space-y-4">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Active Browser Sessions</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Devices currently signed into this WhatsApp CRM workspace account.</p>
+                    </div>
+
+                    <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                        <div class="py-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                        <span>Current Windows Session</span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    </div>
+                                    <div class="text-[11px] text-gray-400 font-mono">Chrome / Windows • Active Now</div>
+                                </div>
+                            </div>
+                            <x-tag color="emerald" class="font-bold text-[10px]">This Device</x-tag>
+                        </div>
+                    </div>
+                </x-card>
+            </div>
         </div>
     @endif
 
     <!-- TAB 3: NOTIFICATIONS & SOUNDS -->
     @if($activeTab === 'notifications')
-        <div class="max-w-2xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Audio Preferences -->
             <x-card bodyClass="p-6 sm:p-8 space-y-6">
                 <div>
-                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Alert Preferences</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Configure real-time audio rings, desktop notifications, and periodic campaign digests.</p>
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Audio & Real-time Chimes</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Configure audio bells when inbound customer WhatsApp chats arrive.</p>
+                </div>
+
+                <div class="p-4 rounded-xl border border-gray-200/80 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="font-bold text-sm text-gray-800 dark:text-gray-200 block">Incoming Message Audio Chime</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 block">Play a pleasant soft sound when a WhatsApp customer sends a new message.</span>
+                        
+                        <div class="pt-2">
+                            <button type="button" 
+                                    onclick="const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(587.33, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.3);"
+                                    class="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary-deep font-semibold">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Play Test Chime</span>
+                            </button>
+                        </div>
+                    </div>
+                    <x-switcher wire:model="soundEnabled" />
+                </div>
+
+                <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <x-button wire:click="saveNotificationSettings" variant="solid" size="sm">
+                        Save Preferences
+                    </x-button>
+                </div>
+            </x-card>
+
+            <!-- Push & Email Digests -->
+            <x-card bodyClass="p-6 sm:p-8 space-y-6">
+                <div>
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Desktop Push & Email Digests</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Stay updated even when your CRM browser window is minimized or closed.</p>
                 </div>
 
                 <div class="space-y-4">
-                    <div class="p-4 rounded-xl border border-gray-200/80 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 flex items-start justify-between gap-4">
-                        <div class="space-y-1">
-                            <span class="font-bold text-sm text-gray-800 dark:text-gray-200 block">Incoming Message Audio Chime</span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400 block">Play a pleasant soft sound when a WhatsApp customer sends a new message.</span>
-                            
-                            <div class="pt-2">
-                                <button type="button" 
-                                        onclick="const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(587.33, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.3);"
-                                        class="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary-deep font-semibold">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span>Play Test Chime</span>
-                                </button>
-                            </div>
-                        </div>
-                        <x-switcher wire:model="soundEnabled" />
-                    </div>
-
                     <div class="p-4 rounded-xl border border-gray-200/80 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 flex items-center justify-between gap-4">
                         <div class="space-y-1">
                             <span class="font-bold text-sm text-gray-800 dark:text-gray-200 block">Desktop Push Notifications</span>
@@ -217,7 +294,7 @@
                 </div>
 
                 <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
-                    <x-button wire:click="saveNotificationSettings" variant="solid" size="md">
+                    <x-button wire:click="saveNotificationSettings" variant="solid" size="sm">
                         Save Preferences
                     </x-button>
                 </div>
