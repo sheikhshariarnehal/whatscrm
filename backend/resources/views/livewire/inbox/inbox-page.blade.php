@@ -1,4 +1,4 @@
-<div class="h-[calc(100vh-5rem)] flex -m-4 sm:-m-6 lg:-m-8 bg-white dark:bg-gray-900 overflow-hidden border-t border-gray-200 dark:border-gray-800"
+<div class="h-full flex-1 flex bg-white dark:bg-gray-900 overflow-hidden"
      x-data="{ mobileChatOpen: false, sidebarDetailsOpen: true }">
 
     <!-- ========================================== -->

@@ -1,4 +1,4 @@
-<div class="h-[calc(100vh-5rem)] flex flex-col -m-4 sm:-m-6 lg:-m-8 bg-gray-50/60 dark:bg-gray-950/40 overflow-hidden"
+<div class="h-full flex-1 flex flex-col bg-gray-50/60 dark:bg-gray-950/40 overflow-hidden"
      x-data="{ showModal: false }">
 
     <!-- Kanban Top Toolbar -->

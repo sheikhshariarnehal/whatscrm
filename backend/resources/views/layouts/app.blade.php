@@ -531,7 +531,7 @@
         <!-- ========================================== -->
         <!-- 4. MAIN WORKSPACE CONTENT CONTAINER        -->
         <!-- ========================================== -->
-        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden relative">
             {{ $slot }}
         </main>
     </div>
@@ -610,11 +610,6 @@
                 </a>
             </div>
         </div>
-    </div>
-
-    <!-- Compatibility Helper -->
-    <div class="hidden">
-        <livewire:layout.navigation />
     </div>
 
     @livewireScripts

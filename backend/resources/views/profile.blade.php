@@ -1,28 +1,27 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+    <div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto">
+        <!-- Profile Page Header -->
+        <div class="space-y-1">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Account Profile</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Manage your personal credentials, contact email, and security settings.</p>
+        </div>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.update-profile-information-form />
-                </div>
+        <!-- Cards -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 shadow-sm">
+            <div class="max-w-xl">
+                <livewire:profile.update-profile-information-form />
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.update-password-form />
-                </div>
+        <div class="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 shadow-sm">
+            <div class="max-w-xl">
+                <livewire:profile.update-password-form />
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <livewire:profile.delete-user-form />
-                </div>
+        <div class="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 shadow-sm">
+            <div class="max-w-xl">
+                <livewire:profile.delete-user-form />
             </div>
         </div>
     </div>
