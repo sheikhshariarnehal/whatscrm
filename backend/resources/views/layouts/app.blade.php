@@ -32,6 +32,18 @@
 
     <title>{{ config('app.name', 'WhatsCRM') }} - WhatsApp Business SaaS</title>
 
+    <!-- Anti-FOUC Theme & Layout Pre-hydration Script -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,7 +81,7 @@
         
         <!-- Mobile Drawer Header -->
         <div class="h-16 flex items-center justify-between px-5 border-b border-gray-100 dark:border-gray-800">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-3">
                 <img x-show="!darkMode" src="/img/logo/logo-light-full.png" alt="WhatsCRM" class="h-8 max-h-8">
                 <img x-show="darkMode" src="/img/logo/logo-dark-full.png" alt="WhatsCRM" class="h-8 max-h-8">
             </a>
@@ -81,50 +93,50 @@
         <!-- Mobile Drawer Menu Links -->
         <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
             <div class="menu-title">Main Menu</div>
-            <a href="{{ route('dashboard') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('dashboard') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('dashboard') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('dashboard') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="dashboard" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('inbox') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable justify-between {{ request()->routeIs('inbox') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('inbox') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable justify-between {{ request()->routeIs('inbox') ? 'menu-item-active' : '' }}">
                 <div class="flex items-center gap-3">
                     <x-nav-icon name="inbox" class="w-5 h-5 flex-shrink-0 text-xl" />
                     <span>Inbox</span>
                 </div>
                 <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">Live</span>
             </a>
-            <a href="{{ route('crm') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('crm') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('crm') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('crm') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="crm" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>CRM Pipeline</span>
             </a>
 
             <div class="menu-title pt-3">Marketing & Channels</div>
-            <a href="{{ route('contacts') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('contacts') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('contacts') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('contacts') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="contacts" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Contacts</span>
             </a>
-            <a href="{{ route('campaigns') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('campaigns') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('campaigns') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('campaigns') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="campaigns" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Campaigns</span>
             </a>
-            <a href="{{ route('automations') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('automations') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('automations') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('automations') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="automations" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Automations</span>
             </a>
-            <a href="{{ route('devices') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('devices') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="devices" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>WhatsApp API</span>
             </a>
 
             <div class="menu-title pt-3">Administration</div>
-            <a href="{{ route('team') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('team') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('team') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('team') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="team" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Team & Agents</span>
             </a>
-            <a href="{{ route('developer') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('developer') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('developer') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('developer') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="developer" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Developer API</span>
             </a>
-            <a href="{{ route('settings') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('settings') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('settings') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('settings') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="settings" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Settings</span>
             </a>
@@ -141,20 +153,21 @@
     <!-- ========================================== -->
     <!-- 2. DESKTOP COLLAPSIBLE SIDENAV             -->
     <!-- ========================================== -->
-    <aside :style="sideNavCollapse ? 'width: 80px;' : 'width: 280px;'"
-           class="side-nav side-nav-bg hidden lg:flex flex-col flex-none flex-shrink-0 transition-all duration-200">
+    <aside :class="sideNavCollapse ? 'w-[80px]' : 'w-[280px]'"
+           style="width: 280px;"
+           class="side-nav side-nav-bg hidden lg:flex flex-col flex-none flex-shrink-0 transition-[width] duration-200 ease-in-out">
         
         <!-- SideNav Header with Template Logos -->
-        <div class="h-16 flex items-center border-b border-gray-100 dark:border-gray-800 transition-all duration-200 overflow-hidden"
+        <div class="h-16 flex items-center border-b border-gray-100 dark:border-gray-800 overflow-hidden"
              :class="sideNavCollapse ? 'justify-center px-2' : 'justify-start px-6'">
-            <a href="{{ route('dashboard') }}" class="flex items-center">
+            <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center">
                 <!-- Expanded Mode Logos -->
                 <div x-show="!sideNavCollapse" class="flex items-center">
                     <img x-show="!darkMode" src="/img/logo/logo-light-full.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
                     <img x-show="darkMode" src="/img/logo/logo-dark-full.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
                 </div>
                 <!-- Collapsed Streamline Mode Logos -->
-                <div x-show="sideNavCollapse" class="flex items-center justify-center">
+                <div x-show="sideNavCollapse" x-cloak class="flex items-center justify-center">
                     <img x-show="!darkMode" src="/img/logo/logo-light-streamline.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
                     <img x-show="darkMode" src="/img/logo/logo-dark-streamline.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
                 </div>
@@ -169,6 +182,7 @@
 
             <!-- Dashboard -->
             <a href="{{ route('dashboard') }}" 
+               wire:navigate
                title="Dashboard"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('dashboard') ? 'menu-item-active' : '' }}">
@@ -178,6 +192,7 @@
 
             <!-- Unified Live Inbox -->
             <a href="{{ route('inbox') }}" 
+               wire:navigate
                title="Live Chat Inbox"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5 justify-between'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('inbox') ? 'menu-item-active' : '' }}">
@@ -190,6 +205,7 @@
 
             <!-- CRM Pipeline -->
             <a href="{{ route('crm') }}" 
+               wire:navigate
                title="CRM Pipeline"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('crm') ? 'menu-item-active' : '' }}">
@@ -203,6 +219,7 @@
 
             <!-- Contacts Directory -->
             <a href="{{ route('contacts') }}" 
+               wire:navigate
                title="Contacts Directory"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('contacts') ? 'menu-item-active' : '' }}">
@@ -212,6 +229,7 @@
 
             <!-- Broadcast Campaigns -->
             <a href="{{ route('campaigns') }}" 
+               wire:navigate
                title="Broadcast Campaigns"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('campaigns') ? 'menu-item-active' : '' }}">
@@ -221,6 +239,7 @@
 
             <!-- Automations & Bots -->
             <a href="{{ route('automations') }}" 
+               wire:navigate
                title="Automations & Bots"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('automations') ? 'menu-item-active' : '' }}">
@@ -230,6 +249,7 @@
 
             <!-- WhatsApp Accounts (Devices) -->
             <a href="{{ route('devices') }}" 
+               wire:navigate
                title="WhatsApp Cloud API Accounts"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
@@ -243,6 +263,7 @@
 
             <!-- Team & Agents -->
             <a href="{{ route('team') }}" 
+               wire:navigate
                title="Team & RBAC"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('team') ? 'menu-item-active' : '' }}">
@@ -252,6 +273,7 @@
 
             <!-- Developer API & Webhooks -->
             <a href="{{ route('developer') }}" 
+               wire:navigate
                title="Developer Hub & Webhooks"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('developer') ? 'menu-item-active' : '' }}">
@@ -261,6 +283,7 @@
 
             <!-- Workspace Settings -->
             <a href="{{ route('settings') }}" 
+               wire:navigate
                title="Workspace Settings"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('settings') ? 'menu-item-active' : '' }}">
@@ -428,7 +451,7 @@
                                 </div>
                             </div>
                             <div class="p-2 border-t border-gray-100 dark:border-gray-800 text-center">
-                                <a href="{{ route('inbox') }}" class="text-xs font-semibold text-primary hover:underline block py-1">View Realtime Inbox</a>
+                                <a href="{{ route('inbox') }}" wire:navigate class="text-xs font-semibold text-primary hover:underline block py-1">View Realtime Inbox</a>
                             </div>
                         </div>
                     </div>
@@ -478,15 +501,15 @@
                                 </div>
                             </div>
                             <div class="py-1">
-                                <a href="{{ route('profile') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <a href="{{ route('profile') }}" wire:navigate class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                     <x-nav-icon name="user" class="w-4 h-4 text-gray-400" />
                                     <span>Account Profile</span>
                                 </a>
-                                <a href="{{ route('settings') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <a href="{{ route('settings') }}" wire:navigate class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                     <x-nav-icon name="settings" class="w-4 h-4 text-gray-400" />
                                     <span>Workspace Settings</span>
                                 </a>
-                                <a href="{{ route('developer') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                <a href="{{ route('developer') }}" wire:navigate class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                     <x-nav-icon name="developer" class="w-4 h-4 text-gray-400" />
                                     <span>API Keys & Webhooks</span>
                                 </a>
@@ -556,31 +579,31 @@
 
             <!-- Search Quick Results -->
             <div class="max-h-80 overflow-y-auto p-2 space-y-1">
-                <a href="{{ route('dashboard') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="{{ route('dashboard') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <x-nav-icon name="dashboard" class="w-4 h-4 text-primary" />
                     <span>Dashboard & Analytics Overview</span>
                 </a>
-                <a href="{{ route('inbox') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="{{ route('inbox') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <x-nav-icon name="inbox" class="w-4 h-4 text-emerald-500" />
                     <span>Live 3-Column Chat Inbox</span>
                 </a>
-                <a href="{{ route('crm') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="{{ route('crm') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <x-nav-icon name="crm" class="w-4 h-4 text-purple-500" />
                     <span>CRM Kanban Deal Stages</span>
                 </a>
-                <a href="{{ route('contacts') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="{{ route('contacts') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <x-nav-icon name="contacts" class="w-4 h-4 text-blue-500" />
                     <span>Contacts Directory & CSV Import</span>
                 </a>
-                <a href="{{ route('campaigns') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="{{ route('campaigns') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <x-nav-icon name="campaigns" class="w-4 h-4 text-amber-500" />
                     <span>Broadcast Campaigns Dispatcher</span>
                 </a>
-                <a href="{{ route('automations') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="{{ route('automations') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <x-nav-icon name="automations" class="w-4 h-4 text-rose-500" />
                     <span>Automations, Bot Flows & AI</span>
                 </a>
-                <a href="{{ route('devices') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="{{ route('devices') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <x-nav-icon name="devices" class="w-4 h-4 text-cyan-500" />
                     <span>WhatsApp Cloud API Account Settings</span>
                 </a>
