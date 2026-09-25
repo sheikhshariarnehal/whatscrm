@@ -1,0 +1,308 @@
+<div class="h-[calc(100vh-5rem)] flex -m-4 sm:-m-6 lg:-m-8 bg-white dark:bg-gray-900 overflow-hidden border-t border-gray-200 dark:border-gray-800"
+     x-data="{ mobileChatOpen: false, sidebarDetailsOpen: true }">
+
+    <!-- ========================================== -->
+    <!-- COLUMN 1: Conversation List (320px / w-80) -->
+    <!-- ========================================== -->
+    <div :class="mobileChatOpen ? 'hidden md:flex' : 'flex'"
+         class="w-full md:w-80 lg:w-96 flex flex-col border-r border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 shrink-0">
+        
+        <!-- Search & Filter Header -->
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800 space-y-3">
+            <div class="flex items-center justify-between">
+                <h1 class="font-bold text-lg text-gray-900 dark:text-white">Conversations</h1>
+                <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-primary/10 text-primary">
+                    {{ $conversations->count() }} active
+                </span>
+            </div>
+
+            <!-- Search input -->
+            <div class="relative">
+                <svg class="w-4 h-4 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input wire:model.live.debounce.300ms="search" 
+                       type="text" 
+                       placeholder="Search name, phone, messages..." 
+                       class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+
+            <!-- Filter tabs -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                @foreach (['open' => 'Open', 'unread' => 'Unread', 'closed' => 'Closed', 'all' => 'All'] as $key => $label)
+                    <button wire:click="$set('statusFilter', '{{ $key }}')" 
+                            class="px-2.5 py-1 rounded-lg font-medium transition-colors shrink-0 {{ $statusFilter === $key ? 'bg-primary text-white shadow-sm' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700' }}">
+                        {{ $label }}
+                    </button>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Conversations Scrollable List -->
+        <div class="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800/60">
+            @forelse ($conversations as $conv)
+                <button wire:click="selectConversation({{ $conv->id }})"
+                        @click="mobileChatOpen = true"
+                        class="w-full text-left p-3.5 flex items-start gap-3 transition-colors {{ $selectedConversationId === $conv->id ? 'bg-primary/5 dark:bg-primary/10 border-l-4 border-primary' : 'hover:bg-gray-100/60 dark:hover:bg-gray-800/40' }}">
+                    
+                    <!-- Avatar -->
+                    <div class="relative shrink-0">
+                        <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-primary/20 to-blue-200 dark:from-primary/30 dark:to-blue-900 flex items-center justify-center text-primary font-bold text-sm">
+                            {{ substr($conv->sender_name ?? $conv->sender_mobile ?? 'W', 0, 1) }}
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-gray-900"></span>
+                    </div>
+
+                    <!-- Meta & Preview -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">
+                                {{ $conv->sender_name ?? $conv->sender_mobile }}
+                            </span>
+                            <span class="text-[11px] text-gray-400 shrink-0">
+                                {{ $conv->updated_at->shortRelativeDiffForHumans() }}
+                            </span>
+                        </div>
+
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5 {{ $conv->unread_count > 0 ? 'font-semibold text-gray-900 dark:text-white' : '' }}">
+                            {{ $conv->last_message ?? 'No messages' }}
+                        </p>
+
+                        <!-- Tags and Badges -->
+                        <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                            @foreach ($conv->tags->take(2) as $tag)
+                                <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold"
+                                      style="background-color: {{ $tag->hex_color }}20; color: {{ $tag->hex_color }}">
+                                    {{ $tag->title }}
+                                </span>
+                            @endforeach
+                            @if ($conv->unread_count > 0)
+                                <span class="ml-auto px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-primary text-white">
+                                    {{ $conv->unread_count }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </button>
+            @empty
+                <div class="p-8 text-center text-gray-400 text-xs">
+                    No conversations match your filter.
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- COLUMN 2: Active Chat Area & Composer     -->
+    <!-- ========================================== -->
+    <div :class="mobileChatOpen ? 'flex' : 'hidden md:flex'"
+         class="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900">
+        
+        @if ($selectedConversation)
+            <!-- Active Conversation Top Bar -->
+            <div class="h-16 px-4 sm:px-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-10 shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button @click="mobileChatOpen = false" class="md:hidden p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary/20 to-blue-200 dark:from-primary/30 dark:to-blue-900 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                        {{ substr($selectedConversation->sender_name ?? $selectedConversation->sender_mobile ?? 'W', 0, 1) }}
+                    </div>
+
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h2 class="font-bold text-sm sm:text-base text-gray-900 dark:text-white truncate">
+                                {{ $selectedConversation->sender_name ?? $selectedConversation->sender_mobile }}
+                            </h2>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                                WhatsApp
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-mono truncate">
+                            {{ $selectedConversation->sender_mobile }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Status Selector & Sidebar Toggle -->
+                <div class="flex items-center gap-2">
+                    <select wire:change="updateStatus($event.target.value)" 
+                            class="text-xs font-semibold py-1.5 px-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary">
+                        <option value="open" {{ $selectedConversation->status === 'open' ? 'selected' : '' }}>🟢 Open</option>
+                        <option value="pending" {{ $selectedConversation->status === 'pending' ? 'selected' : '' }}>🟡 Pending</option>
+                        <option value="closed" {{ $selectedConversation->status === 'closed' ? 'selected' : '' }}>⚪ Closed</option>
+                    </select>
+
+                    <button @click="sidebarDetailsOpen = !sidebarDetailsOpen" 
+                            class="p-2 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            title="Toggle Contact Details">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Scrollable Thread -->
+            <div id="messages-container"
+                 x-init="$el.scrollTop = $el.scrollHeight"
+                 @message-sent.window="$nextTick(() => { $el.scrollTop = $el.scrollHeight; })"
+                 class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/30 dark:bg-gray-950/20">
+                
+                @forelse ($activeMessages as $message)
+                    <div class="flex {{ $message->direction === 'outbound' ? 'justify-end' : 'justify-start' }}">
+                        <div class="max-w-[85%] sm:max-w-md lg:max-w-lg space-y-1">
+                            <!-- Message Bubble -->
+                            <div class="p-3.5 rounded-2xl shadow-sm text-sm {{ $message->direction === 'outbound' ? 'bg-primary text-white rounded-tr-xs' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-tl-xs border border-gray-100 dark:border-gray-700/60' }}">
+                                <p class="whitespace-pre-wrap break-words leading-relaxed">{{ $message->content }}</p>
+                            </div>
+
+                            <!-- Message Footer (Timestamp & Delivery Status) -->
+                            <div class="flex items-center gap-1.5 text-[10px] text-gray-400 px-1 {{ $message->direction === 'outbound' ? 'justify-end' : 'justify-start' }}">
+                                <span>{{ $message->created_at->format('h:i A') }}</span>
+
+                                @if ($message->direction === 'outbound')
+                                    @if ($message->status === 'read')
+                                        <!-- Blue Double Check -->
+                                        <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 16 16" fill="currentColor"><path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4 0a.5.5 0 0 0-.708-.708L2 9.293l.646.647 5-5z"/></svg>
+                                    @elseif ($message->status === 'delivered')
+                                        <!-- Gray Double Check -->
+                                        <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 16 16" fill="currentColor"><path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4 0a.5.5 0 0 0-.708-.708L2 9.293l.646.647 5-5z"/></svg>
+                                    @elseif ($message->status === 'sent')
+                                        <!-- Single Check -->
+                                        <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+                                    @else
+                                        <!-- Clock -->
+                                        <svg class="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
+                                    @endif
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="h-full flex items-center justify-center text-center text-gray-400 text-xs">
+                        No messages in this conversation yet. Send the first reply below.
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Message Composer Box -->
+            <div class="p-3 sm:p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+                <form wire:submit.prevent="sendMessage" class="space-y-2">
+                    <div class="flex items-end gap-2 p-2 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                        <textarea wire:model="messageBody"
+                                  @keydown.enter.exact.prevent="$wire.sendMessage()"
+                                  placeholder="Type a message (Press Enter to send, Shift+Enter for newline)..."
+                                  rows="1"
+                                  class="flex-1 bg-transparent border-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-0 resize-none max-h-32 min-h-[38px] py-1 px-2"></textarea>
+
+                        <button type="submit"
+                                wire:loading.attr="disabled"
+                                class="px-4 py-2 rounded-xl bg-primary hover:bg-primary-deep text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-sm shadow-primary/20 shrink-0">
+                            <span wire:loading.remove>Send</span>
+                            <span wire:loading class="flex items-center gap-1">
+                                <svg class="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                Sending
+                            </span>
+                            <svg wire:loading.remove class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @else
+            <!-- Empty state when no conversation is selected -->
+            <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-400">
+                <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 mb-3">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                </div>
+                <h3 class="font-bold text-base text-gray-900 dark:text-white">No Conversation Selected</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
+                    Select a conversation from the left to start chatting with your customer.
+                </p>
+            </div>
+        @endif
+    </div>
+
+    <!-- ========================================== -->
+    <!-- COLUMN 3: Customer CRM Sidebar (300px)    -->
+    <!-- ========================================== -->
+    @if ($selectedConversation)
+        <div x-show="sidebarDetailsOpen"
+             class="hidden lg:flex w-80 flex-col border-l border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 shrink-0 overflow-y-auto">
+            
+            <!-- Contact Profile Card -->
+            <div class="p-5 border-b border-gray-200 dark:border-gray-800 text-center space-y-2">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-primary to-indigo-500 flex items-center justify-center text-white text-xl font-bold mx-auto shadow-md shadow-primary/20">
+                    {{ substr($selectedConversation->sender_name ?? $selectedConversation->sender_mobile ?? 'W', 0, 1) }}
+                </div>
+                <div>
+                    <h3 class="font-bold text-base text-gray-900 dark:text-white">
+                        {{ $selectedConversation->sender_name ?? 'WhatsApp Contact' }}
+                    </h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                        {{ $selectedConversation->sender_mobile }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tags Management Section -->
+            <div class="p-5 border-b border-gray-200 dark:border-gray-800 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tags / Pipeline</span>
+                    
+                    <!-- Tag Picker Dropdown -->
+                    <select wire:change="attachTag($event.target.value)" 
+                            class="text-[11px] font-semibold py-1 px-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+                        <option value="">+ Add Tag</option>
+                        @foreach ($availableTags as $tag)
+                            <option value="{{ $tag->id }}">{{ $tag->title }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex flex-wrap gap-1.5">
+                    @forelse ($selectedConversation->tags as $tag)
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold"
+                              style="background-color: {{ $tag->hex_color }}20; color: {{ $tag->hex_color }}">
+                            <span>{{ $tag->title }}</span>
+                            <button wire:click="detachTag({{ $tag->id }})" class="hover:opacity-75">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </span>
+                    @empty
+                        <span class="text-xs text-gray-400">No tags attached</span>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Internal Notes Section -->
+            <div class="p-5 space-y-4 flex-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Internal Agent Notes</span>
+
+                <!-- Add Note Form -->
+                <form wire:submit.prevent="addNote" class="space-y-2">
+                    <textarea wire:model="internalNoteBody"
+                              placeholder="Write a private note for agents..." 
+                              rows="2" 
+                              class="w-full text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2.5 focus:outline-none focus:ring-1 focus:ring-primary"></textarea>
+                    <button type="submit" 
+                            class="w-full py-1.5 px-3 rounded-lg bg-gray-900 dark:bg-gray-800 text-white font-semibold text-xs hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors">
+                        Add Note
+                    </button>
+                </form>
+
+                <!-- Notes Thread -->
+                <div class="space-y-2.5">
+                    @forelse ($conversationNotes as $note)
+                        <div class="p-3 rounded-xl bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 text-xs space-y-1">
+                            <div class="flex items-center justify-between text-[10px] text-gray-400">
+                                <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $note->user->name ?? 'Agent' }}</span>
+                                <span>{{ $note->created_at->diffForHumans() }}</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ $note->note }}</p>
+                        </div>
+                    @empty
+                        <p class="text-xs text-gray-400 text-center py-2">No internal notes yet.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    @endif
+</div>

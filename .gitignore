@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+vendor/
+*/node_modules/
+*/vendor/
+
+# Environment and Secrets
+.env
+.env.*
+!.env.example
+*.key
+auth.json
+
+# Builds & Caches
+.phpunit.result.cache
+.phpunit.cache
+*.log
+*/storage/*.key
+*/storage/framework/cache/*
+*/storage/framework/sessions/*
+*/storage/framework/views/*
+*/storage/logs/*
+!*/storage/framework/cache/.gitignore
+!*/storage/framework/sessions/.gitignore
+!*/storage/framework/views/.gitignore
+!*/storage/logs/.gitignore
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Starter dist
+starter/dist/
+starter/build/
+backend/public/hot
+backend/public/storage
