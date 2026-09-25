@@ -41,7 +41,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-200 antialiased font-sans flex h-screen overflow-hidden">
+<body class="bg-gray-50/70 dark:bg-gray-950 text-gray-800 dark:text-gray-200 antialiased font-sans flex h-screen overflow-hidden">
 
     <!-- ========================================== -->
     <!-- 1. MOBILE DRAWER NAVIGATION (For < lg)     -->
@@ -64,7 +64,7 @@
            x-transition:leave="transition ease-in-out duration-300 transform"
            x-transition:leave-start="translate-x-0"
            x-transition:leave-end="-translate-x-full"
-           class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 border-r border-gray-200/80 dark:border-gray-800 flex flex-col lg:hidden"
+           class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col lg:hidden"
            style="display: none;">
         
         <!-- Mobile Drawer Header -->
@@ -141,27 +141,23 @@
     <!-- ========================================== -->
     <!-- 2. DESKTOP COLLAPSIBLE SIDENAV             -->
     <!-- ========================================== -->
-    <aside :style="sideNavCollapse ? 'width: 80px; min-width: 80px;' : 'width: 280px; min-width: 280px;'"
-           class="side-nav side-nav-bg hidden lg:flex flex-col">
+    <aside :style="sideNavCollapse ? 'width: 80px;' : 'width: 280px;'"
+           class="side-nav side-nav-bg hidden lg:flex flex-col flex-none flex-shrink-0 transition-all duration-200">
         
         <!-- SideNav Header with Template Logos -->
-        <div class="h-16 flex items-center border-b border-gray-100 dark:border-gray-800 transition-all duration-200"
+        <div class="h-16 flex items-center border-b border-gray-100 dark:border-gray-800 transition-all duration-200 overflow-hidden"
              :class="sideNavCollapse ? 'justify-center px-2' : 'justify-start px-6'">
             <a href="{{ route('dashboard') }}" class="flex items-center">
                 <!-- Expanded Mode Logos -->
-                <template x-if="!sideNavCollapse">
-                    <div>
-                        <img x-show="!darkMode" src="/img/logo/logo-light-full.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
-                        <img x-show="darkMode" src="/img/logo/logo-dark-full.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
-                    </div>
-                </template>
+                <div x-show="!sideNavCollapse" class="flex items-center">
+                    <img x-show="!darkMode" src="/img/logo/logo-light-full.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
+                    <img x-show="darkMode" src="/img/logo/logo-dark-full.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
+                </div>
                 <!-- Collapsed Streamline Mode Logos -->
-                <template x-if="sideNavCollapse">
-                    <div>
-                        <img x-show="!darkMode" src="/img/logo/logo-light-streamline.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
-                        <img x-show="darkMode" src="/img/logo/logo-dark-streamline.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
-                    </div>
-                </template>
+                <div x-show="sideNavCollapse" class="flex items-center justify-center">
+                    <img x-show="!darkMode" src="/img/logo/logo-light-streamline.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
+                    <img x-show="darkMode" src="/img/logo/logo-dark-streamline.png" alt="WhatsCRM" class="h-9 max-h-9 object-contain">
+                </div>
             </a>
         </div>
 
@@ -329,7 +325,7 @@
 
                     <!-- Quick Global Search Button (Command Palette) -->
                     <button @click="searchOpen = true" 
-                            class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-gray-50/60 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs transition-colors">
+                            class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700/80 text-gray-500 dark:text-gray-400 text-xs transition-colors">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span>Search CRM...</span>
                         <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-semibold bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-gray-500 dark:text-gray-300 shadow-2xs">Ctrl K</kbd>
@@ -338,7 +334,7 @@
                     <!-- Workspace Switcher Dropdown -->
                     <div class="relative" x-data="{ wsDropdownOpen: false }">
                         <button @click="wsDropdownOpen = !wsDropdownOpen" 
-                                class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800/80 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 transition-colors shadow-2xs">
+                                class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/80 text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 transition-colors shadow-2xs">
                             <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                             <span class="truncate max-w-[130px] sm:max-w-[180px]">{{ $currentWorkspace->name ?? 'Default Workspace' }}</span>
                             <svg class="w-3.5 h-3.5 text-gray-400 transition-transform" :class="wsDropdownOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -359,7 +355,7 @@
                                 @foreach ($userWorkspaces as $ws)
                                     <form method="POST" action="{{ route('workspace.switch', $ws) }}">
                                         @csrf
-                                        <button type="submit" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors {{ (isset($currentWorkspace) && $currentWorkspace->id === $ws->id) ? 'text-primary bg-primary/10 dark:bg-primary/20 font-bold' : 'text-gray-700 dark:text-gray-300' }}">
+                                        <button type="submit" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors {{ (isset($currentWorkspace) && $currentWorkspace->id === $ws->id) ? 'text-primary bg-primary-subtle dark:bg-primary-subtle font-bold' : 'text-gray-700 dark:text-gray-300' }}">
                                             <div class="flex items-center gap-2 truncate">
                                                 <span class="w-2 h-2 rounded-full {{ (isset($currentWorkspace) && $currentWorkspace->id === $ws->id) ? 'bg-primary' : 'bg-gray-400' }}"></span>
                                                 <span class="truncate">{{ $ws->name }}</span>
@@ -375,7 +371,7 @@
                     </div>
 
                     <!-- WhatsApp Cloud API Live Status Badge -->
-                    <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                    <div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span>Cloud API Live</span>
                     </div>
@@ -412,7 +408,7 @@
                                 <span class="font-bold text-sm text-gray-900 dark:text-white">Live Activity Alerts</span>
                                 <button @click="hasUnread = false" class="text-xs font-semibold text-primary hover:underline">Mark all read</button>
                             </div>
-                            <div class="max-h-72 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800/60 p-1">
+                            <div class="max-h-72 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800 p-1">
                                 <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors flex items-start gap-3 cursor-pointer">
                                     <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 font-bold text-xs">WA</div>
                                     <div class="flex-1 min-w-0">
@@ -544,7 +540,7 @@
              x-transition:leave="ease-in duration-150"
              x-transition:leave-start="opacity-100 scale-100"
              x-transition:leave-end="opacity-0 scale-95"
-             class="relative mx-auto max-w-xl rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200/80 dark:border-gray-800 overflow-hidden">
+             class="relative mx-auto max-w-xl rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
             
             <!-- Search Header Bar -->
             <div class="flex items-center px-4 border-b border-gray-100 dark:border-gray-800">
