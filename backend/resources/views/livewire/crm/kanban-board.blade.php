@@ -17,7 +17,7 @@
                 <input wire:model.live.debounce.300ms="search" 
                        type="text" 
                        placeholder="Filter leads..." 
-                       class="input input-sm w-full pl-9 pr-3">
+                       class="input input-sm input-affix-left w-full pr-3">
             </div>
 
             <!-- New Stage Button -->

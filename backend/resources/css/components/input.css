@@ -76,15 +76,23 @@
     }
   }
 
+  .input-affix-left {
+    padding-left: 2.35rem !important;
+  }
+
+  .input-affix-right {
+    padding-right: 2.25rem !important;
+  }
+
   .input-wrapper {
     @apply relative flex items-center w-full;
   }
 
   .input-icon-prefix {
-    @apply absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400;
+    @apply absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 z-10;
   }
 
   .input-icon-suffix {
-    @apply absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer;
+    @apply absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer z-10;
   }
 }

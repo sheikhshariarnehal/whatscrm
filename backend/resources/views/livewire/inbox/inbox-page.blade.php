@@ -24,7 +24,7 @@
                 <input wire:model.live.debounce.300ms="search" 
                        type="text" 
                        placeholder="Search name, phone, messages..." 
-                       class="input input-sm w-full pl-9 pr-4">
+                       class="input input-sm input-affix-left w-full pr-4">
             </div>
 
             <!-- Filter tabs -->
