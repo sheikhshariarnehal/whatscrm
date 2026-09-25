@@ -82,58 +82,58 @@
         <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
             <div class="menu-title">Main Menu</div>
             <a href="{{ route('dashboard') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('dashboard') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <x-nav-icon name="dashboard" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Dashboard</span>
             </a>
             <a href="{{ route('inbox') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable justify-between {{ request()->routeIs('inbox') ? 'menu-item-active' : '' }}">
                 <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                    <x-nav-icon name="inbox" class="w-5 h-5 flex-shrink-0 text-xl" />
                     <span>Inbox</span>
                 </div>
                 <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white">Live</span>
             </a>
             <a href="{{ route('crm') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('crm') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+                <x-nav-icon name="crm" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>CRM Pipeline</span>
             </a>
 
-            <div class="menu-title pt-2">Communication & Marketing</div>
+            <div class="menu-title pt-3">Marketing & Channels</div>
             <a href="{{ route('contacts') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('contacts') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                <span>Contacts Directory</span>
+                <x-nav-icon name="contacts" class="w-5 h-5 flex-shrink-0 text-xl" />
+                <span>Contacts</span>
             </a>
             <a href="{{ route('campaigns') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('campaigns') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                <span>Broadcast Campaigns</span>
+                <x-nav-icon name="campaigns" class="w-5 h-5 flex-shrink-0 text-xl" />
+                <span>Campaigns</span>
             </a>
             <a href="{{ route('automations') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('automations') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                <span>Automations & Bots</span>
+                <x-nav-icon name="automations" class="w-5 h-5 flex-shrink-0 text-xl" />
+                <span>Automations</span>
             </a>
             <a href="{{ route('devices') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                <span>WhatsApp Accounts</span>
+                <x-nav-icon name="devices" class="w-5 h-5 flex-shrink-0 text-xl" />
+                <span>WhatsApp API</span>
             </a>
 
-            <div class="menu-title pt-2">Administration</div>
+            <div class="menu-title pt-3">Administration</div>
             <a href="{{ route('team') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('team') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <x-nav-icon name="team" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Team & Agents</span>
             </a>
             <a href="{{ route('developer') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('developer') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <span>Developer API & Webhooks</span>
+                <x-nav-icon name="developer" class="w-5 h-5 flex-shrink-0 text-xl" />
+                <span>Developer API</span>
             </a>
             <a href="{{ route('settings') }}" @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('settings') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>Workspace Settings</span>
+                <x-nav-icon name="settings" class="w-5 h-5 flex-shrink-0 text-xl" />
+                <span>Settings</span>
             </a>
             <a href="/admin" target="_blank" class="menu-item menu-item-hoverable text-amber-600 dark:text-amber-400 justify-between">
                 <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <x-nav-icon name="admin" class="w-5 h-5 flex-shrink-0 text-xl" />
                     <span>SuperAdmin</span>
                 </div>
-                <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300">Filament</span>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300">Admin</span>
             </a>
         </nav>
     </aside>
@@ -172,7 +172,7 @@
                title="Dashboard"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('dashboard') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <x-nav-icon name="dashboard" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Dashboard</span>
             </a>
 
@@ -182,7 +182,7 @@
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5 justify-between'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('inbox') ? 'menu-item-active' : '' }}">
                 <div class="flex items-center gap-3 min-w-0">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                    <x-nav-icon name="inbox" class="w-5 h-5 flex-shrink-0 text-xl" />
                     <span x-show="!sideNavCollapse" class="truncate">Inbox</span>
                 </div>
                 <span x-show="!sideNavCollapse" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary text-white shadow-xs">Live</span>
@@ -193,11 +193,11 @@
                title="CRM Pipeline"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('crm') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+                <x-nav-icon name="crm" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">CRM Pipeline</span>
             </a>
 
-            <!-- Section 2: Communication & Marketing -->
+            <!-- Section 2: Marketing & Channels -->
             <div x-show="!sideNavCollapse" class="menu-title pt-3">Marketing & Channels</div>
             <div x-show="sideNavCollapse" class="my-2 border-t border-gray-200/60 dark:border-gray-800"></div>
 
@@ -206,7 +206,7 @@
                title="Contacts Directory"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('contacts') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <x-nav-icon name="contacts" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Contacts</span>
             </a>
 
@@ -215,7 +215,7 @@
                title="Broadcast Campaigns"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('campaigns') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                <x-nav-icon name="campaigns" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Campaigns</span>
             </a>
 
@@ -224,7 +224,7 @@
                title="Automations & Bots"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('automations') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <x-nav-icon name="automations" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Automations</span>
             </a>
 
@@ -233,7 +233,7 @@
                title="WhatsApp Cloud API Accounts"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                <x-nav-icon name="devices" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">WhatsApp API</span>
             </a>
 
@@ -246,7 +246,7 @@
                title="Team & RBAC"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('team') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <x-nav-icon name="team" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Team & Agents</span>
             </a>
 
@@ -255,7 +255,7 @@
                title="Developer Hub & Webhooks"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('developer') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <x-nav-icon name="developer" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Developer API</span>
             </a>
 
@@ -264,7 +264,7 @@
                title="Workspace Settings"
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5'"
                class="menu-item menu-item-hoverable {{ request()->routeIs('settings') ? 'menu-item-active' : '' }}">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <x-nav-icon name="settings" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span x-show="!sideNavCollapse" class="truncate">Settings</span>
             </a>
 
@@ -274,7 +274,7 @@
                :class="sideNavCollapse ? 'justify-center px-0' : 'px-3.5 justify-between'"
                class="menu-item menu-item-hoverable text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30">
                 <div class="flex items-center gap-3 min-w-0">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <x-nav-icon name="admin" class="w-5 h-5 flex-shrink-0 text-xl" />
                     <span x-show="!sideNavCollapse" class="truncate font-semibold">SuperAdmin</span>
                 </div>
                 <span x-show="!sideNavCollapse" class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300">Admin</span>
@@ -479,22 +479,22 @@
                             </div>
                             <div class="py-1">
                                 <a href="{{ route('profile') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    <x-nav-icon name="user" class="w-4 h-4 text-gray-400" />
                                     <span>Account Profile</span>
                                 </a>
                                 <a href="{{ route('settings') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <x-nav-icon name="settings" class="w-4 h-4 text-gray-400" />
                                     <span>Workspace Settings</span>
                                 </a>
                                 <a href="{{ route('developer') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                                    <x-nav-icon name="developer" class="w-4 h-4 text-gray-400" />
                                     <span>API Keys & Webhooks</span>
                                 </a>
                             </div>
                             <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-100 dark:border-gray-800 pt-1">
                                 @csrf
                                 <button type="submit" class="w-full text-left flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                    <x-nav-icon name="logout" class="w-4 h-4" />
                                     <span>Sign Out</span>
                                 </button>
                             </form>
@@ -544,7 +544,7 @@
             
             <!-- Search Header Bar -->
             <div class="flex items-center px-4 border-b border-gray-100 dark:border-gray-800">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <x-nav-icon name="search" class="w-5 h-5 text-gray-400" />
                 <input type="text" 
                        x-model="searchQuery" 
                        x-ref="searchInput" 
@@ -557,31 +557,31 @@
             <!-- Search Quick Results -->
             <div class="max-h-80 overflow-y-auto p-2 space-y-1">
                 <a href="{{ route('dashboard') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                    <x-nav-icon name="dashboard" class="w-4 h-4 text-primary" />
                     <span>Dashboard & Analytics Overview</span>
                 </a>
                 <a href="{{ route('inbox') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                    <x-nav-icon name="inbox" class="w-4 h-4 text-emerald-500" />
                     <span>Live 3-Column Chat Inbox</span>
                 </a>
                 <a href="{{ route('crm') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+                    <x-nav-icon name="crm" class="w-4 h-4 text-purple-500" />
                     <span>CRM Kanban Deal Stages</span>
                 </a>
                 <a href="{{ route('contacts') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <x-nav-icon name="contacts" class="w-4 h-4 text-blue-500" />
                     <span>Contacts Directory & CSV Import</span>
                 </a>
                 <a href="{{ route('campaigns') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                    <x-nav-icon name="campaigns" class="w-4 h-4 text-amber-500" />
                     <span>Broadcast Campaigns Dispatcher</span>
                 </a>
                 <a href="{{ route('automations') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <x-nav-icon name="automations" class="w-4 h-4 text-rose-500" />
                     <span>Automations, Bot Flows & AI</span>
                 </a>
                 <a href="{{ route('devices') }}" @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <x-nav-icon name="devices" class="w-4 h-4 text-cyan-500" />
                     <span>WhatsApp Cloud API Account Settings</span>
                 </a>
             </div>
