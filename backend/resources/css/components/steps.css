@@ -1,0 +1,81 @@
+@layer components {
+  .steps {
+    @apply flex justify-between items-center w-full;
+
+    &.steps-vertical {
+      @apply flex-col items-start;
+    }
+  }
+
+  .step-item {
+    @apply flex items-center flex-1 last:flex-none;
+
+    &.step-item-vertical {
+      @apply items-start flex-col w-full;
+    }
+  }
+
+  .step-item-wrapper {
+    @apply flex items-center shrink-0;
+  }
+
+  .step-item-icon {
+    min-width: 2.25rem;
+    @apply text-xs rounded-full w-9 h-9 flex items-center justify-center font-bold transition-all duration-200 select-none;
+
+    &.step-item-icon-pending {
+      @apply border-2 border-gray-300 dark:border-gray-700 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-900;
+    }
+
+    &.step-item-icon-current {
+      @apply border-2 border-primary text-primary bg-primary-subtle shadow-sm;
+    }
+
+    &.step-item-icon-complete {
+      @apply bg-primary text-white border-2 border-primary;
+    }
+
+    &.step-item-icon-error {
+      @apply border-2 border-rose-500 text-rose-500 bg-rose-50 dark:bg-rose-950;
+    }
+  }
+
+  .step-item-content {
+    @apply ltr:ml-3 rtl:mr-3 relative;
+  }
+
+  .step-item-title {
+    @apply whitespace-nowrap font-bold block text-xs text-gray-700 dark:text-gray-200;
+
+    &.step-item-title-active {
+      @apply text-gray-900 dark:text-white font-black;
+    }
+
+    &.step-item-title-error {
+      @apply text-rose-500;
+    }
+  }
+
+  .step-item-description {
+    @apply text-[11px] text-gray-400 dark:text-gray-500 block;
+  }
+
+  .step-clickable {
+    @apply cursor-pointer hover:opacity-80;
+  }
+
+  .step-connect {
+    height: 2px;
+    @apply flex-1 mx-4 bg-gray-200 dark:bg-gray-700 transition-colors duration-200;
+
+    &.step-connect-active {
+      @apply bg-primary;
+    }
+
+    &.step-connect-vertical {
+      min-height: 2.5rem;
+      width: 2px;
+      @apply ltr:ml-4 rtl:mr-4 my-1 flex-none;
+    }
+  }
+}

@@ -501,26 +501,23 @@
                                     <div class="text-[11px] text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email ?? '' }}</div>
                                 </div>
                             </div>
-                            <div class="py-1">
-                                <a href="{{ route('profile') }}" wire:navigate class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    <x-nav-icon name="user" class="w-4 h-4 text-gray-400" />
-                                    <span>Account Profile</span>
-                                </a>
-                                <a href="{{ route('settings') }}" wire:navigate class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    <x-nav-icon name="settings" class="w-4 h-4 text-gray-400" />
-                                    <span>Workspace Settings</span>
-                                </a>
-                                <a href="{{ route('developer') }}" wire:navigate class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    <x-nav-icon name="developer" class="w-4 h-4 text-gray-400" />
-                                    <span>API Keys & Webhooks</span>
-                                </a>
+                            <div class="py-1 space-y-0.5">
+                                <x-dropdown-item href="{{ route('profile') }}" wire:navigate icon="user">
+                                    Account Profile
+                                </x-dropdown-item>
+                                <x-dropdown-item href="{{ route('settings') }}" wire:navigate icon="settings">
+                                    Workspace Settings
+                                </x-dropdown-item>
+                                <x-dropdown-item href="{{ route('developer') }}" wire:navigate icon="developer">
+                                    API Keys & Webhooks
+                                </x-dropdown-item>
                             </div>
-                            <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-100 dark:border-gray-800 pt-1">
+                            <x-dropdown-divider />
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full text-left flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
-                                    <x-nav-icon name="logout" class="w-4 h-4" />
-                                    <span>Sign Out</span>
-                                </button>
+                                <x-dropdown-item :danger="true" icon="logout" onclick="this.closest('form').submit(); return false;">
+                                    Sign Out
+                                </x-dropdown-item>
                             </form>
                         </div>
                     </div>

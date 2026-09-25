@@ -17,25 +17,26 @@
             </div>
 
             <!-- Search input -->
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </div>
-                <input wire:model.live.debounce.300ms="search" 
-                       type="text" 
-                       placeholder="Search name, phone, messages..." 
-                       class="input input-sm input-affix-left w-full pr-4">
-            </div>
+            <x-input 
+                wire:model.live.debounce.300ms="search" 
+                placeholder="Search name, phone, messages..." 
+                prefix-icon="chat"
+                size="sm"
+            />
 
             <!-- Filter tabs -->
-            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+            <x-tabs variant="pill" class="w-full">
                 @foreach (['open' => 'Open', 'unread' => 'Unread', 'closed' => 'Closed', 'all' => 'All'] as $key => $label)
-                    <button wire:click="$set('statusFilter', '{{ $key }}')" 
-                            class="px-2.5 py-1 rounded-xl font-semibold transition-all shrink-0 {{ $statusFilter === $key ? 'bg-primary text-white shadow-sm' : 'bg-gray-100/70 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200/80 dark:hover:bg-gray-700' }}">
+                    <x-tab-item 
+                        wire:click="$set('statusFilter', '{{ $key }}')" 
+                        variant="pill" 
+                        :active="$statusFilter === $key"
+                        class="flex-1 text-center"
+                    >
                         {{ $label }}
-                    </button>
+                    </x-tab-item>
                 @endforeach
-            </div>
+            </x-tabs>
         </div>
 
         <!-- Conversations Scrollable List -->

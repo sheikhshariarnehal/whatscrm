@@ -159,8 +159,15 @@
     <!-- Tab 2: Create Campaign Wizard -->
     @if($activeTab === 'create')
         <div class="max-w-3xl mx-auto">
-            <x-card bodyClass="p-6 sm:p-8">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <x-card bodyClass="p-6 sm:p-8 space-y-6">
+                <!-- Wizard Progress Steps -->
+                <x-steps class="pb-6 border-b border-gray-100 dark:border-gray-800">
+                    <x-step-item :step="1" status="complete" title="Target Audience" description="Select contacts list" />
+                    <x-step-item :step="2" status="in_progress" title="Template Mapping" description="Dynamic parameters" />
+                    <x-step-item :step="3" status="pending" :isLast="true" title="Dispatch" description="Meta Cloud API" />
+                </x-steps>
+
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-primary-subtle text-primary flex items-center justify-center text-sm font-black">1</span>
                     <span>Configure WhatsApp Broadcast</span>
                 </h2>
