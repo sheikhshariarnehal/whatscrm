@@ -52,6 +52,12 @@ class ContactTable extends Component
         $this->resetPage();
     }
 
+    public function resetFilters()
+    {
+        $this->reset(['search', 'phonebookFilter']);
+        $this->resetPage();
+    }
+
     public function openCreateContactModal()
     {
         $this->reset(['editingContactId', 'name', 'mobile', 'email', 'phonebook_id']);

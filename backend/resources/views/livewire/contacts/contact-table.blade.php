@@ -2,21 +2,27 @@
     <!-- Header with Action Buttons -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Contacts & Phonebook Directory</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Manage audience phone numbers, groups, and audience segmentation</p>
+            <div class="flex items-center gap-2.5">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Contacts & Phonebook</h1>
+                <x-tag color="primary" class="font-bold">{{ $contacts->total() }} Total</x-tag>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage audience phone numbers, groups, and audience segmentation</p>
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
-            <x-button wire:click="$set('showPhonebookModal', true)" variant="default" size="sm" icon="contacts">
-                New Group
+            <x-button wire:click="$set('showPhonebookModal', true)" variant="default" size="sm">
+                <svg class="w-4 h-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>New Group</span>
             </x-button>
 
             <x-button wire:click="$set('showImportModal', true)" variant="default" size="sm">
-                Import CSV
+                <svg class="w-4 h-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                <span>Import CSV</span>
             </x-button>
 
             <x-button wire:click="openCreateContactModal" variant="solid" size="sm">
-                + Add Contact
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Add Contact</span>
             </x-button>
         </div>
     </div>
@@ -24,37 +30,64 @@
     <!-- Alert Message -->
     @if (session()->has('message'))
         <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-medium flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
             <span>{{ session('message') }}</span>
         </div>
     @endif
 
-    <!-- Search & Filter Bar Card -->
-    <x-card bodyClass="p-4" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <!-- Search -->
-        <div class="relative flex-1 max-w-md">
-            <svg class="w-4 h-4 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input wire:model.live.debounce.300ms="search" 
-                   type="text" 
-                   placeholder="Search contacts by name, mobile, email..." 
-                   class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-        </div>
-
-        <!-- Phonebook filter -->
-        <div class="flex items-center gap-2">
-            <label class="text-xs text-gray-500 dark:text-gray-400 font-medium">Group:</label>
-            <select wire:model.live="phonebookFilter" 
-                    class="text-xs font-semibold py-2 px-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary">
-                <option value="">All Phonebooks</option>
-                @foreach ($phonebooks as $pb)
-                    <option value="{{ $pb->id }}">{{ $pb->name }}</option>
-                @endforeach
-            </select>
-        </div>
-    </x-card>
-
     <!-- Contacts Table Card -->
     <x-card gutterless class="overflow-hidden">
+        <!-- Integrated Table Toolbar (Search & Filter Header) -->
+        <div class="p-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-800">
+            <!-- Left Controls: Search Bar & Group Filter -->
+            <div class="flex flex-1 items-center gap-3 flex-wrap">
+                <!-- Search Input -->
+                <div class="relative w-full sm:w-80">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input wire:model.live.debounce.300ms="search" 
+                           type="text" 
+                           placeholder="Search contacts by name, mobile, email..." 
+                           class="input input-sm w-full pl-9 pr-8">
+                    @if ($search)
+                        <button wire:click="$set('search', '')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" title="Clear search">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    @endif
+                </div>
+
+                <!-- Phonebook Group Filter Dropdown -->
+                <div class="relative flex items-center">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                    </div>
+                    <select wire:model.live="phonebookFilter" 
+                            class="select select-sm pl-8 pr-8 appearance-none">
+                        <option value="">All Phonebooks ({{ $phonebooks->count() }})</option>
+                        @foreach ($phonebooks as $pb)
+                            <option value="{{ $pb->id }}">{{ $pb->name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-gray-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+
+                <!-- Reset Active Filters -->
+                @if ($search || $phonebookFilter)
+                    <button wire:click="resetFilters" class="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1.5 py-1.5 px-2.5 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <span>Reset filters</span>
+                    </button>
+                @endif
+            </div>
+
+            <!-- Right: Results Count -->
+            <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                <span>Showing <strong class="text-gray-900 dark:text-white font-semibold">{{ $contacts->count() }}</strong> of <strong class="text-gray-900 dark:text-white font-semibold">{{ $contacts->total() }}</strong> contacts</span>
+            </div>
+        </div>
         <x-table hoverable>
             <thead>
                 <tr>

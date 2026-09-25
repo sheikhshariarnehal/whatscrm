@@ -5,6 +5,7 @@
 @import './components/tag.css';
 @import './components/button.css';
 @import './components/tabs.css';
+@import './components/input.css';
 
 @tailwind base;
 @tailwind components;

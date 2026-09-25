@@ -11,19 +11,20 @@
         <div class="flex items-center gap-3">
             <!-- Search -->
             <div class="relative w-64">
-                <svg class="w-4 h-4 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
                 <input wire:model.live.debounce.300ms="search" 
                        type="text" 
                        placeholder="Filter leads..." 
-                       class="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary">
+                       class="input input-sm w-full pl-9 pr-3">
             </div>
 
             <!-- New Stage Button -->
-            <button @click="showModal = true" 
-                    class="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-deep text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm shadow-primary/20 transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <x-button @click="showModal = true" variant="solid" size="sm">
+                <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 <span>Add Stage</span>
-            </button>
+            </x-button>
         </div>
     </div>
 

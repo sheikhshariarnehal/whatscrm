@@ -8,28 +8,30 @@
          class="w-full md:w-80 lg:w-96 flex flex-col border-r border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/60 shrink-0">
         
         <!-- Search & Filter Header -->
-        <div class="p-4 border-b border-gray-200 dark:border-gray-800 space-y-3">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800 space-y-3 bg-white dark:bg-gray-900">
             <div class="flex items-center justify-between">
-                <h1 class="font-bold text-lg text-gray-900 dark:text-white">Conversations</h1>
-                <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-primary/10 text-primary">
-                    {{ $conversations->count() }} active
-                </span>
+                <h1 class="font-bold text-base text-gray-900 dark:text-white tracking-tight">Conversations</h1>
+                <x-tag color="primary" class="font-semibold text-[11px]">
+                    {{ $conversations->count() }} Active
+                </x-tag>
             </div>
 
             <!-- Search input -->
             <div class="relative">
-                <svg class="w-4 h-4 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
                 <input wire:model.live.debounce.300ms="search" 
                        type="text" 
                        placeholder="Search name, phone, messages..." 
-                       class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                       class="input input-sm w-full pl-9 pr-4">
             </div>
 
             <!-- Filter tabs -->
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
                 @foreach (['open' => 'Open', 'unread' => 'Unread', 'closed' => 'Closed', 'all' => 'All'] as $key => $label)
                     <button wire:click="$set('statusFilter', '{{ $key }}')" 
-                            class="px-2.5 py-1 rounded-lg font-medium transition-colors shrink-0 {{ $statusFilter === $key ? 'bg-primary text-white shadow-sm' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700' }}">
+                            class="px-2.5 py-1 rounded-xl font-semibold transition-all shrink-0 {{ $statusFilter === $key ? 'bg-primary text-white shadow-sm' : 'bg-gray-100/70 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200/80 dark:hover:bg-gray-700' }}">
                         {{ $label }}
                     </button>
                 @endforeach

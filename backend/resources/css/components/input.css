@@ -1,0 +1,90 @@
+@layer components {
+  .input {
+    @apply border
+      border-gray-200 
+      dark:border-gray-700
+      bg-gray-50 
+      dark:bg-gray-900 
+      rounded-xl 
+      w-full 
+      py-2 px-3.5
+      focus:outline-none 
+      focus:ring-2 
+      focus:ring-primary
+      focus:border-primary
+      focus:bg-white
+      focus:dark:bg-gray-800
+      appearance-none 
+      transition 
+      duration-150 
+      text-gray-900
+      dark:text-gray-100
+      font-medium
+      text-xs
+      ease-in-out;
+
+    &::placeholder {
+      @apply text-gray-400 font-normal;
+    }
+
+    &.input-sm {
+      @apply py-1.5 px-3 text-xs h-9;
+    }
+
+    &.input-md {
+      @apply py-2 px-3.5 text-sm h-10;
+    }
+
+    &.input-lg {
+      @apply py-2.5 px-4 text-base h-11;
+    }
+
+    &.input-invalid {
+      @apply border-rose-400 dark:border-rose-600 focus:ring-rose-500 focus:border-rose-500;
+    }
+  }
+
+  .select {
+    @apply border
+      border-gray-200 
+      dark:border-gray-700
+      bg-gray-50 
+      dark:bg-gray-900 
+      rounded-xl 
+      py-2 px-3.5
+      focus:outline-none 
+      focus:ring-2 
+      focus:ring-primary
+      focus:border-primary
+      focus:bg-white
+      focus:dark:bg-gray-800
+      transition 
+      duration-150 
+      text-gray-900
+      dark:text-gray-100
+      font-medium
+      text-xs
+      cursor-pointer
+      ease-in-out;
+
+    &.select-sm {
+      @apply py-1.5 px-3 text-xs h-9;
+    }
+
+    &.select-md {
+      @apply py-2 px-3.5 text-sm h-10;
+    }
+  }
+
+  .input-wrapper {
+    @apply relative flex items-center w-full;
+  }
+
+  .input-icon-prefix {
+    @apply absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400;
+  }
+
+  .input-icon-suffix {
+    @apply absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer;
+  }
+}
