@@ -173,7 +173,7 @@
     @if ($showContactModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
             <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
                     <h3 class="font-bold text-base text-gray-900 dark:text-white">
                         {{ $editingContactId ? 'Edit Contact' : 'Create New Contact' }}
                     </h3>
@@ -182,51 +182,34 @@
                     </button>
                 </div>
 
-                <form wire:submit.prevent="saveContact" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">WhatsApp Phone Number *</label>
-                        <input wire:model="mobile" 
-                               type="text" 
-                               placeholder="+15551234567" 
-                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                        @error('mobile') <span class="text-xs text-rose-500 mt-1">{{ $message }}</span> @enderror
-                    </div>
+                <form wire:submit.prevent="saveContact" class="space-y-4 pt-2">
+                    <x-form-item label="WhatsApp Phone Number" :required="true" :error="$errors->first('mobile')">
+                        <x-input wire:model="mobile" placeholder="+15551234567" prefix-icon="chat" :invalid="$errors->has('mobile')" />
+                    </x-form-item>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
-                        <input wire:model="name" 
-                               type="text" 
-                               placeholder="e.g. Jane Doe" 
-                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                        @error('name') <span class="text-xs text-rose-500 mt-1">{{ $message }}</span> @enderror
-                    </div>
+                    <x-form-item label="Full Name" :error="$errors->first('name')">
+                        <x-input wire:model="name" placeholder="e.g. Jane Doe" prefix-icon="contacts" :invalid="$errors->has('name')" />
+                    </x-form-item>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
-                        <input wire:model="email" 
-                               type="email" 
-                               placeholder="jane@example.com" 
-                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                    </div>
+                    <x-form-item label="Email Address" :error="$errors->first('email')">
+                        <x-input wire:model="email" type="email" placeholder="jane@example.com" prefix-icon="broadcast" :invalid="$errors->has('email')" />
+                    </x-form-item>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Phonebook Group</label>
-                        <select wire:model="phonebook_id" 
-                                class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                            <option value="">No Group</option>
+                    <x-form-item label="Phonebook Group">
+                        <x-select wire:model="phonebook_id" placeholder="No Group">
                             @foreach ($phonebooks as $pb)
                                 <option value="{{ $pb->id }}">{{ $pb->name }}</option>
                             @endforeach
-                        </select>
-                    </div>
+                        </x-select>
+                    </x-form-item>
 
-                    <div class="flex justify-end gap-2 pt-2">
-                        <button type="button" wire:click="$set('showContactModal', false)" class="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+                        <x-button type="button" wire:click="$set('showContactModal', false)" variant="default" size="sm">
                             Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary-deep text-white shadow-sm shadow-primary/20">
+                        </x-button>
+                        <x-button type="submit" variant="solid" size="sm">
                             Save Contact
-                        </button>
+                        </x-button>
                     </div>
                 </form>
             </div>
@@ -237,30 +220,25 @@
     @if ($showPhonebookModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
             <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
                     <h3 class="font-bold text-base text-gray-900 dark:text-white">Create Phonebook Group</h3>
                     <button wire:click="$set('showPhonebookModal', false)" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
 
-                <form wire:submit.prevent="createPhonebook" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Group Name *</label>
-                        <input wire:model="newPhonebookName" 
-                               type="text" 
-                               placeholder="e.g. VIP Clients, Summer Campaign" 
-                               class="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                        @error('newPhonebookName') <span class="text-xs text-rose-500 mt-1">{{ $message }}</span> @enderror
-                    </div>
+                <form wire:submit.prevent="createPhonebook" class="space-y-4 pt-2">
+                    <x-form-item label="Group Name" :required="true" :error="$errors->first('newPhonebookName')">
+                        <x-input wire:model="newPhonebookName" placeholder="e.g. VIP Clients, Summer Campaign" prefix-icon="broadcast" :invalid="$errors->has('newPhonebookName')" />
+                    </x-form-item>
 
-                    <div class="flex justify-end gap-2 pt-2">
-                        <button type="button" wire:click="$set('showPhonebookModal', false)" class="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+                        <x-button type="button" wire:click="$set('showPhonebookModal', false)" variant="default" size="sm">
                             Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary-deep text-white shadow-sm shadow-primary/20">
+                        </x-button>
+                        <x-button type="submit" variant="solid" size="sm">
                             Create Group
-                        </button>
+                        </x-button>
                     </div>
                 </form>
             </div>
@@ -271,30 +249,31 @@
     @if ($showImportModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
             <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
                     <h3 class="font-bold text-base text-gray-900 dark:text-white">Import Contacts from CSV</h3>
                     <button wire:click="$set('showImportModal', false)" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
 
-                <form wire:submit.prevent="importCsv" class="space-y-4">
-                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-dashed border-gray-300 dark:border-gray-700 text-center space-y-2">
-                        <input wire:model="csvFile" type="file" accept=".csv,text/csv" class="text-xs text-gray-500">
-                        <p class="text-[11px] text-gray-400">CSV must have a header row with <code>name</code>, <code>mobile</code> (or <code>phone</code>), and optional <code>email</code>.</p>
-                        @error('csvFile') <span class="text-xs text-rose-500 block">{{ $message }}</span> @enderror
-                    </div>
+                <form wire:submit.prevent="importCsv" class="space-y-4 pt-2">
+                    <x-form-item :error="$errors->first('csvFile')">
+                        <x-upload 
+                            wire:model="csvFile" 
+                            accept=".csv,text/csv" 
+                            title="Drop CSV file here or click to browse" 
+                            description="CSV must contain name and mobile (phone) columns"
+                        />
+                    </x-form-item>
 
-                    <div class="flex justify-end gap-2 pt-2">
-                        <button type="button" wire:click="$set('showImportModal', false)" class="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+                        <x-button type="button" wire:click="$set('showImportModal', false)" variant="default" size="sm">
                             Cancel
-                        </button>
-                        <button type="submit" 
-                                wire:loading.attr="disabled"
-                                class="px-4 py-2 rounded-xl text-xs font-semibold bg-primary hover:bg-primary-deep text-white shadow-sm shadow-primary/20 flex items-center gap-1.5">
+                        </x-button>
+                        <x-button type="submit" variant="solid" size="sm" wire:loading.attr="disabled">
                             <span wire:loading.remove>Start Import</span>
                             <span wire:loading>Importing...</span>
-                        </button>
+                        </x-button>
                     </div>
                 </form>
             </div>

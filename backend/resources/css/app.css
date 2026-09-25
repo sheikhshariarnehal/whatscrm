@@ -6,6 +6,11 @@
 @import './components/button.css';
 @import './components/tabs.css';
 @import './components/input.css';
+@import './components/checkbox.css';
+@import './components/switcher.css';
+@import './components/segment.css';
+@import './components/form.css';
+@import './components/upload.css';
 
 @tailwind base;
 @tailwind components;

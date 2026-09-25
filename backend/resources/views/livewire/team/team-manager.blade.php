@@ -31,21 +31,27 @@
         </div>
     @endif
 
-    <!-- Sub-Navbar Tabs -->
-    <div class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800">
-        <button wire:click="setTab('members')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'members' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-            <span>Team Members ({{ count($members) }})</span>
-        </button>
-        <button wire:click="setTab('permissions')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'permissions' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span>Roles & Permissions</span>
-        </button>
-        <button wire:click="setTab('performance')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'performance' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            <span>Agent Performance</span>
-        </button>
-    </div>
+    <!-- Segment Navigation Tabs -->
+    <x-segment>
+        <x-segment-item wire:click="setTab('members')" :active="$activeTab === 'members'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Team Members ({{ count($members) }})</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('permissions')" :active="$activeTab === 'permissions'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>Roles & Permissions</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('performance')" :active="$activeTab === 'performance'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Agent Performance</span>
+            </span>
+        </x-segment-item>
+    </x-segment>
 
     <!-- TAB 1: MEMBERS LIST -->
     @if($activeTab === 'members')
@@ -237,29 +243,25 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="space-y-4 text-xs">
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
-                        <input type="text" wire:model="inviteName" placeholder="e.g. Sarah Miller" class="input input-sm">
-                        @error('inviteName') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
-                        <input type="email" wire:model="inviteEmail" placeholder="sarah@acme.com" class="input input-sm">
-                        @error('inviteEmail') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                        <input type="password" wire:model="invitePassword" placeholder="Minimum 8 characters" class="input input-sm">
-                        @error('invitePassword') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Workspace Role</label>
-                        <select wire:model="inviteRole" class="select select-sm w-full">
+                <div class="space-y-4 pt-1">
+                    <x-form-item label="Full Name" :required="true" :error="$errors->first('inviteName')">
+                        <x-input wire:model="inviteName" placeholder="e.g. Sarah Miller" prefix-icon="contacts" :invalid="$errors->has('inviteName')" />
+                    </x-form-item>
+
+                    <x-form-item label="Email Address" :required="true" :error="$errors->first('inviteEmail')">
+                        <x-input type="email" wire:model="inviteEmail" placeholder="sarah@acme.com" prefix-icon="broadcast" :invalid="$errors->has('inviteEmail')" />
+                    </x-form-item>
+
+                    <x-form-item label="Password" :required="true" :error="$errors->first('invitePassword')">
+                        <x-input type="password" wire:model="invitePassword" placeholder="Minimum 8 characters" prefix-icon="settings" :invalid="$errors->has('invitePassword')" />
+                    </x-form-item>
+
+                    <x-form-item label="Workspace Role">
+                        <x-select wire:model="inviteRole">
                             <option value="agent">Support Agent (Assigned chats only)</option>
                             <option value="admin">Administrator (Full CRM access)</option>
-                        </select>
-                    </div>
+                        </x-select>
+                    </x-form-item>
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
                     <x-button wire:click="$set('showInviteModal', false)" variant="default" size="sm">Cancel</x-button>
@@ -279,17 +281,16 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="space-y-4 text-xs">
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Role</label>
-                        <select wire:model="editRole" class="select select-sm w-full">
+                <div class="space-y-4 pt-1">
+                    <x-form-item label="Role">
+                        <x-select wire:model="editRole">
                             <option value="agent">Support Agent</option>
                             <option value="admin">Administrator</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center gap-2 pt-1">
-                        <input type="checkbox" wire:model="editIsActive" id="editIsActive" class="rounded text-primary focus:ring-primary">
-                        <label for="editIsActive" class="text-gray-700 dark:text-gray-300 font-semibold text-xs">Active Member</label>
+                        </x-select>
+                    </x-form-item>
+
+                    <div class="pt-1">
+                        <x-checkbox wire:model="editIsActive" id="editIsActive" label="Active Member" />
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">

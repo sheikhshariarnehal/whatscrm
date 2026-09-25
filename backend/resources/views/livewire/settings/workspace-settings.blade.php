@@ -15,45 +15,46 @@
         </div>
     @endif
 
-    <!-- Sub-Navbar Tabs -->
-    <div class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800">
-        <button wire:click="setTab('company')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'company' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-            <span>Company Profile</span>
-        </button>
-        <button wire:click="setTab('security')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'security' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-            <span>Security & Password</span>
-        </button>
-        <button wire:click="setTab('notifications')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'notifications' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-            <span>Notifications & Sounds</span>
-        </button>
-        <button wire:click="setTab('billing')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'billing' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-            <span>Billing & Quotas</span>
-        </button>
-    </div>
+    <!-- Segment Navigation Tabs -->
+    <x-segment>
+        <x-segment-item wire:click="setTab('company')" :active="$activeTab === 'company'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                <span>Company Profile</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('security')" :active="$activeTab === 'security'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <span>Security & Password</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('notifications')" :active="$activeTab === 'notifications'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                <span>Notifications & Sounds</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('billing')" :active="$activeTab === 'billing'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                <span>Billing & Quotas</span>
+            </span>
+        </x-segment-item>
+    </x-segment>
 
     <!-- TAB 1: COMPANY PROFILE -->
     @if($activeTab === 'company')
         <div class="max-w-2xl">
             <x-card bodyClass="p-6 sm:p-8">
-                <form wire:submit.prevent="saveCompanySettings" class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Company / Workspace Name</label>
-                        <input 
-                            type="text" 
-                            wire:model="companyName" 
-                            class="input input-md"
-                        >
-                        @error('companyName') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
+                <form wire:submit.prevent="saveCompanySettings" class="space-y-5">
+                    <x-form-item label="Company / Workspace Name" :required="true" :error="$errors->first('companyName')">
+                        <x-input wire:model="companyName" :invalid="$errors->has('companyName')" />
+                    </x-form-item>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Default Country Code</label>
-                            <select wire:model="countryCode" class="select select-md w-full">
+                        <x-form-item label="Default Country Code">
+                            <x-select wire:model="countryCode">
                                 <option value="+1">+1 (United States / Canada)</option>
                                 <option value="+44">+44 (United Kingdom)</option>
                                 <option value="+91">+91 (India)</option>
@@ -61,20 +62,19 @@
                                 <option value="+971">+971 (United Arab Emirates)</option>
                                 <option value="+61">+61 (Australia)</option>
                                 <option value="+49">+49 (Germany)</option>
-                            </select>
-                        </div>
+                            </x-select>
+                        </x-form-item>
 
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Timezone</label>
-                            <select wire:model="timezone" class="select select-md w-full">
+                        <x-form-item label="Timezone">
+                            <x-select wire:model="timezone">
                                 <option value="UTC">UTC (Universal Coordinated Time)</option>
                                 <option value="America/New_York">America/New York (EST/EDT)</option>
                                 <option value="Europe/London">Europe/London (GMT/BST)</option>
                                 <option value="Asia/Dhaka">Asia/Dhaka (GMT+6)</option>
                                 <option value="Asia/Dubai">Asia/Dubai (GST)</option>
                                 <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                            </select>
-                        </div>
+                            </x-select>
+                        </x-form-item>
                     </div>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
@@ -92,34 +92,17 @@
         <div class="max-w-xl">
             <x-card bodyClass="p-6 sm:p-8">
                 <form wire:submit.prevent="updatePassword" class="space-y-5">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Current Password</label>
-                        <input 
-                            type="password" 
-                            wire:model="currentPassword" 
-                            class="input input-md"
-                        >
-                        @error('currentPassword') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
+                    <x-form-item label="Current Password" :required="true" :error="$errors->first('currentPassword')">
+                        <x-input type="password" wire:model="currentPassword" :invalid="$errors->has('currentPassword')" />
+                    </x-form-item>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">New Password</label>
-                        <input 
-                            type="password" 
-                            wire:model="newPassword" 
-                            class="input input-md"
-                        >
-                        @error('newPassword') <span class="text-xs text-rose-500 mt-1 block">{{ $message }}</span> @enderror
-                    </div>
+                    <x-form-item label="New Password" :required="true" :error="$errors->first('newPassword')">
+                        <x-input type="password" wire:model="newPassword" :invalid="$errors->has('newPassword')" />
+                    </x-form-item>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Confirm New Password</label>
-                        <input 
-                            type="password" 
-                            wire:model="newPassword_confirmation" 
-                            class="input input-md"
-                        >
-                    </div>
+                    <x-form-item label="Confirm New Password" :required="true">
+                        <x-input type="password" wire:model="newPassword_confirmation" />
+                    </x-form-item>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">
                         <x-button type="submit" variant="solid" size="md">
@@ -138,29 +121,29 @@
                 <h3 class="text-base font-bold text-gray-900 dark:text-white">Alert Preferences</h3>
 
                 <div class="space-y-4">
-                    <label class="flex items-start gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 cursor-pointer">
-                        <input type="checkbox" wire:model="soundEnabled" class="mt-0.5 rounded text-primary focus:ring-primary">
-                        <div>
-                            <div class="text-xs font-bold text-gray-900 dark:text-white">Incoming Message Audio Chime</div>
-                            <div class="text-[11px] text-gray-500 dark:text-gray-400">Play a pleasant soft sound when a WhatsApp customer sends a new message.</div>
-                        </div>
-                    </label>
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40">
+                        <x-switcher 
+                            wire:model="soundEnabled"
+                            label="Incoming Message Audio Chime" 
+                            description="Play a pleasant soft sound when a WhatsApp customer sends a new message."
+                        />
+                    </div>
 
-                    <label class="flex items-start gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 cursor-pointer">
-                        <input type="checkbox" wire:model="browserPushEnabled" class="mt-0.5 rounded text-primary focus:ring-primary">
-                        <div>
-                            <div class="text-xs font-bold text-gray-900 dark:text-white">Desktop Push Notifications</div>
-                            <div class="text-[11px] text-gray-500 dark:text-gray-400">Receive native browser alerts even when the browser tab is minimized.</div>
-                        </div>
-                    </label>
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40">
+                        <x-switcher 
+                            wire:model="browserPushEnabled"
+                            label="Desktop Push Notifications" 
+                            description="Receive native browser alerts even when the browser tab is minimized."
+                        />
+                    </div>
 
-                    <label class="flex items-start gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 cursor-pointer">
-                        <input type="checkbox" wire:model="campaignDigestEnabled" class="mt-0.5 rounded text-primary focus:ring-primary">
-                        <div>
-                            <div class="text-xs font-bold text-gray-900 dark:text-white">Broadcast Completion Email Digest</div>
-                            <div class="text-[11px] text-gray-500 dark:text-gray-400">Receive an email summary with read-rates and delivery logs when a mass campaign finishes.</div>
-                        </div>
-                    </label>
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40">
+                        <x-switcher 
+                            wire:model="campaignDigestEnabled"
+                            label="Broadcast Completion Email Digest" 
+                            description="Receive an email summary with read-rates and delivery logs when a mass campaign finishes."
+                        />
+                    </div>
                 </div>
 
                 <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-800">

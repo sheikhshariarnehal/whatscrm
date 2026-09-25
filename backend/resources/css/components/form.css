@@ -1,0 +1,21 @@
+@layer components {
+  .form-item {
+    @apply mb-5 relative flex flex-col;
+
+    &.horizontal {
+      @apply flex-row items-center justify-between gap-4;
+    }
+  }
+  
+  .form-label {
+    @apply block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5;
+  
+    &.invalid {
+      @apply text-rose-500;
+    }
+  }
+  
+  .form-explain {
+    @apply text-rose-500 text-xs mt-1 block font-medium;
+  }
+}

@@ -43,32 +43,40 @@
         </div>
     @endif
 
-    <!-- Sub-Navbar Tabs -->
-    <div class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800">
-        <button wire:click="setTab('tokens')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'tokens' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-            <span>API Keys ({{ count($tokens) }})</span>
-        </button>
-        <button wire:click="setTab('webhooks')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'webhooks' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            <span>Event Webhooks ({{ count($webhooks) }})</span>
-        </button>
-        <button wire:click="setTab('logs')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'logs' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-            <span>Webhook Logs ({{ $logs->total() }})</span>
-        </button>
-        <button wire:click="setTab('docs')" class="px-4 py-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 {{ $activeTab === 'docs' ? 'border-primary text-primary font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-            <span>REST API Docs</span>
-        </button>
-    </div>
+    <!-- Segment Navigation Tabs -->
+    <x-segment>
+        <x-segment-item wire:click="setTab('tokens')" :active="$activeTab === 'tokens'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                <span>API Keys ({{ count($tokens) }})</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('webhooks')" :active="$activeTab === 'webhooks'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Event Webhooks ({{ count($webhooks) }})</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('logs')" :active="$activeTab === 'logs'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                <span>Webhook Logs ({{ $logs->total() }})</span>
+            </span>
+        </x-segment-item>
+        <x-segment-item wire:click="setTab('docs')" :active="$activeTab === 'docs'">
+            <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <span>REST API Docs</span>
+            </span>
+        </x-segment-item>
+    </x-segment>
 
     <!-- TAB 1: API KEYS -->
     @if($activeTab === 'tokens')
         <x-card gutterless class="overflow-hidden">
             @if($tokens->isEmpty())
                 <div class="p-12 text-center">
-                    <div class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 rounded-2xl bg-primary-subtle text-primary flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                     </div>
                     <h3 class="text-base font-bold text-gray-900 dark:text-white">No API Keys Generated</h3>
@@ -129,7 +137,7 @@
         <x-card gutterless class="overflow-hidden">
             @if($webhooks->isEmpty())
                 <div class="p-12 text-center">
-                    <div class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 rounded-2xl bg-primary-subtle text-primary flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                     <h3 class="text-base font-bold text-gray-900 dark:text-white">No Webhooks Registered</h3>
@@ -225,7 +233,7 @@
                                 <td>
                                     @if($l->response_status >= 200 && $l->response_status < 300)
                                         <x-tag color="emerald" class="font-mono">
-                                            {{ $l->response_status }} OK
+                                             {{ $l->response_status }} OK
                                         </x-tag>
                                     @else
                                         <x-tag color="rose" class="font-mono">
@@ -325,12 +333,10 @@
                         <x-button wire:click="$set('showTokenModal', false)" variant="solid" size="sm">Done</x-button>
                     </div>
                 @else
-                    <div class="space-y-4 text-xs">
-                        <div>
-                            <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Key Name / Description</label>
-                            <input type="text" wire:model="tokenName" placeholder="e.g. WooCommerce Production Sync" class="input input-sm">
-                            @error('tokenName') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                        </div>
+                    <div class="space-y-4 pt-1">
+                        <x-form-item label="Key Name / Description" :required="true" :error="$errors->first('tokenName')">
+                            <x-input wire:model="tokenName" placeholder="e.g. WooCommerce Production Sync" prefix-icon="broadcast" :invalid="$errors->has('tokenName')" />
+                        </x-form-item>
                     </div>
                     <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
                         <x-button wire:click="$set('showTokenModal', false)" variant="default" size="sm">Cancel</x-button>
@@ -351,42 +357,27 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="space-y-4 text-xs">
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Webhook Name</label>
-                        <input type="text" wire:model="webhookName" placeholder="e.g. Shopify Order Sync" class="input input-sm">
-                        @error('webhookName') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Payload Destination URL</label>
-                        <input type="url" wire:model="webhookUrl" placeholder="https://api.yourshop.com/webhooks/whatsapp" class="input input-sm font-mono">
-                        @error('webhookUrl') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">HMAC Secret</label>
-                        <input type="text" wire:model="webhookSecret" readonly class="input input-sm font-mono text-gray-500">
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-2">Subscribe to Events</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" wire:model="webhookEvents.message.received" class="rounded text-primary focus:ring-primary">
-                                <span class="font-mono text-xs">message.received</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" wire:model="webhookEvents.message.status" class="rounded text-primary focus:ring-primary">
-                                <span class="font-mono text-xs">message.status</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" wire:model="webhookEvents.contact.created" class="rounded text-primary focus:ring-primary">
-                                <span class="font-mono text-xs">contact.created</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" wire:model="webhookEvents.campaign.completed" class="rounded text-primary focus:ring-primary">
-                                <span class="font-mono text-xs">campaign.completed</span>
-                            </label>
+                <div class="space-y-4 pt-1">
+                    <x-form-item label="Webhook Name" :required="true" :error="$errors->first('webhookName')">
+                        <x-input wire:model="webhookName" placeholder="e.g. Shopify Order Sync" :invalid="$errors->has('webhookName')" />
+                    </x-form-item>
+
+                    <x-form-item label="Payload Destination URL" :required="true" :error="$errors->first('webhookUrl')">
+                        <x-input type="url" wire:model="webhookUrl" placeholder="https://api.yourshop.com/webhooks/whatsapp" class="font-mono text-xs" :invalid="$errors->has('webhookUrl')" />
+                    </x-form-item>
+
+                    <x-form-item label="HMAC Secret">
+                        <x-input type="text" wire:model="webhookSecret" readonly class="font-mono text-xs text-gray-500 bg-gray-100 dark:bg-gray-800" />
+                    </x-form-item>
+
+                    <x-form-item label="Subscribe to Events">
+                        <div class="grid grid-cols-2 gap-3 pt-1">
+                            <x-checkbox wire:model="webhookEvents.message.received" label="message.received" />
+                            <x-checkbox wire:model="webhookEvents.message.status" label="message.status" />
+                            <x-checkbox wire:model="webhookEvents.contact.created" label="contact.created" />
+                            <x-checkbox wire:model="webhookEvents.campaign.completed" label="campaign.completed" />
                         </div>
-                    </div>
+                    </x-form-item>
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
                     <x-button wire:click="$set('showWebhookModal', false)" variant="default" size="sm">Cancel</x-button>
