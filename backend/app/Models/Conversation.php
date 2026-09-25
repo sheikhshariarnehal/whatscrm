@@ -19,8 +19,10 @@ class Conversation extends Model
     {
         return [
             'last_message_at' => 'datetime',
+            'expected_close_at' => 'date',
             'unread_count' => 'integer',
             'kanban_order' => 'integer',
+            'deal_value' => 'decimal:2',
         ];
     }
 

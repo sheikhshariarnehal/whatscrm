@@ -247,7 +247,7 @@
 
                                     @if ($conv->expected_close_at)
                                         <span class="text-[10px] text-gray-400">
-                                            Closes {{ $conv->expected_close_at->format('M d') }}
+                                            Closes {{ \Carbon\Carbon::parse($conv->expected_close_at)->format('M d') }}
                                         </span>
                                     @endif
                                 </div>
@@ -371,7 +371,7 @@
                                     {{ $conv->assignedMember?->user?->name ?? 'Unassigned' }}
                                 </td>
                                 <td class="p-4 text-gray-400">
-                                    {{ $conv->expected_close_at ? $conv->expected_close_at->format('M d, Y') : '—' }}
+                                    {{ $conv->expected_close_at ? \Carbon\Carbon::parse($conv->expected_close_at)->format('M d, Y') : '—' }}
                                 </td>
                                 <td class="p-4 text-right space-x-2">
                                     <a href="{{ route('inbox') }}" class="text-primary hover:underline font-semibold">Chat</a>
