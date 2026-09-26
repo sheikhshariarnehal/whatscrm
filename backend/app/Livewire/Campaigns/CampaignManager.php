@@ -381,9 +381,13 @@ class CampaignManager extends Component
             ->latest()
             ->paginate(10);
 
-        $hasActiveCampaigns = Campaign::where('workspace_id', $this->workspaceId)
-            ->where('status', 'processing')
-            ->exists();
+        $totalCampaigns = Campaign::where('workspace_id', $this->workspaceId)->count();
+        $totalSent = (int) Campaign::where('workspace_id', $this->workspaceId)->sum('sent_count');
+        $totalDelivered = (int) Campaign::where('workspace_id', $this->workspaceId)->sum('delivered_count');
+        $activeBroadcasts = Campaign::where('workspace_id', $this->workspaceId)->where('status', 'processing')->count();
+        $deliveryRate = $totalSent > 0 ? round(($totalDelivered / $totalSent) * 100, 1) : 100;
+
+        $hasActiveCampaigns = $activeBroadcasts > 0;
 
         $phonebooks = Phonebook::where('workspace_id', $this->workspaceId)
             ->withCount('contacts')
@@ -446,6 +450,11 @@ class CampaignManager extends Component
 
         return view('livewire.campaigns.campaign-manager', [
             'campaigns' => $campaigns,
+            'totalCampaigns' => $totalCampaigns,
+            'totalSent' => $totalSent,
+            'totalDelivered' => $totalDelivered,
+            'activeBroadcasts' => $activeBroadcasts,
+            'deliveryRate' => $deliveryRate,
             'phonebooks' => $phonebooks,
             'tags' => $tags,
             'templates' => $templates,

@@ -43,8 +43,70 @@
         </div>
     @endif
 
+    <!-- Starter KPI Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Total Campaigns</span>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($totalCampaigns) }}</h3>
+                    <span class="text-[11px] text-gray-400 mt-1 block">Scheduled & Executed</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-primary-subtle text-primary flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                </div>
+            </div>
+        </x-card>
+
+        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Total Outbound Sent</span>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($totalSent) }}</h3>
+                    <span class="text-[11px] text-gray-400 mt-1 block">Messages Dispatched</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                </div>
+            </div>
+        </x-card>
+
+        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Delivered Messages</span>
+                    <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ number_format($totalDelivered) }}</h3>
+                    <span class="text-[11px] text-gray-400 mt-1 block">{{ $deliveryRate }}% Delivery Success Rate</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+            </div>
+        </x-card>
+
+        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Active Queue Broadcasts</span>
+                    <div class="flex items-center gap-2 mt-1">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $activeBroadcasts }}</h3>
+                        @if($activeBroadcasts > 0)
+                            <x-tag color="primary" class="animate-pulse text-[10px]">Processing</x-tag>
+                        @else
+                            <x-tag color="gray" class="text-[10px]">Idle</x-tag>
+                        @endif
+                    </div>
+                    <span class="text-[11px] text-gray-400 mt-1 block">Real-time worker pool</span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+            </div>
+        </x-card>
+    </div>
+
     <!-- Sub-Navbar Tabs -->
-    <x-tabs>
+    <x-tabs variant="underline">
         <x-tab-item wire:click="setTab('all')" :active="$activeTab === 'all'">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             <span>All Campaigns ({{ $campaigns->total() }})</span>
@@ -136,9 +198,7 @@
                                             <span>{{ $camp->sent_count }} / {{ $camp->total_recipients }}</span>
                                             <span class="font-bold">{{ $pct }}%</span>
                                         </div>
-                                        <div class="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                                            <div class="bg-primary h-full transition-all duration-500" style="width: {{ $pct }}%"></div>
-                                        </div>
+                                        <x-progress :percent="$pct" size="sm" color="bg-primary" :showInfo="false" />
                                     </div>
                                 </td>
                                 <td>
@@ -148,38 +208,37 @@
                                         <x-tag color="primary" class="font-bold text-[10px] animate-pulse">Sending...</x-tag>
                                     @elseif($camp->status === 'paused')
                                         <x-tag color="amber" class="font-bold text-[10px]">Paused</x-tag>
-                                    @elseif($camp->status === 'scheduled')
-                                        <x-tag color="default" class="font-bold text-[10px]">Scheduled</x-tag>
+                                    @elseif($camp->status === 'draft')
+                                        <x-tag color="gray" class="text-[10px]">Draft</x-tag>
                                     @else
-                                        <x-tag color="default" class="text-[10px] capitalize">{{ $camp->status }}</x-tag>
+                                        <x-tag color="default" class="text-[10px]">{{ $camp->status }}</x-tag>
                                     @endif
                                 </td>
                                 <td class="text-xs text-gray-500">
-                                    {{ $camp->created_at->format('M d, H:i') }}
+                                    {{ $camp->created_at->format('M d, Y') }}
                                 </td>
                                 <td class="text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        @if($camp->status === 'processing')
-                                            <button wire:click="pauseCampaign({{ $camp->id }})" title="Pause Broadcast" class="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                            </button>
-                                        @elseif($camp->status === 'paused')
-                                            <button wire:click="resumeCampaign({{ $camp->id }})" title="Resume Broadcast" class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                            </button>
-                                        @endif
-
-                                        <button wire:click="runTestBroadcast({{ $camp->id }})" title="Run Instant 3-Contact Test" class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-semibold">
-                                            ⚡ Test
-                                        </button>
-
-                                        <x-button wire:click="viewLogs({{ $camp->id }})" variant="default" size="xs">
+                                        <!-- View Logs -->
+                                        <x-button wire:click="setFilterCampaign({{ $camp->id }})" variant="default" size="xs" title="View Delivery Logs">
                                             Logs
                                         </x-button>
 
-                                        <button wire:click="deleteCampaign({{ $camp->id }})" wire:confirm="Delete this campaign and all its delivery logs?" class="p-1.5 text-rose-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20" title="Delete">
+                                        <!-- Pause / Resume -->
+                                        @if($camp->status === 'processing')
+                                            <x-button wire:click="pauseCampaign({{ $camp->id }})" variant="default" size="xs" class="text-amber-500" title="Pause broadcast">
+                                                Pause
+                                            </x-button>
+                                        @elseif($camp->status === 'paused')
+                                            <x-button wire:click="resumeCampaign({{ $camp->id }})" variant="default" size="xs" class="text-emerald-500" title="Resume broadcast">
+                                                Resume
+                                            </x-button>
+                                        @endif
+
+                                        <!-- Delete -->
+                                        <x-button wire:click="deleteCampaign({{ $camp->id }})" wire:confirm="Delete this campaign and all its delivery logs?" variant="plain" size="xs" class="text-rose-500 hover:text-rose-700" title="Delete">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
+                                        </x-button>
                                     </div>
                                 </td>
                             </tr>
@@ -198,31 +257,16 @@
     <!-- ============================================================== -->
     @if($activeTab === 'create')
         <div class="space-y-6">
-            <!-- 5-Step Interactive Wizard Header Breadcrumbs -->
-            <div class="p-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 shadow-xs">
-                <div class="grid grid-cols-5 gap-2 text-center text-xs">
-                    <button type="button" wire:click="setWizardStep(1)" class="p-2.5 rounded-xl transition-all {{ $wizardStep === 1 ? 'bg-primary text-white font-bold shadow-xs' : ($wizardStep > 1 ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-semibold' : 'text-gray-400') }}">
-                        <span class="block text-[10px] uppercase tracking-wider">Step 1</span>
-                        <span class="truncate block">Channel & Title</span>
-                    </button>
-                    <button type="button" wire:click="setWizardStep(2)" class="p-2.5 rounded-xl transition-all {{ $wizardStep === 2 ? 'bg-primary text-white font-bold shadow-xs' : ($wizardStep > 2 ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-semibold' : 'text-gray-400') }}">
-                        <span class="block text-[10px] uppercase tracking-wider">Step 2</span>
-                        <span class="truncate block">Target Audience</span>
-                    </button>
-                    <button type="button" wire:click="setWizardStep(3)" class="p-2.5 rounded-xl transition-all {{ $wizardStep === 3 ? 'bg-primary text-white font-bold shadow-xs' : ($wizardStep > 3 ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-semibold' : 'text-gray-400') }}">
-                        <span class="block text-[10px] uppercase tracking-wider">Step 3</span>
-                        <span class="truncate block">Message & Media</span>
-                    </button>
-                    <button type="button" wire:click="setWizardStep(4)" class="p-2.5 rounded-xl transition-all {{ $wizardStep === 4 ? 'bg-primary text-white font-bold shadow-xs' : ($wizardStep > 4 ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 font-semibold' : 'text-gray-400') }}">
-                        <span class="block text-[10px] uppercase tracking-wider">Step 4</span>
-                        <span class="truncate block">Variables Mapping</span>
-                    </button>
-                    <button type="button" wire:click="setWizardStep(5)" class="p-2.5 rounded-xl transition-all {{ $wizardStep === 5 ? 'bg-primary text-white font-bold shadow-xs' : 'text-gray-400' }}">
-                        <span class="block text-[10px] uppercase tracking-wider">Step 5</span>
-                        <span class="truncate block">Pacing & Launch</span>
-                    </button>
-                </div>
-            </div>
+            <!-- 5-Step Interactive Wizard Header Breadcrumbs using Elstar Steps component -->
+            <x-card class="bg-white dark:bg-gray-800 shadow-xs border border-gray-200/80 dark:border-gray-700">
+                <x-steps>
+                    <x-step-item :step="1" :status="$wizardStep > 1 ? 'complete' : ($wizardStep === 1 ? 'in_progress' : 'pending')" title="Channel & Title" wire:click="setWizardStep(1)" class="cursor-pointer" />
+                    <x-step-item :step="2" :status="$wizardStep > 2 ? 'complete' : ($wizardStep === 2 ? 'in_progress' : 'pending')" title="Target Audience" wire:click="setWizardStep(2)" class="cursor-pointer" />
+                    <x-step-item :step="3" :status="$wizardStep > 3 ? 'complete' : ($wizardStep === 3 ? 'in_progress' : 'pending')" title="Message & Media" wire:click="setWizardStep(3)" class="cursor-pointer" />
+                    <x-step-item :step="4" :status="$wizardStep > 4 ? 'complete' : ($wizardStep === 4 ? 'in_progress' : 'pending')" title="Variables Mapping" wire:click="setWizardStep(4)" class="cursor-pointer" />
+                    <x-step-item :step="5" :status="$wizardStep === 5 ? 'in_progress' : 'pending'" :isLast="true" title="Pacing & Launch" wire:click="setWizardStep(5)" class="cursor-pointer" />
+                </x-steps>
+            </x-card>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left 2 Cols: Step Content -->
@@ -271,7 +315,7 @@
                                     <x-form-item label="Dispatch Line (Paired WhatsApp Device)" :required="true" :error="$errors->first('qrDeviceId')">
                                         <x-select wire:model="qrDeviceId">
                                             @foreach ($pairedDevices as $d)
-                                                <option value="{{ $d['id'] }}">{{ $d['name'] }} ({{ $d['phone'] }})</option>
+                                                 <option value="{{ $d['id'] }}">{{ $d['name'] }} ({{ $d['phone'] }})</option>
                                             @endforeach
                                         </x-select>
                                     </x-form-item>
@@ -360,25 +404,29 @@
                                         </div>
                                     </x-form-item>
 
-                                    <!-- Media Attachment Selector -->
+                                    <!-- Media Attachment Segment Selector -->
                                     <div class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-800">
                                         <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Media Attachment</label>
-                                        <div class="grid grid-cols-4 gap-2">
-                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'none' ? 'border-primary bg-primary-subtle font-bold' : 'border-gray-200 dark:border-gray-700' }} cursor-pointer text-xs">
+                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'none' ? 'border-primary bg-primary-subtle text-primary font-bold shadow-xs' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300' }} cursor-pointer text-xs transition-all">
                                                 <input type="radio" wire:model.live="mediaType" value="none" class="sr-only">
-                                                <span>None (Text)</span>
+                                                <span class="block text-base mb-0.5">💬</span>
+                                                <span>Text Only</span>
                                             </label>
-                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'image' ? 'border-primary bg-primary-subtle font-bold' : 'border-gray-200 dark:border-gray-700' }} cursor-pointer text-xs">
+                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'image' ? 'border-primary bg-primary-subtle text-primary font-bold shadow-xs' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300' }} cursor-pointer text-xs transition-all">
                                                 <input type="radio" wire:model.live="mediaType" value="image" class="sr-only">
-                                                <span>🖼️ Image</span>
+                                                <span class="block text-base mb-0.5">🖼️</span>
+                                                <span>Image</span>
                                             </label>
-                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'document' ? 'border-primary bg-primary-subtle font-bold' : 'border-gray-200 dark:border-gray-700' }} cursor-pointer text-xs">
+                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'document' ? 'border-primary bg-primary-subtle text-primary font-bold shadow-xs' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300' }} cursor-pointer text-xs transition-all">
                                                 <input type="radio" wire:model.live="mediaType" value="document" class="sr-only">
-                                                <span>📄 Document</span>
+                                                <span class="block text-base mb-0.5">📄</span>
+                                                <span>Document</span>
                                             </label>
-                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'video' ? 'border-primary bg-primary-subtle font-bold' : 'border-gray-200 dark:border-gray-700' }} cursor-pointer text-xs">
+                                            <label class="p-3 text-center rounded-xl border {{ $mediaType === 'video' ? 'border-primary bg-primary-subtle text-primary font-bold shadow-xs' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300' }} cursor-pointer text-xs transition-all">
                                                 <input type="radio" wire:model.live="mediaType" value="video" class="sr-only">
-                                                <span>🎬 Video</span>
+                                                <span class="block text-base mb-0.5">🎬</span>
+                                                <span>Video</span>
                                             </label>
                                         </div>
 
@@ -469,7 +517,7 @@
 
                             <div class="flex items-center gap-2">
                                 @if($wizardStep === 5)
-                                    <x-button type="button" wire:click="runTestBroadcast" variant="default" size="sm" class="text-emerald-600">
+                                    <x-button type="button" wire:click="runTestBroadcast" variant="default" size="sm" class="text-emerald-600 font-bold">
                                         ⚡ Run 3-Contact Test
                                     </x-button>
 
@@ -490,7 +538,10 @@
                 <!-- Right Column: Live Message Preview Card -->
                 <div class="space-y-6">
                     <x-card bodyClass="p-6 space-y-4">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">WhatsApp Phone Preview</h3>
+                        <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
+                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">WhatsApp Phone Preview</h3>
+                            <x-tag color="emerald" class="text-[9px]">Live Rendering</x-tag>
+                        </div>
                         
                         <!-- Simulated WhatsApp Message Bubble -->
                         <div class="rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 p-4 border border-emerald-100 dark:border-emerald-900/30 space-y-3">
