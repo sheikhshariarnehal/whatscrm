@@ -6,10 +6,12 @@ use App\Events\ConversationUpdated;
 use App\Events\NewMessageReceived;
 use App\Models\Conversation;
 use App\Models\ConversationNote;
+use App\Models\Instance;
 use App\Models\Message;
 use App\Models\QuickReply;
 use App\Models\Tag;
 use App\Models\WorkspaceMember;
+use App\Services\WhatsApp\BaileysService;
 use App\Services\WhatsApp\CloudApiService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -135,22 +137,57 @@ class InboxPage extends Component
             'sent_by_user_id' => $user->id,
         ]);
 
-        // 2. Dispatch via Meta WhatsApp Cloud API if WhatsApp channel
-        $service = CloudApiService::forWorkspace($this->workspaceId);
-        if ($service && in_array($conversation->channel ?? 'whatsapp', ['whatsapp', 'whatsapp_cloud'])) {
-            $result = $service->sendTextMessage($conversation->sender_mobile ?? $conversation->chat_id, $this->messageBody);
+        // 2. Dispatch via Meta WhatsApp Cloud API or Baileys device
+        $dispatched = false;
+        $sendError = null;
+
+        $cloudService = CloudApiService::forWorkspace($this->workspaceId);
+        if ($cloudService && in_array($conversation->channel ?? 'whatsapp', ['whatsapp', 'whatsapp_cloud'])) {
+            $result = $cloudService->sendTextMessage($conversation->sender_mobile ?? $conversation->chat_id, $this->messageBody);
             if ($result['success'] ?? false) {
                 $externalId = $result['data']['messages'][0]['id'] ?? null;
                 $message->update([
                     'status' => 'sent',
                     'external_id' => $externalId,
                 ]);
+                $dispatched = true;
             } else {
-                $message->update([
-                    'status' => 'failed',
-                    'metadata' => ['error' => $result['error'] ?? 'Sending failed'],
-                ]);
+                $sendError = $result['error'] ?? 'Cloud API sending failed';
             }
+        }
+
+        // If not sent via Cloud API, check for active Baileys session
+        if (!$dispatched) {
+            $instanceQuery = Instance::where('uid', (string) $this->workspaceId)->where('status', 'ACTIVE');
+            $instance = !empty($conversation->instance_id)
+                ? ((clone $instanceQuery)->where('uniqueId', $conversation->instance_id)->first() ?? $instanceQuery->first())
+                : $instanceQuery->first();
+
+            if ($instance) {
+                $baileys = new BaileysService();
+                $targetPhone = $conversation->sender_mobile ?: $conversation->chat_id;
+                $result = $baileys->sendTextMessage($instance->uniqueId, $targetPhone, $this->messageBody);
+
+                if ($result['success'] ?? false) {
+                    $message->update([
+                        'status' => 'sent',
+                        'channel' => 'baileys',
+                        'external_id' => $result['messageId'] ?? null,
+                    ]);
+                    $dispatched = true;
+                } else {
+                    $sendError = $result['error'] ?? 'Baileys device sending failed';
+                }
+            }
+        }
+
+        if ($dispatched) {
+            // Success
+        } elseif ($sendError) {
+            $message->update([
+                'status' => 'failed',
+                'metadata' => ['error' => $sendError],
+            ]);
         } else {
             // Simulated instant sent for dev or other channels
             $message->update(['status' => 'sent']);

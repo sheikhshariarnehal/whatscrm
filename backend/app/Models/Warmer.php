@@ -13,12 +13,18 @@ class Warmer extends Model
         'uid',
         'instances',
         'is_active',
+        'min_sleep',
+        'max_sleep',
+        'max_daily',
         'createdAt',
     ];
 
     protected $casts = [
         'instances' => 'array',
         'is_active' => 'boolean',
+        'min_sleep' => 'integer',
+        'max_sleep' => 'integer',
+        'max_daily' => 'integer',
         'createdAt' => 'datetime',
     ];
 }

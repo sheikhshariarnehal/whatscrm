@@ -58,11 +58,11 @@ return new class extends Migration
 
         if (!Schema::hasTable('auth')) {
             Schema::create('auth', function (Blueprint $table) {
-                $table->id();
-                $table->string('session', 255);
-                $table->string('id_key', 255);
-                $table->text('data');
-                $table->unique(['session', 'id_key']);
+                // mysql-baileys 1.x uses: session (varchar 50), id (varchar 100), value (longtext)
+                $table->string('session', 50)->index();
+                $table->string('id', 100)->index();
+                $table->longText('value')->nullable();
+                $table->unique(['session', 'id'], 'idxunique');
             });
         }
 

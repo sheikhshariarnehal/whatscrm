@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // ── WhatsCRM Baileys Microservice ────────────────────────────────────────
+    'baileys' => [
+        'url'     => env('BAILEYS_SERVICE_URL', 'http://127.0.0.1:8002'),
+        'secret'  => env('BAILEYS_INTERNAL_SECRET', ''),
+        'timeout' => env('BAILEYS_TIMEOUT', 5),
+    ],
+
 ];
+

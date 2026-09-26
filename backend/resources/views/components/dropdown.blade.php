@@ -2,6 +2,7 @@
     'placement' => 'bottom-end', // bottom-start, bottom-end, bottom-center, top-start, top-end, top-center
     'width' => 'w-52',
     'contentClasses' => '',
+    'closeOnClick' => true,
 ])
 
 @php
@@ -37,7 +38,7 @@
         x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
         class="dropdown-menu absolute {{ $placementClass }} {{ $width }} {{ $contentClasses }}"
         style="display: none;"
-        @click="open = false"
+        @if($closeOnClick) @click="open = false" @endif
     >
         @if(isset($content))
             {{ $content }}
