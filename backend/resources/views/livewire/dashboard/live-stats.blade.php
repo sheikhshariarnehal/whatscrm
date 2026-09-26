@@ -13,11 +13,13 @@
         </div>
 
         <div class="flex items-center gap-3 z-10 shrink-0">
-            <x-button variant="default" size="sm" as="a" href="{{ route('inbox') }}" icon="inbox" class="bg-white text-gray-900 border-none hover:bg-blue-50">
-                Open Live Inbox
+            <x-button variant="default" size="md" as="a" href="{{ route('inbox') }}" class="bg-white text-gray-900 border-none hover:bg-blue-50 shadow-md font-bold">
+                <x-ph-icon name="chat-circle-dots" weight="duotone" class="text-lg mr-1.5 text-primary" />
+                <span>Open Live Inbox</span>
             </x-button>
-            <x-button variant="solid" size="sm" as="a" href="{{ route('campaigns') }}" class="bg-white/10 hover:bg-white/20 text-white border border-white/20">
-                + New Campaign
+            <x-button variant="solid" size="md" as="a" href="{{ route('campaigns') }}" class="bg-white/15 hover:bg-white/25 text-white border border-white/20 font-bold backdrop-blur-sm">
+                <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
+                <span>New Campaign</span>
             </x-button>
         </div>
 

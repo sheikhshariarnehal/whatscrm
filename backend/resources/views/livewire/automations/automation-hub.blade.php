@@ -395,11 +395,11 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Match Type</label>
-                            <select wire:model="ruleMatchType" class="select select-md w-full">
+                            <x-select wire:model="ruleMatchType">
                                 <option value="contains">Contains Keyword</option>
                                 <option value="exact">Exact Match</option>
                                 <option value="starts_with">Starts With</option>
-                            </select>
+                            </x-select>
                         </div>
                         <div>
                             <label class="block font-semibold text-gray-700 dark:text-gray-300 mb-1">Priority Order</label>

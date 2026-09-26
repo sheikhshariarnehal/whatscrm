@@ -1,6 +1,6 @@
 @layer components {
   .steps {
-    @apply flex justify-between items-center w-full;
+    @apply flex items-center justify-between w-full overflow-x-auto py-1;
 
     &.steps-vertical {
       @apply flex-col items-start;
@@ -8,7 +8,7 @@
   }
 
   .step-item {
-    @apply flex items-center flex-1 last:flex-none;
+    @apply flex items-center flex-1 last:flex-none min-w-0 select-none;
 
     &.step-item-vertical {
       @apply items-start flex-col w-full;
@@ -16,23 +16,23 @@
   }
 
   .step-item-wrapper {
-    @apply flex items-center shrink-0;
+    @apply flex items-center gap-2.5 shrink-0;
   }
 
   .step-item-icon {
     min-width: 2.25rem;
-    @apply text-xs rounded-full w-9 h-9 flex items-center justify-center font-bold transition-all duration-200 select-none;
+    @apply text-xs rounded-full w-9 h-9 flex items-center justify-center font-bold transition-all duration-200 shrink-0;
 
     &.step-item-icon-pending {
-      @apply border-2 border-gray-300 dark:border-gray-700 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-900;
+      @apply border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800;
     }
 
     &.step-item-icon-current {
-      @apply border-2 border-primary text-primary bg-primary-subtle shadow-sm;
+      @apply border-2 border-primary text-primary bg-primary-subtle ring-4 ring-primary-subtle shadow-sm font-bold;
     }
 
     &.step-item-icon-complete {
-      @apply bg-primary text-white border-2 border-primary;
+      @apply bg-primary text-white border-2 border-primary shadow-sm font-bold;
     }
 
     &.step-item-icon-error {
@@ -41,14 +41,18 @@
   }
 
   .step-item-content {
-    @apply ltr:ml-3 rtl:mr-3 relative;
+    @apply relative min-w-0;
   }
 
   .step-item-title {
-    @apply whitespace-nowrap font-bold block text-xs text-gray-700 dark:text-gray-200;
+    @apply whitespace-nowrap font-bold block text-xs text-gray-500 dark:text-gray-400 transition-colors duration-150;
 
     &.step-item-title-active {
-      @apply text-gray-900 dark:text-white font-black;
+      @apply text-gray-900 dark:text-white font-extrabold;
+    }
+
+    &.step-item-title-complete {
+      @apply text-gray-700 dark:text-gray-200 font-semibold;
     }
 
     &.step-item-title-error {
@@ -57,16 +61,16 @@
   }
 
   .step-item-description {
-    @apply text-[11px] text-gray-400 dark:text-gray-500 block;
+    @apply text-[11px] text-gray-400 dark:text-gray-500 block truncate;
   }
 
   .step-clickable {
-    @apply cursor-pointer hover:opacity-80;
+    @apply cursor-pointer hover:opacity-90;
   }
 
   .step-connect {
     height: 2px;
-    @apply flex-1 mx-4 bg-gray-200 dark:bg-gray-700 transition-colors duration-200;
+    @apply flex-1 mx-3 sm:mx-4 bg-gray-200 dark:bg-gray-700 transition-colors duration-200 min-w-[20px];
 
     &.step-connect-active {
       @apply bg-primary;
@@ -75,7 +79,7 @@
     &.step-connect-vertical {
       min-height: 2.5rem;
       width: 2px;
-      @apply ltr:ml-4 rtl:mr-4 my-1 flex-none;
+      @apply ml-4 my-1 flex-none;
     }
   }
 }

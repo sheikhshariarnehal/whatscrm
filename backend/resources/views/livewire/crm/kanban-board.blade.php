@@ -49,24 +49,26 @@
             </div>
 
             <!-- Priority Filter -->
-            <select wire:model.live="priorityFilter"
-                    class="rounded-xl text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5 px-2.5 font-semibold focus:ring-2 focus:ring-primary/20">
-                <option value="all">All Priorities</option>
-                <option value="urgent">⚡ Urgent</option>
-                <option value="high">🔥 High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-            </select>
+            <div class="w-36">
+                <x-select wire:model.live="priorityFilter" size="sm">
+                    <option value="all">All Priorities</option>
+                    <option value="urgent">⚡ Urgent</option>
+                    <option value="high">🔥 High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </x-select>
+            </div>
 
             <!-- Agent Filter -->
-            <select wire:model.live="agentFilter"
-                    class="rounded-xl text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5 px-2.5 font-semibold focus:ring-2 focus:ring-primary/20">
-                <option value="all">All Agents</option>
-                <option value="unassigned">👤 Unassigned</option>
-                @foreach ($teamMembers as $member)
-                    <option value="{{ $member->id }}">{{ $member->user?->name ?? 'Agent' }}</option>
-                @endforeach
-            </select>
+            <div class="w-40">
+                <x-select wire:model.live="agentFilter" size="sm">
+                    <option value="all">All Agents</option>
+                    <option value="unassigned">👤 Unassigned</option>
+                    @foreach ($teamMembers as $member)
+                        <option value="{{ $member->id }}">{{ $member->user?->name ?? 'Agent' }}</option>
+                    @endforeach
+                </x-select>
+            </div>
 
             <!-- + New Deal Button -->
             <button type="button"
@@ -586,36 +588,33 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pipeline Stage *</label>
-                        <select wire:model="dealStage"
-                                class="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold focus:ring-2 focus:ring-primary/20">
+                        <x-select wire:model="dealStage">
                             @foreach ($defaultStages as $s)
                                 <option value="{{ $s['key'] }}">{{ $s['title'] }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Priority</label>
-                        <select wire:model="dealPriority"
-                                class="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold focus:ring-2 focus:ring-primary/20">
+                        <x-select wire:model="dealPriority">
                             <option value="urgent">⚡ Urgent</option>
                             <option value="high">🔥 High</option>
                             <option value="medium">Medium</option>
                             <option value="low">Low</option>
-                        </select>
+                        </x-select>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Assigned Agent</label>
-                        <select wire:model="dealAssignedMemberId"
-                                class="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold focus:ring-2 focus:ring-primary/20">
+                        <x-select wire:model="dealAssignedMemberId" prefixIcon="user-circle">
                             <option value="">👤 Unassigned</option>
                             @foreach ($teamMembers as $m)
                                 <option value="{{ $m->id }}">{{ $m->user?->name ?? 'Agent' }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>

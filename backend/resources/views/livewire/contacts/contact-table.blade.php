@@ -12,18 +12,18 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
-            <x-button wire:click="exportCsv" variant="default" size="sm" title="Export all contacts to CSV">
-                <svg class="w-4 h-4 mr-1 text-gray-500 dark:text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <x-button wire:click="exportCsv" variant="default" size="md" title="Export all contacts to CSV">
+                <x-ph-icon name="download-simple" weight="bold" class="text-base mr-1.5 text-gray-500 dark:text-gray-400" />
                 <span>Export CSV</span>
             </x-button>
 
-            <x-button wire:click="$set('showImportModal', true)" variant="default" size="sm">
-                <svg class="w-4 h-4 mr-1 text-gray-500 dark:text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <x-button wire:click="$set('showImportModal', true)" variant="default" size="md">
+                <x-ph-icon name="upload-simple" weight="bold" class="text-base mr-1.5 text-gray-500 dark:text-gray-400" />
                 <span>Import CSV</span>
             </x-button>
 
-            <x-button wire:click="openCreateContactModal" variant="solid" size="sm">
-                <svg class="w-4 h-4 mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <x-button wire:click="openCreateContactModal" variant="solid" size="md">
+                <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
                 <span>Add Contact</span>
             </x-button>
         </div>
@@ -284,8 +284,8 @@
                     <h3 class="text-base font-bold text-gray-900 dark:text-white">Phonebook Groups</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Segment your audience for targeted broadcast campaigns and workflow automations.</p>
                 </div>
-                <x-button wire:click="openCreatePhonebookModal" variant="solid" size="sm">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <x-button wire:click="openCreatePhonebookModal" variant="solid" size="md">
+                    <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
                     <span>New Group</span>
                 </x-button>
             </div>
@@ -355,8 +355,8 @@
                         Define dynamic custom contact parameters used for WhatsApp template variables (e.g. &#123;&#123;company_name&#125;&#125;, &#123;&#123;order_id&#125;&#125;).
                     </p>
                 </div>
-                <x-button wire:click="$set('showFieldModal', true)" variant="solid" size="sm">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <x-button wire:click="$set('showFieldModal', true)" variant="solid" size="md">
+                    <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
                     <span>New Custom Field</span>
                 </x-button>
             </div>
@@ -422,8 +422,8 @@
                         Contacts who have sent STOP or unsubscribed from outbound WhatsApp campaigns are excluded automatically.
                     </p>
                 </div>
-                <x-button wire:click="$set('showBlacklistModal', true)" variant="solid" size="sm">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <x-button wire:click="$set('showBlacklistModal', true)" variant="solid" size="md">
+                    <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
                     <span>Add to Blacklist</span>
                 </x-button>
             </div>

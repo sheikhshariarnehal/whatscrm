@@ -9,7 +9,7 @@
       w-full 
       py-2 px-3.5
       focus:outline-none 
-      focus:ring-2 
+      focus:ring-1 
       focus:ring-primary
       focus:border-primary
       focus:bg-white
@@ -32,11 +32,11 @@
     }
 
     &.input-md {
-      @apply py-2 px-3.5 text-sm h-10;
+      @apply py-2 px-3.5 text-xs h-10;
     }
 
     &.input-lg {
-      @apply py-2.5 px-4 text-base h-11;
+      @apply py-2.5 px-4 text-sm h-11;
     }
 
     &.input-invalid {
@@ -44,16 +44,41 @@
     }
   }
 
+  /* Browser Native Date / Datetime picker styling enhancement */
+  input[type="date"],
+  input[type="datetime-local"] {
+    @apply font-sans;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 2px;
+    border-radius: 4px;
+    transition: opacity 0.15s ease-in-out;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator:hover,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+
+  .dark input[type="date"]::-webkit-calendar-picker-indicator,
+  .dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.9) hue-rotate(180deg) brightness(1.2);
+  }
+
   .select {
     @apply border
       border-gray-200 
       dark:border-gray-700
       bg-gray-50 
-      dark:bg-gray-900 
+      dark:bg-gray-800 
       rounded-xl 
-      py-2 px-3.5
+      py-2 pl-3.5 pr-10
       focus:outline-none 
-      focus:ring-2 
+      focus:ring-1 
       focus:ring-primary
       focus:border-primary
       focus:bg-white
@@ -62,26 +87,48 @@
       duration-150 
       text-gray-900
       dark:text-gray-100
-      font-medium
+      font-semibold
       text-xs
       cursor-pointer
+      w-full
+      shadow-sm
       ease-in-out;
 
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25em 1.25em;
+
     &.select-sm {
-      @apply py-1.5 px-3 text-xs h-9;
+      @apply py-1.5 pl-3 pr-8 text-xs h-9;
     }
 
     &.select-md {
-      @apply py-2 px-3.5 text-sm h-10;
+      @apply py-2 pl-3.5 pr-10 text-xs h-10;
+    }
+
+    &.select-lg {
+      @apply py-2.5 pl-4 pr-12 text-sm h-11;
     }
   }
 
+  .dark .select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+
+  .select option {
+    @apply bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 py-2;
+  }
+
   .input-affix-left {
-    padding-left: 2.35rem !important;
+    padding-left: 2.5rem !important;
   }
 
   .input-affix-right {
-    padding-right: 2.25rem !important;
+    padding-right: 2.5rem !important;
   }
 
   .input-wrapper {
@@ -89,10 +136,10 @@
   }
 
   .input-icon-prefix {
-    @apply absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 z-10;
+    @apply absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10;
   }
 
   .input-icon-suffix {
-    @apply absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer z-10;
+    @apply absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer z-10;
   }
 }

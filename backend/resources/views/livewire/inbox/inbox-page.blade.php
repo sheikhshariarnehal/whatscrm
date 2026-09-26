@@ -664,30 +664,28 @@
 
                     <div class="space-y-1.5">
                         <label class="text-[11px] text-gray-400 font-medium">Pipeline Stage</label>
-                        <select wire:change="updateKanbanStage($event.target.value)"
-                                class="w-full rounded-xl text-xs border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 font-semibold focus:ring-2 focus:ring-primary/20">
+                        <x-select wire:change="updateKanbanStage($event.target.value)" prefixIcon="kanban" size="sm">
                             <option value="lead" @selected($selectedConversation->kanban_stage === 'lead')>🟢 Lead (New Inbound)</option>
                             <option value="contacted" @selected($selectedConversation->kanban_stage === 'contacted')>🔵 Contacted</option>
                             <option value="qualified" @selected($selectedConversation->kanban_stage === 'qualified')>🟣 Qualified</option>
                             <option value="negotiation" @selected($selectedConversation->kanban_stage === 'negotiation')>🟡 Proposal / Negotiation</option>
                             <option value="won" @selected($selectedConversation->kanban_stage === 'won')>🏆 Won / Closed Deal</option>
                             <option value="lost" @selected($selectedConversation->kanban_stage === 'lost')>🔴 Lost / Closed</option>
-                        </select>
+                        </x-select>
                     </div>
                 </div>
 
                 <!-- Assigned Agent Section -->
                 <div class="p-4 border-b border-gray-200 dark:border-gray-800 space-y-2 bg-white dark:bg-gray-900">
                     <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">👥 Assigned Team Member</span>
-                    <select wire:change="assignAgent($event.target.value)"
-                            class="w-full rounded-xl text-xs border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 font-semibold focus:ring-2 focus:ring-primary/20">
+                    <x-select wire:change="assignAgent($event.target.value)" prefixIcon="user-circle" size="sm">
                         <option value="">👤 Unassigned</option>
                         @foreach ($teamMembers as $member)
                             <option value="{{ $member->id }}" @selected($selectedConversation->assigned_member_id == $member->id)>
                                 {{ $member->user?->name ?? 'Agent' }} ({{ ucfirst($member->role ?? 'Agent') }})
                             </option>
                         @endforeach
-                    </select>
+                    </x-select>
                 </div>
 
                 <!-- Tags & Labels Management Section -->
