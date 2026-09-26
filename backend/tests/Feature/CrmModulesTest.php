@@ -83,6 +83,13 @@ class CrmModulesTest extends TestCase
         Queue::assertPushed(ProcessCampaignBatch::class, function ($job) use ($campaign) {
             return $job->campaignId === $campaign->id;
         });
+
+        // Test Livewire setFilterCampaign action
+        \Livewire\Livewire::actingAs($this->user)
+            ->test(\App\Livewire\Campaigns\CampaignManager::class)
+            ->call('setFilterCampaign', $campaign->id)
+            ->assertSet('activeTab', 'logs')
+            ->assertSet('filterCampaignId', $campaign->id);
     }
 
     public function test_flow_execution_service_triggers_keyword_chatbot(): void

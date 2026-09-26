@@ -62,6 +62,7 @@ class ProcessCampaignBatch implements ShouldQueue
 
         if ($contacts->isEmpty()) {
             $campaign->update([
+                'total_recipients' => 0,
                 'status' => 'completed',
                 'completed_at' => now(),
             ]);
@@ -70,11 +71,31 @@ class ProcessCampaignBatch implements ShouldQueue
 
         $campaign->update(['total_recipients' => $contacts->count()]);
 
-        foreach ($contacts as $contact) {
+        // Prevent duplicate sends if campaign was paused and resumed
+        $alreadyLoggedContactIds = CampaignLog::where('campaign_id', $campaign->id)
+            ->whereIn('status', ['sent', 'delivered', 'read'])
+            ->pluck('contact_id')
+            ->toArray();
+
+        foreach ($contacts as $index => $contact) {
             // Check if campaign was paused during processing
             $freshStatus = Campaign::withoutGlobalScopes()->where('id', $campaign->id)->value('status');
             if ($freshStatus === 'paused') {
                 break;
+            }
+
+            if (in_array($contact->id, $alreadyLoggedContactIds)) {
+                continue;
+            }
+
+            // Anti-ban randomized delay between messages (after first contact)
+            if ($index > 0 && $campaign->delay_min > 0) {
+                $minSec = min($campaign->delay_min, $campaign->delay_max ?? $campaign->delay_min);
+                $maxSec = max($campaign->delay_min, $campaign->delay_max ?? $campaign->delay_min);
+                $delaySec = rand($minSec, $maxSec);
+                if ($delaySec > 0) {
+                    sleep($delaySec);
+                }
             }
 
             // Resolve dynamic variables
@@ -153,9 +174,14 @@ class ProcessCampaignBatch implements ShouldQueue
             // Format Meta Cloud API template parameters
             $bodyParameters = [];
             foreach ($variables as $val) {
+                $paramText = (string) $val;
+                if ($campaign->random_suffix) {
+                    $suffixes = ["\u{200B}", "\u{200C}", "\u{200D}", "\u{FEFF}"];
+                    $paramText .= $suffixes[array_rand($suffixes)];
+                }
                 $bodyParameters[] = [
                     'type' => 'text',
-                    'text' => (string) $val,
+                    'text' => $paramText,
                 ];
             }
 

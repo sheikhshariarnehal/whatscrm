@@ -381,22 +381,15 @@
                             <x-ph-icon name="list" weight="bold" class="text-2xl" />
                         </span>
                     </button>
-
-                    <!-- Quick Global Search Button (Command Palette) -->
-                    <button @click="searchOpen = true" 
-                            class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-800/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-medium transition-colors h-9 shadow-2xs">
-                        <x-ph-icon name="magnifying-glass" weight="bold" class="text-base text-gray-400 dark:text-gray-500" />
-                        <span>Search CRM...</span>
-                        <kbd class="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold font-mono bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-gray-500 dark:text-gray-300 shadow-2xs">⌘K</kbd>
-                    </button>
-
                 </div>
 
-                <!-- Header Action End -->
+                <!-- Header Action End (Search, Notifications, Settings, Theme Mode, User Profile) -->
                 <div class="header-action">
-                    <!-- Quick Search Mobile Trigger -->
-                    <button @click="searchOpen = true" class="sm:hidden header-action-item text-gray-600 dark:text-gray-300" title="Search CRM">
-                        <x-ph-icon name="magnifying-glass" weight="bold" class="text-xl" />
+                    <!-- Quick Global Search Icon Button (Command Palette) -->
+                    <button @click="searchOpen = true" 
+                            class="header-action-item text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white" 
+                            title="Search CRM (⌘K)">
+                        <x-ph-icon name="magnifying-glass" weight="duotone" class="text-2xl" />
                     </button>
 
                     <!-- Notifications Dropdown Component using x-dropdown -->
@@ -448,6 +441,13 @@
                             </a>
                         </div>
                     </x-dropdown>
+
+                    <!-- Quick Settings / Configurator Trigger (SidePanel in starter template) -->
+                    <a href="{{ route('settings') }}" wire:navigate 
+                       class="header-action-item text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                       title="Workspace Settings">
+                        <x-ph-icon name="gear-six" weight="duotone" class="text-2xl" />
+                    </a>
 
                     <!-- Dark / Light Mode Switcher (Pure Tailwind Instant Paint, Zero Pop) -->
                     <button @click="toggleDark()" 

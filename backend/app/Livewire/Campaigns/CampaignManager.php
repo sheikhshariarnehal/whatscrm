@@ -214,6 +214,25 @@ class CampaignManager extends Component
         $this->validateCurrentStep(2);
         $this->validateCurrentStep(3);
 
+        $recipientCount = 0;
+        if ($this->targetType === 'phonebook' && $this->targetId) {
+            $recipientCount = Contact::withoutGlobalScopes()
+                ->where('workspace_id', $this->workspaceId)
+                ->where('phonebook_id', $this->targetId)
+                ->count();
+        } elseif ($this->targetType === 'tags' && $this->targetId) {
+            $recipientCount = Contact::withoutGlobalScopes()
+                ->where('workspace_id', $this->workspaceId)
+                ->whereHas('tags', function ($q) {
+                    $q->where('tags.id', $this->targetId);
+                })
+                ->count();
+        } else {
+            $recipientCount = Contact::withoutGlobalScopes()
+                ->where('workspace_id', $this->workspaceId)
+                ->count();
+        }
+
         $campaign = Campaign::create([
             'workspace_id' => $this->workspaceId,
             'name' => $this->name,
@@ -228,6 +247,7 @@ class CampaignManager extends Component
             'media_url' => !empty($this->mediaUrl) ? $this->mediaUrl : null,
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
+            'total_recipients' => $recipientCount,
             'delay_min' => $this->delayMin,
             'delay_max' => $this->delayMax,
             'random_suffix' => $this->randomSuffix,
@@ -238,6 +258,7 @@ class CampaignManager extends Component
 
         // Dispatch background processing job
         ProcessCampaignBatch::dispatch($campaign->id);
+        self::ensureQueueWorkerRunning();
 
         $this->reset(['name', 'targetId', 'scheduledAt', 'wizardStep', 'mediaUrl']);
         $this->activeTab = 'all';
@@ -363,7 +384,26 @@ class CampaignManager extends Component
         if ($campaign && $campaign->status === 'paused') {
             $campaign->update(['status' => 'processing']);
             ProcessCampaignBatch::dispatch($campaign->id);
+            self::ensureQueueWorkerRunning();
             session()->flash('success', 'Campaign resumed and sending.');
+        }
+    }
+
+    public static function ensureQueueWorkerRunning(): void
+    {
+        try {
+            if (config('queue.default') === 'sync') {
+                return;
+            }
+
+            if (PHP_OS_FAMILY === 'Windows') {
+                $basePath = base_path();
+                pclose(popen("start /B php \"{$basePath}\\artisan\" queue:work --stop-when-empty > NUL 2>&1", "r"));
+            } else {
+                pclose(popen('php ' . base_path('artisan') . ' queue:work --stop-when-empty > /dev/null 2>&1 &', 'r'));
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Could not auto-start queue worker: ' . $e->getMessage());
         }
     }
 
@@ -377,11 +417,16 @@ class CampaignManager extends Component
         }
     }
 
-    public function viewLogs(int $campaignId)
+    public function setFilterCampaign(?int $campaignId = null)
     {
         $this->filterCampaignId = $campaignId;
         $this->activeTab = 'logs';
         $this->resetPage();
+    }
+
+    public function viewLogs(?int $campaignId = null)
+    {
+        $this->setFilterCampaign($campaignId);
     }
 
     public function syncTemplates()

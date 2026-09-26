@@ -589,8 +589,15 @@ class CloudApiService
     /**
      * Format phone number to international E.164 digits without '+' or symbols.
      */
-    protected function cleanPhoneNumber(string $phone): string
+    public function cleanPhoneNumber(string $phone): string
     {
-        return preg_replace('/[^0-9]/', '', $phone);
+        $clean = preg_replace('/[^0-9]/', '', $phone);
+        // Normalize Bangladesh local format 01XXXXXXXXX -> 8801XXXXXXXXX
+        if (str_starts_with($clean, '01') && strlen($clean) === 11) {
+            $clean = '880' . substr($clean, 1);
+        } elseif (str_starts_with($clean, '1') && strlen($clean) === 10) {
+            $clean = '880' . $clean;
+        }
+        return $clean;
     }
 }
