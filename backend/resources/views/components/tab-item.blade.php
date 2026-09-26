@@ -12,11 +12,13 @@
         ($variant === 'pill' ? 'tab-nav-pill ' : 'tab-nav-underline ') . 
         ($active ? 'tab-nav-active ' : '') . 
         ($disabled ? 'tab-nav-disabled ' : '');
+    $tag = $attributes->has('href') ? 'a' : 'button';
 @endphp
 
-<button type="button" 
-        @if ($disabled) disabled @endif
-        {{ $attributes->merge(['class' => trim($baseClass)]) }}>
+<{{ $tag }} 
+    @if ($tag === 'button') type="button" @endif
+    @if ($disabled) disabled @endif
+    {{ $attributes->merge(['class' => trim($baseClass)]) }}>
     @if ($icon)
         <x-nav-icon :name="$icon" class="tab-nav-icon w-4 h-4 shrink-0" />
     @endif
@@ -30,5 +32,5 @@
             <x-badge :content="$badge" :color="$badgeColor" />
         </span>
     @endif
-</button>
+</{{ $tag }}>
 

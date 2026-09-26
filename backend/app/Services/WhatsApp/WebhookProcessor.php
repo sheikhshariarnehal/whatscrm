@@ -26,6 +26,11 @@ class WebhookProcessor
 
         foreach ($payload['entry'] ?? [] as $entry) {
             foreach ($entry['changes'] ?? [] as $change) {
+                if (($change['field'] ?? '') === 'message_template_status_update') {
+                    $this->handleTemplateStatusUpdate($entry['id'] ?? null, $change['value'] ?? []);
+                    continue;
+                }
+
                 if (($change['field'] ?? '') !== 'messages') {
                     continue;
                 }
@@ -201,5 +206,28 @@ class WebhookProcessor
         $message->update(['status' => $status]);
 
         event(new MessageStatusUpdated($message));
+    }
+
+    protected function handleTemplateStatusUpdate(?string $wabaId, array $value): void
+    {
+        Log::info('Meta Template Status Update received', [
+            'waba_id' => $wabaId,
+            'event'   => $value['event'] ?? null,
+            'template_name' => $value['message_template_name'] ?? null,
+            'reason'  => $value['reason'] ?? null,
+        ]);
+
+        if (! $wabaId) {
+            return;
+        }
+
+        $credential = MetaCredential::withoutGlobalScope(WorkspaceScope::class)
+            ->where('waba_id', $wabaId)
+            ->first();
+
+        if ($credential) {
+            $service = new CloudApiService($credential);
+            $service->getMessageTemplates();
+        }
     }
 }

@@ -24,18 +24,30 @@ class DeviceManager extends Component
     public int $workspaceId;
     public ?MetaCredential $credential = null;
     public string $activeTab = 'qr'; // 'qr', 'meta', 'warmer', 'social'
+    protected array $allowedTabs = ['qr', 'meta', 'warmer', 'social'];
 
     // Baileys service health
     public bool $baileysOnline = false;
     public int  $baileysActiveSessions = 0;
 
-    // Meta Cloud API Fields
+    // Meta Cloud API Fields & Telemetry
     public string $phone_number_id = '';
     public string $waba_id = '';
     public string $access_token = '';
     public string $verify_token = 'whatscrm_secure_token';
     public string $display_phone_number = '';
     public ?string $app_id = '';
+    public bool $metaConnected = false;
+    public string $metaVerifiedName = 'WhatsApp Business';
+    public string $metaQualityRating = 'UNKNOWN';
+    public string $metaMessagingLimit = 'TIER_1K';
+    public bool $metaIsOnBizApp = false;
+    public string $metaPlatformType = 'CLOUD_API';
+    public bool $metaWebhookSubscribed = false;
+    public ?string $metaLastSynced = null;
+    public array $metaTemplates = [];
+    public bool $showEditMetaModal = false;
+    public bool $isValidatingMeta = false;
 
     // Test Message Fields
     public string $test_phone_number = '';
@@ -80,8 +92,15 @@ class DeviceManager extends Component
     // LIFECYCLE
     // =========================================================================
 
-    public function mount()
+    public function mount(?string $tab = null)
     {
+        $targetTab = $tab ?? request()->query('tab');
+        if ($targetTab && in_array($targetTab, $this->allowedTabs, true)) {
+            $this->activeTab = $targetTab;
+        } else {
+            $this->activeTab = 'qr';
+        }
+
         $this->workspaceId = session('current_workspace_id') ?? Auth::user()?->workspaces()->first()?->id ?? 1;
         $this->loadCredentials();
         $this->loadPairedDevices();
@@ -91,9 +110,17 @@ class DeviceManager extends Component
         $this->checkBaileysHealth();
     }
 
-    public function setTab(string $tab)
+    public function setTab(string $tab, bool $pushHistory = true)
     {
+        if (!in_array($tab, $this->allowedTabs, true)) {
+            $tab = 'qr';
+        }
+
         $this->activeTab = $tab;
+
+        if ($pushHistory) {
+            $this->dispatch('device-tab-changed', tab: $tab);
+        }
     }
 
     // =========================================================================
@@ -104,12 +131,31 @@ class DeviceManager extends Component
     {
         $this->credential = MetaCredential::where('workspace_id', $this->workspaceId)->first();
 
-        if ($this->credential) {
-            $this->phone_number_id    = $this->credential->phone_number_id ?? '';
-            $this->waba_id            = $this->credential->waba_id ?? '';
-            $this->verify_token       = $this->credential->verify_token ?? 'whatscrm_secure_token';
+        if ($this->credential && $this->credential->isConnected()) {
+            $this->phone_number_id      = $this->credential->phone_number_id ?? '';
+            $this->waba_id              = $this->credential->waba_id ?? '';
+            $this->verify_token         = $this->credential->verify_token ?? 'whatscrm_secure_token';
             $this->display_phone_number = $this->credential->display_phone_number ?? '';
-            $this->app_id             = $this->credential->app_id ?? '';
+            $this->app_id               = $this->credential->app_id ?? '';
+
+            $settings = $this->credential->settings ?? [];
+            $this->metaVerifiedName      = $this->credential->verified_name ?: 'WhatsApp Business';
+            $this->metaQualityRating     = $this->credential->quality_rating ?: 'UNKNOWN';
+            $this->metaMessagingLimit    = $settings['messaging_limit_tier'] ?? 'TIER_1K';
+            $this->metaIsOnBizApp        = (bool) ($settings['is_on_biz_app'] ?? false);
+            $this->metaPlatformType      = $settings['platform_type'] ?? 'CLOUD_API';
+            $this->metaWebhookSubscribed = (bool) ($settings['webhook_subscribed'] ?? false);
+            $this->metaLastSynced        = $settings['last_synced_at'] ?? null;
+            $this->metaConnected         = true;
+        } else {
+            $this->metaConnected = false;
+            if ($this->credential) {
+                $this->phone_number_id      = $this->credential->phone_number_id ?? '';
+                $this->waba_id              = $this->credential->waba_id ?? '';
+                $this->verify_token         = $this->credential->verify_token ?? 'whatscrm_secure_token';
+                $this->display_phone_number = $this->credential->display_phone_number ?? '';
+                $this->app_id               = $this->credential->app_id ?? '';
+            }
         }
     }
 
@@ -597,37 +643,124 @@ class DeviceManager extends Component
     // META CLOUD API ACTIONS
     // =========================================================================
 
+    public function openEditMetaModal()
+    {
+        $this->showEditMetaModal = true;
+    }
+
+    public function closeEditMetaModal()
+    {
+        $this->showEditMetaModal = false;
+    }
+
     public function saveCredentials()
     {
         $this->validate([
-            'phone_number_id'     => 'required|string|max:50',
-            'waba_id'             => 'required|string|max:50',
-            'access_token'        => $this->credential ? 'nullable|string' : 'required|string',
-            'verify_token'        => 'required|string|max:100',
+            'phone_number_id'      => 'required|string|max:50',
+            'waba_id'              => 'required|string|max:50',
+            'access_token'         => $this->credential ? 'nullable|string' : 'required|string',
+            'verify_token'         => 'required|string|max:100',
             'display_phone_number' => 'nullable|string|max:50',
+            'app_id'               => 'nullable|string|max:50',
         ]);
 
-        $data = [
-            'workspace_id'        => $this->workspaceId,
-            'phone_number_id'     => $this->phone_number_id,
-            'waba_id'             => $this->waba_id,
-            'verify_token'        => $this->verify_token,
-            'display_phone_number' => $this->display_phone_number,
-            'app_id'              => $this->app_id,
-            'status'              => 'connected',
-        ];
+        $phoneNumberId = trim($this->phone_number_id);
+        $wabaId        = trim($this->waba_id);
+        $rawToken      = !empty($this->access_token) ? $this->access_token : ($this->credential?->access_token ?? '');
+        $token         = trim($rawToken, " \t\n\r\0\x0B\"'");
 
-        if (!empty($this->access_token)) {
-            $data['access_token'] = $this->access_token;
+        if (empty($token)) {
+            $this->addError('access_token', 'Meta Permanent Access Token is required.');
+            return;
         }
+
+        // Guard against submitting masked bullet/asterisk placeholders
+        if (preg_match('/^[•*·\.\s]+$/u', $token)) {
+            $msg = 'Please paste your actual Meta Access Token (starts with EAAG...). Masked bullet characters cannot be used.';
+            $this->addError('access_token', $msg);
+            session()->flash('error', "Meta Graph API verification failed: {$msg}");
+            return;
+        }
+
+        // 1. Live Validation against Meta Graph API
+        $metaRes = CloudApiService::verifyAndFetchDetails($phoneNumberId, $token);
+
+        if (!$metaRes['success']) {
+            $errorMsg = $metaRes['error'] ?? 'Meta API validation failed. Check Phone Number ID and Access Token.';
+            if (str_contains(strtolower($errorMsg), 'could not be decrypted')) {
+                $errorMsg = 'The access token could not be decrypted by Meta. This occurs if the token is incomplete, missing characters, or generated for a different Meta App. Please copy the full, fresh token from WhatsApp > API Setup (or System Users).';
+            }
+            $this->addError('access_token', $errorMsg);
+            session()->flash('error', "Meta Graph API verification failed: {$errorMsg}");
+            return;
+        }
+
+        $metaData      = $metaRes['data'] ?? [];
+        $verifiedName  = $metaData['verified_name'] ?: ($this->metaVerifiedName ?: 'WhatsApp Business Account');
+        $displayPhone  = $metaData['display_phone_number'] ?: $this->display_phone_number;
+        $qualityRating = $metaData['quality_rating'] ?: 'GREEN';
+
+        // 2. Auto-subscribe WABA to Webhooks
+        $subRes = CloudApiService::subscribeWaba($wabaId, $token);
+
+        // 3. Fetch WABA Details
+        $wabaDetails = CloudApiService::fetchWabaDetails($wabaId, $token);
+        $wabaName    = $wabaDetails['data']['name'] ?? null;
+
+        // 4. Assemble Settings
+        $settings = $this->credential?->settings ?? [];
+        $settings['messaging_limit_tier']     = $metaData['messaging_limit_tier'] ?? ($settings['messaging_limit_tier'] ?? 'TIER_1K');
+        $settings['code_verification_status'] = $metaData['code_verification_status'] ?? 'VERIFIED';
+        $settings['is_on_biz_app']             = (bool) ($metaData['is_on_biz_app'] ?? false);
+        $settings['platform_type']             = $metaData['platform_type'] ?? 'CLOUD_API';
+        $settings['webhook_subscribed']        = $subRes['success'] ?? false;
+        $settings['waba_name']                 = $wabaName;
+        $settings['last_synced_at']            = now()->toIso8601String();
+        $settings['login_type']                = 'manual';
+
+        $data = [
+            'workspace_id'         => $this->workspaceId,
+            'phone_number_id'      => $phoneNumberId,
+            'waba_id'              => $wabaId,
+            'access_token'         => $token,
+            'verify_token'         => trim($this->verify_token),
+            'display_phone_number' => $displayPhone,
+            'verified_name'        => $verifiedName,
+            'quality_rating'       => $qualityRating,
+            'app_id'               => trim($this->app_id ?? ''),
+            'status'               => 'connected',
+            'settings'             => $settings,
+        ];
 
         MetaCredential::updateOrCreate(
             ['workspace_id' => $this->workspaceId],
             $data
         );
 
+        $this->showEditMetaModal = false;
         $this->loadCredentials();
-        session()->flash('message', 'WhatsApp Cloud API credentials saved successfully.');
+
+        // 5. Auto-sync approved templates
+        $this->syncTemplates();
+
+        session()->flash('message', "Meta Cloud API Connected & Verified! Channel: {$verifiedName} ({$displayPhone}) | Quality: {$qualityRating}");
+    }
+
+    public function refreshMetaStatus()
+    {
+        $service = CloudApiService::forWorkspace($this->workspaceId);
+        if (!$service) {
+            session()->flash('error', 'No active Meta Cloud API credential found.');
+            return;
+        }
+
+        $res = $service->refreshDetails();
+        if ($res['success']) {
+            $this->loadCredentials();
+            session()->flash('message', 'Meta Graph API health & channel status refreshed live.');
+        } else {
+            session()->flash('error', 'Failed to refresh Meta status: ' . ($res['error'] ?? 'Unknown error'));
+        }
     }
 
     public function sendTestMessage()
@@ -661,7 +794,17 @@ class DeviceManager extends Component
         if ($service) {
             $res = $service->getMessageTemplates();
             if ($res['success'] ?? false) {
-                $count = count($res['data']['data'] ?? []);
+                $templates = $res['data']['data'] ?? [];
+                $count = count($templates);
+
+                if ($this->credential) {
+                    $settings = $this->credential->settings ?? [];
+                    $settings['templates_count'] = $count;
+                    $settings['templates_last_synced'] = now()->toIso8601String();
+                    $this->credential->update(['settings' => $settings]);
+                    $this->metaTemplates = array_slice($templates, 0, 10);
+                }
+
                 $this->sync_status = "Successfully synced {$count} template(s) directly from Meta Business Account.";
                 session()->flash('message', $this->sync_status);
                 return;
@@ -822,7 +965,16 @@ SVG;
 
     public function render()
     {
-        $webhookCallbackUrl = url('/api/v1/webhook/whatsapp');
+        $webhookCallbackUrl = \Illuminate\Support\Facades\Cache::remember('active_ngrok_webhook_url', 30, function () {
+            try {
+                $ngrokRes = Http::connectTimeout(0.2)->timeout(0.5)->get('http://127.0.0.1:4040/api/tunnels');
+                if ($ngrokRes->successful() && !empty($ngrokRes->json()['tunnels'][0]['public_url'])) {
+                    return rtrim($ngrokRes->json()['tunnels'][0]['public_url'], '/') . '/api/v1/webhook/whatsapp';
+                }
+            } catch (\Throwable $e) {}
+            return url('/api/v1/webhook/whatsapp');
+        });
+
         $totalMessagesToday = array_sum(array_column($this->pairedDevices, 'messages_today'));
         $activeWarmerCount  = count(array_filter($this->pairedDevices, fn($d) => $d['warmer_active'] ?? false));
         $metaConnected      = (bool) ($this->credential && $this->credential->isConnected());

@@ -111,4 +111,30 @@ class WhatsAppWebhookTest extends TestCase
         // Verify Event was dispatched
         Event::assertDispatched(NewMessageReceived::class);
     }
+
+    public function test_template_status_update_webhook(): void
+    {
+        $payload = [
+            'object' => 'whatsapp_business_account',
+            'entry' => [
+                [
+                    'id' => 'waba_999888',
+                    'changes' => [
+                        [
+                            'field' => 'message_template_status_update',
+                            'value' => [
+                                'event' => 'APPROVED',
+                                'message_template_id' => '123456789',
+                                'message_template_name' => 'order_confirmation',
+                                'message_template_language' => 'en_US',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/webhook/whatsapp', $payload);
+        $response->assertStatus(200);
+    }
 }

@@ -16,6 +16,8 @@ use App\Models\WorkspaceMember;
 use App\Services\Automation\FlowExecutionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use App\Livewire\Devices\DeviceManager;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class CrmModulesTest extends TestCase
@@ -160,5 +162,41 @@ class CrmModulesTest extends TestCase
             'name' => 'Shopify Store Hook',
             'url' => 'https://example.com/webhook',
         ]);
+    }
+
+    public function test_device_routes_and_subtabs_are_accessible(): void
+    {
+        $this->actingAs($this->user);
+
+        // Base /devices route
+        $response = $this->get(route('devices'));
+        $response->assertOk();
+
+        // Subtabs: qr, meta, warmer, social
+        foreach (['qr', 'meta', 'warmer', 'social'] as $tab) {
+            $response = $this->get(route('devices', $tab));
+            $response->assertOk();
+        }
+
+        // Invalid tab gracefully handles without 404
+        $response = $this->get('/devices/unknown-tab-123');
+        $response->assertOk();
+
+        // Livewire component mounts directly with specified tab
+        Livewire::test(DeviceManager::class, ['tab' => 'meta'])
+            ->assertSet('activeTab', 'meta');
+
+        Livewire::test(DeviceManager::class, ['tab' => 'warmer'])
+            ->assertSet('activeTab', 'warmer');
+
+        // Unknown tab falls back to 'qr'
+        Livewire::test(DeviceManager::class, ['tab' => 'invalid'])
+            ->assertSet('activeTab', 'qr');
+
+        // Tab switching dispatches browser event for history pushState
+        Livewire::test(DeviceManager::class)
+            ->call('setTab', 'meta')
+            ->assertSet('activeTab', 'meta')
+            ->assertDispatched('device-tab-changed', tab: 'meta');
     }
 }

@@ -29,6 +29,107 @@ class CloudApiService
     }
 
     /**
+     * Verify credentials directly against Meta Graph API and fetch phone details.
+     */
+    public static function verifyAndFetchDetails(string $phoneNumberId, string $accessToken): array
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->withToken($accessToken)
+                ->acceptJson()
+                ->timeout(15)
+                ->get("https://graph.facebook.com/v20.0/{$phoneNumberId}", [
+                    'fields' => 'display_phone_number,verified_name,quality_rating,code_verification_status,messaging_limit_tier,is_on_biz_app,platform_type',
+                ]);
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json(),
+                ];
+            }
+
+            $error = $response->json()['error'] ?? [];
+            $msg = $error['message'] ?? 'Meta API validation failed. Please check your Phone Number ID and Access Token.';
+
+            return [
+                'success' => false,
+                'error' => $msg,
+                'code' => $error['code'] ?? null,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error' => 'Connection to Meta Graph API failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Auto-subscribe Meta app to WABA webhook notifications.
+     */
+    public static function subscribeWaba(string $wabaId, string $accessToken): array
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->withToken($accessToken)
+                ->acceptJson()
+                ->timeout(15)
+                ->post("https://graph.facebook.com/v20.0/{$wabaId}/subscribed_apps");
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json(),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => $response->json()['error']['message'] ?? 'Failed to subscribe webhook to WABA',
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Fetch WABA account details (name, currency, timezone, review status).
+     */
+    public static function fetchWabaDetails(string $wabaId, string $accessToken): array
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->withToken($accessToken)
+                ->acceptJson()
+                ->timeout(15)
+                ->get("https://graph.facebook.com/v20.0/{$wabaId}", [
+                    'fields' => 'id,name,currency,timezone_id,account_review_status,message_template_namespace',
+                ]);
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json(),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error' => $response->json()['error']['message'] ?? 'Failed to fetch WABA details',
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
      * Send plain text message to a WhatsApp number.
      */
     public function sendTextMessage(string $to, string $text, ?string $replyToMessageId = null): array
@@ -115,7 +216,39 @@ class CloudApiService
      */
     public function getMessageTemplates(): array
     {
-        return $this->get("/{$this->credential->waba_id}/message_templates");
+        return $this->get("/{$this->credential->waba_id}/message_templates", ['limit' => 100]);
+    }
+
+    /**
+     * Refresh live metadata from Meta Graph API and update credential model.
+     */
+    public function refreshDetails(): array
+    {
+        $phoneRes = self::verifyAndFetchDetails($this->credential->phone_number_id, $this->credential->access_token);
+        if (!$phoneRes['success']) {
+            return $phoneRes;
+        }
+
+        $data = $phoneRes['data'];
+        $settings = $this->credential->settings ?? [];
+        $settings['messaging_limit_tier'] = $data['messaging_limit_tier'] ?? ($settings['messaging_limit_tier'] ?? 'UNKNOWN');
+        $settings['code_verification_status'] = $data['code_verification_status'] ?? ($settings['code_verification_status'] ?? 'UNKNOWN');
+        $settings['is_on_biz_app'] = $data['is_on_biz_app'] ?? ($settings['is_on_biz_app'] ?? false);
+        $settings['platform_type'] = $data['platform_type'] ?? ($settings['platform_type'] ?? 'CLOUD_API');
+        $settings['last_synced_at'] = now()->toIso8601String();
+
+        $this->credential->update([
+            'display_phone_number' => $data['display_phone_number'] ?? $this->credential->display_phone_number,
+            'verified_name'        => $data['verified_name'] ?? $this->credential->verified_name,
+            'quality_rating'       => $data['quality_rating'] ?? $this->credential->quality_rating,
+            'settings'             => $settings,
+            'status'               => 'connected',
+        ]);
+
+        return [
+            'success' => true,
+            'data'    => $this->credential->fresh(),
+        ];
     }
 
     /**
@@ -124,8 +257,10 @@ class CloudApiService
     protected function post(string $endpoint, array $data): array
     {
         try {
-            $response = Http::withToken($this->credential->access_token)
+            $response = Http::withoutVerifying()
+                ->withToken($this->credential->access_token)
                 ->acceptJson()
+                ->timeout(15)
                 ->post($this->graphUrl . $endpoint, $data);
 
             if ($response->successful()) {
@@ -162,8 +297,10 @@ class CloudApiService
     protected function get(string $endpoint, array $query = []): array
     {
         try {
-            $response = Http::withToken($this->credential->access_token)
+            $response = Http::withoutVerifying()
+                ->withToken($this->credential->access_token)
                 ->acceptJson()
+                ->timeout(15)
                 ->get($this->graphUrl . $endpoint, $query);
 
             if ($response->successful()) {

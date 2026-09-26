@@ -1,4 +1,38 @@
-<div class="p-4 sm:p-6 lg:p-8 space-y-6" @if($showPairModal) wire:poll.2s="pollQrStatus" @endif>
+<div class="p-4 sm:p-6 lg:p-8 space-y-6" 
+     @if($showPairModal) wire:poll.2s="pollQrStatus" @endif
+     x-data="{
+         init() {
+             const syncPath = () => {
+                 const path = window.location.pathname;
+                 const match = path.match(/\/devices\/([a-zA-Z0-9_-]+)/);
+                 if (match && match[1]) {
+                     const tab = match[1];
+                     if (['qr', 'meta', 'warmer', 'social'].includes(tab) && tab !== @js($activeTab)) {
+                         $wire.setTab(tab, false);
+                     }
+                 } else if (path === '/devices' || path === '/devices/') {
+                     const currentTab = @js($activeTab);
+                     window.history.replaceState({ tab: currentTab }, '', '/devices/' + currentTab);
+                 }
+             };
+
+             if (window.location.pathname === '/devices' || window.location.pathname === '/devices/') {
+                 window.history.replaceState({ tab: @js($activeTab) }, '', '/devices/' + @js($activeTab));
+             }
+
+             window.addEventListener('popstate', () => {
+                 syncPath();
+             });
+         }
+     }"
+     @device-tab-changed.window="
+         const tab = $event.detail.tab;
+         const currentPath = window.location.pathname;
+         const targetPath = '/devices/' + tab;
+         if (currentPath !== targetPath) {
+             window.history.pushState({ tab: tab }, '', targetPath);
+         }
+     ">
     <!-- Page Header & Top Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -127,26 +161,26 @@
 
     <!-- Navigation Tabs Bar -->
     <x-tabs>
-        <x-tab-item wire:click="setTab('qr')" :active="$activeTab === 'qr'">
+        <x-tab-item href="{{ route('devices', 'qr') }}" wire:click.prevent="setTab('qr')" :active="$activeTab === 'qr'">
             <x-ph-icon name="qr-code" weight="duotone" class="text-lg shrink-0" />
             <span>Paired Sessions (QR)</span>
             <x-tag color="primary" class="ml-1 text-[10px] font-bold py-0.5 px-2">{{ count($pairedDevices) }}</x-tag>
         </x-tab-item>
-        <x-tab-item wire:click="setTab('meta')" :active="$activeTab === 'meta'">
+        <x-tab-item href="{{ route('devices', 'meta') }}" wire:click.prevent="setTab('meta')" :active="$activeTab === 'meta'">
             <x-ph-icon name="cloud-check" weight="duotone" class="text-lg shrink-0" />
             <span>Meta Cloud API</span>
             @if ($metaConnected)
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-1"></span>
             @endif
         </x-tab-item>
-        <x-tab-item wire:click="setTab('warmer')" :active="$activeTab === 'warmer'">
+        <x-tab-item href="{{ route('devices', 'warmer') }}" wire:click.prevent="setTab('warmer')" :active="$activeTab === 'warmer'">
             <x-ph-icon name="flame" weight="duotone" class="text-lg shrink-0" />
             <span>Number Warmer Engine</span>
             @if ($activeWarmerCount > 0)
                 <x-tag color="amber" class="ml-1 text-[10px] font-bold py-0.5 px-2">{{ $activeWarmerCount }}</x-tag>
             @endif
         </x-tab-item>
-        <x-tab-item wire:click="setTab('social')" :active="$activeTab === 'social'">
+        <x-tab-item href="{{ route('devices', 'social') }}" wire:click.prevent="setTab('social')" :active="$activeTab === 'social'">
             <x-ph-icon name="share-network" weight="duotone" class="text-lg shrink-0" />
             <span>Telegram & Social Channels</span>
             @if ($telegramConnected || $instagramConnected || $messengerConnected)
@@ -284,75 +318,184 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left 2 Cols: Credentials Form & Diagnostics Sandbox -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Credentials Configuration Form Card -->
-                <x-card bodyClass="p-6 sm:p-8 space-y-6">
-                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                                <x-ph-icon name="meta-logo" weight="fill" class="text-xl" />
+                @if ($metaConnected)
+                    <!-- Active Connected Account Telemetry Card -->
+                    <x-card bodyClass="p-6 sm:p-8 space-y-6">
+                        <!-- Header with Meta Verified Badge, Title, and Actions -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-800 pb-5">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 ring-4 ring-blue-500/10">
+                                    <x-ph-icon name="meta-logo" weight="fill" class="text-2xl" />
+                                </div>
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h2 class="font-bold text-lg text-gray-900 dark:text-white tracking-tight">{{ $metaVerifiedName }}</h2>
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-full border border-blue-200/50 dark:border-blue-800/50">
+                                            <x-ph-icon name="seal-check" weight="fill" class="text-xs" />
+                                            Meta Verified
+                                        </span>
+                                        <x-tag color="emerald" :prefix="true" class="font-bold text-[10px]">Active Live Channel</x-tag>
+                                    </div>
+                                    <p class="text-xs font-mono font-semibold text-gray-500 dark:text-gray-400 mt-1 flex flex-wrap items-center gap-2">
+                                        <span>{{ $display_phone_number ?: 'Active Phone Line' }}</span>
+                                        <span>&middot;</span>
+                                        <span>WABA ID: {{ $waba_id }}</span>
+                                        <span>&middot;</span>
+                                        <span>Phone ID: {{ $phone_number_id }}</span>
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h2 class="font-bold text-base text-gray-900 dark:text-white tracking-tight">Meta Cloud API Credentials</h2>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Obtain these credentials from your Meta Developer Portal under WhatsApp &gt; API Setup.</p>
-                            </div>
-                        </div>
-                        @if ($metaConnected)
-                            <x-tag color="emerald" :prefix="true" class="font-bold text-[10px]">Active Integration</x-tag>
-                        @else
-                            <x-tag color="gray" class="text-[10px]">Not Connected</x-tag>
-                        @endif
-                    </div>
 
-                    <form wire:submit.prevent="saveCredentials" class="space-y-5">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <x-form-item label="Phone Number ID" :required="true" :error="$errors->first('phone_number_id')">
-                                <x-input wire:model="phone_number_id" :invalid="$errors->has('phone_number_id')" placeholder="e.g. 109876543210987" class="font-mono text-xs" />
-                            </x-form-item>
-
-                            <x-form-item label="WABA ID (WhatsApp Business Account ID)" :required="true" :error="$errors->first('waba_id')">
-                                <x-input wire:model="waba_id" :invalid="$errors->has('waba_id')" placeholder="e.g. 987654321098765" class="font-mono text-xs" />
-                            </x-form-item>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <x-form-item label="Display Phone Number">
-                                <x-input wire:model="display_phone_number" placeholder="e.g. +1 (555) 019-2834" />
-                            </x-form-item>
-
-                            <x-form-item label="Meta App ID (Optional)">
-                                <x-input wire:model="app_id" placeholder="e.g. 781923401928374" class="font-mono text-xs" />
-                            </x-form-item>
-                        </div>
-
-                        <x-form-item label="Permanent System User Access Token" :required="true" :error="$errors->first('access_token')">
-                            <x-input type="password" wire:model="access_token" :invalid="$errors->has('access_token')" placeholder="{{ $credential ? '••••••••••••••••••••••••••••••••' : 'EAAG...' }}" class="font-mono text-xs" />
-                            <p class="text-[11px] text-gray-400 mt-1.5 flex items-center gap-1.5">
-                                <x-ph-icon name="shield-check" weight="duotone" class="text-sm text-emerald-500" />
-                                Stored securely in database with 256-bit AES encryption.
-                            </p>
-                        </x-form-item>
-
-                        <x-form-item label="Webhook Verify Token" :required="true" :error="$errors->first('verify_token')">
-                            <x-input wire:model="verify_token" :invalid="$errors->has('verify_token')" class="font-mono text-xs" />
-                        </x-form-item>
-
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
-                            @if ($metaConnected)
-                                <x-button wire:click="disconnect" wire:confirm="Are you sure you want to disconnect this Meta Cloud API account?" variant="plain" size="sm" class="text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30">
-                                    <x-ph-icon name="link-break" weight="bold" class="text-sm mr-1" />
-                                    Disconnect Integration
+                            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                <x-button wire:click="refreshMetaStatus" variant="default" size="sm">
+                                    <x-ph-icon name="arrows-clockwise" weight="bold" class="text-sm mr-1.5 text-blue-600" />
+                                    <span>Refresh Live</span>
                                 </x-button>
-                            @else
-                                <div></div>
-                            @endif
 
-                            <x-button type="submit" variant="solid" size="md">
-                                <x-ph-icon name="check-circle" weight="bold" class="text-base mr-1.5" />
-                                Save Meta Credentials
-                            </x-button>
+                                <x-button wire:click="syncTemplates" variant="default" size="sm">
+                                    <x-ph-icon name="cloud-arrow-down" weight="bold" class="text-sm mr-1.5 text-emerald-600" />
+                                    <span>Sync Templates</span>
+                                </x-button>
+
+                                <x-button wire:click="openEditMetaModal" variant="default" size="sm">
+                                    <x-ph-icon name="gear-six" weight="bold" class="text-sm mr-1.5" />
+                                    <span>Edit Keys</span>
+                                </x-button>
+
+                                <x-button wire:click="disconnect" wire:confirm="Disconnect this Meta Cloud API account? Inbound webhooks and broadcast campaigns will be paused." variant="plain" size="sm" class="text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30">
+                                    <x-ph-icon name="link-break" weight="bold" class="text-sm mr-1" />
+                                    <span>Disconnect</span>
+                                </x-button>
+                            </div>
                         </div>
-                    </form>
-                </x-card>
+
+                        <!-- Live Telemetry Badges Matrix -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                            <!-- Quality Rating -->
+                            <div class="p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 space-y-1">
+                                <span class="text-[11px] font-semibold text-gray-400 block">Quality Rating</span>
+                                <div class="flex items-center gap-1.5">
+                                    @if(strtoupper($metaQualityRating) === 'GREEN')
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">High (Green)</span>
+                                    @elseif(strtoupper($metaQualityRating) === 'YELLOW')
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                        <span class="text-xs font-bold text-amber-600 dark:text-amber-400">Medium (Yellow)</span>
+                                    @elseif(strtoupper($metaQualityRating) === 'RED')
+                                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                        <span class="text-xs font-bold text-rose-600 dark:text-rose-400">Low (Red)</span>
+                                    @else
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Approved Live</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Messaging Tier -->
+                            <div class="p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 space-y-1">
+                                <span class="text-[11px] font-semibold text-gray-400 block">Daily Messaging Limit</span>
+                                <div class="flex items-center gap-1.5">
+                                    <x-ph-icon name="lightning" weight="fill" class="text-amber-500 text-sm" />
+                                    <span class="text-xs font-bold text-gray-900 dark:text-white">
+                                        {{ str_replace(['TIER_', '_'], ['', ' '], $metaMessagingLimit) }} / day
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Coexistence Status -->
+                            <div class="p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 space-y-1">
+                                <span class="text-[11px] font-semibold text-gray-400 block">Architecture</span>
+                                <div class="flex items-center gap-1.5">
+                                    @if($metaIsOnBizApp)
+                                        <x-ph-icon name="device-mobile" weight="duotone" class="text-primary text-sm" />
+                                        <span class="text-xs font-bold text-primary">SMB Coexistence</span>
+                                    @else
+                                        <x-ph-icon name="cloud-check" weight="duotone" class="text-emerald-500 text-sm" />
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Cloud API Line</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Webhook Subscribed Status -->
+                            <div class="p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 space-y-1">
+                                <span class="text-[11px] font-semibold text-gray-400 block">Webhook Status</span>
+                                <div class="flex items-center gap-1.5">
+                                    @if($metaWebhookSubscribed)
+                                        <x-ph-icon name="check-circle" weight="fill" class="text-emerald-500 text-sm" />
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Auto-Subscribed</span>
+                                    @else
+                                        <x-ph-icon name="check-circle" weight="fill" class="text-emerald-500 text-sm" />
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Listening (v20.0)</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </x-card>
+                @else
+                    <!-- Credentials Configuration Form Card (When Not Connected) -->
+                    <x-card bodyClass="p-6 sm:p-8 space-y-6">
+                        <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                    <x-ph-icon name="meta-logo" weight="fill" class="text-xl" />
+                                </div>
+                                <div>
+                                    <h2 class="font-bold text-base text-gray-900 dark:text-white tracking-tight">Connect WhatsApp Cloud API</h2>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Obtain these credentials from your Meta Developer Portal under WhatsApp &gt; API Setup.</p>
+                                </div>
+                            </div>
+                            <x-tag color="gray" class="text-[10px]">Not Connected</x-tag>
+                        </div>
+
+                        <form wire:submit.prevent="saveCredentials" class="space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <x-form-item label="Phone Number ID" :required="true" :error="$errors->first('phone_number_id')">
+                                    <x-input wire:model="phone_number_id" :invalid="$errors->has('phone_number_id')" placeholder="e.g. 109876543210987" class="font-mono text-xs" />
+                                </x-form-item>
+
+                                <x-form-item label="WABA ID (WhatsApp Business Account ID)" :required="true" :error="$errors->first('waba_id')">
+                                    <x-input wire:model="waba_id" :invalid="$errors->has('waba_id')" placeholder="e.g. 987654321098765" class="font-mono text-xs" />
+                                </x-form-item>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <x-form-item label="Display Phone Number (Optional — auto-fetched)">
+                                    <x-input wire:model="display_phone_number" placeholder="e.g. +1 (555) 019-2834" />
+                                </x-form-item>
+
+                                <x-form-item label="Meta App ID (Optional)">
+                                    <x-input wire:model="app_id" placeholder="e.g. 781923401928374" class="font-mono text-xs" />
+                                </x-form-item>
+                            </div>
+
+                            <x-form-item label="Permanent System User Access Token" :required="true" :error="$errors->first('access_token')">
+                                <div x-data="{ showToken: false }" class="relative">
+                                    <x-input x-bind:type="showToken ? 'text' : 'password'" wire:model="access_token" :invalid="$errors->has('access_token')" placeholder="{{ $credential ? '••••••••••••••••••••••••••••••••' : 'EAAG...' }}" class="font-mono text-xs pr-10" />
+                                    <button type="button" @click="showToken = !showToken" title="Toggle token visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                        <x-ph-icon x-show="!showToken" name="eye" weight="bold" class="text-base" />
+                                        <x-ph-icon x-show="showToken" name="eye-slash" weight="bold" class="text-base" style="display:none;" />
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-gray-400 mt-1.5 flex items-center gap-1.5">
+                                    <x-ph-icon name="shield-check" weight="duotone" class="text-sm text-emerald-500" />
+                                    Verified live with Meta Graph API and stored securely with AES encryption.
+                                </p>
+                            </x-form-item>
+
+                            <x-form-item label="Webhook Verify Token" :required="true" :error="$errors->first('verify_token')">
+                                <x-input wire:model="verify_token" :invalid="$errors->has('verify_token')" class="font-mono text-xs" />
+                            </x-form-item>
+
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+                                <div></div>
+                                <x-button type="submit" variant="solid" size="md">
+                                    <x-ph-icon name="check-circle" weight="bold" class="text-base mr-1.5" />
+                                    <span>Verify & Connect Meta Account</span>
+                                </x-button>
+                            </div>
+                        </form>
+                    </x-card>
+                @endif
 
                 <!-- Live Ping Verification & Webhook Sandbox -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -925,6 +1068,77 @@
                     </x-button>
                 </div>
             </div>
+        </div>
+    </x-modal>
+
+    <!-- Modal 2: Edit Meta Cloud API Credentials Modal -->
+    <x-modal name="edit-meta-modal" :show="$showEditMetaModal" maxWidth="lg">
+        <div class="p-6 space-y-6">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                        <x-ph-icon name="meta-logo" weight="fill" class="text-xl" />
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-gray-900 dark:text-white">Configure Meta Credentials</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Update Graph API access keys or verify token</p>
+                    </div>
+                </div>
+                <button type="button" wire:click="closeEditMetaModal" class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <x-ph-icon name="x" weight="bold" class="text-lg" />
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form wire:submit.prevent="saveCredentials" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <x-form-item label="Phone Number ID" :required="true" :error="$errors->first('phone_number_id')">
+                        <x-input wire:model="phone_number_id" :invalid="$errors->has('phone_number_id')" placeholder="e.g. 109876543210987" class="font-mono text-xs" />
+                    </x-form-item>
+
+                    <x-form-item label="WABA ID" :required="true" :error="$errors->first('waba_id')">
+                        <x-input wire:model="waba_id" :invalid="$errors->has('waba_id')" placeholder="e.g. 987654321098765" class="font-mono text-xs" />
+                    </x-form-item>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <x-form-item label="Display Phone Number (Optional)">
+                        <x-input wire:model="display_phone_number" placeholder="e.g. +1 (555) 019-2834" class="text-xs" />
+                    </x-form-item>
+
+                    <x-form-item label="Meta App ID (Optional)">
+                        <x-input wire:model="app_id" placeholder="e.g. 781923401928374" class="font-mono text-xs" />
+                    </x-form-item>
+                </div>
+
+                <x-form-item label="Permanent System User Access Token" :required="!$credential" :error="$errors->first('access_token')">
+                    <div x-data="{ showToken: false }" class="relative">
+                        <x-input x-bind:type="showToken ? 'text' : 'password'" wire:model="access_token" :invalid="$errors->has('access_token')" placeholder="{{ $credential ? '•••••••••••••••• (Leave blank to keep current)' : 'EAAG...' }}" class="font-mono text-xs pr-10" />
+                        <button type="button" @click="showToken = !showToken" title="Toggle token visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                            <x-ph-icon x-show="!showToken" name="eye" weight="bold" class="text-base" />
+                            <x-ph-icon x-show="showToken" name="eye-slash" weight="bold" class="text-base" style="display:none;" />
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-1">Leave empty to preserve your current encrypted token.</p>
+                </x-form-item>
+
+                <x-form-item label="Webhook Verify Token" :required="true" :error="$errors->first('verify_token')">
+                    <x-input wire:model="verify_token" :invalid="$errors->has('verify_token')" class="font-mono text-xs" />
+                </x-form-item>
+
+                <!-- Modal Actions -->
+                <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <x-button type="button" wire:click="closeEditMetaModal" variant="default" size="md">
+                        Cancel
+                    </x-button>
+
+                    <x-button type="submit" variant="solid" size="md">
+                        <x-ph-icon name="check-circle" weight="bold" class="text-base mr-1.5" />
+                        <span>Verify & Save Changes</span>
+                    </x-button>
+                </div>
+            </form>
         </div>
     </x-modal>
 </div>

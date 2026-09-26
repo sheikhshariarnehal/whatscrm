@@ -156,9 +156,9 @@
                 <x-nav-icon name="automations" class="w-5 h-5 flex-shrink-0 text-xl" />
                 <span>Automations</span>
             </a>
-            <a href="{{ route('devices') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
+            <a href="{{ route('devices') }}" wire:navigate @click="mobileNavOpen = false" class="menu-item menu-item-hoverable {{ request()->is('devices*') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="devices" class="w-5 h-5 flex-shrink-0 text-xl" />
-                <span>WhatsApp API</span>
+                <span>Configuration</span>
             </a>
 
             <div class="menu-title pt-3">Administration</div>
@@ -280,14 +280,14 @@
                 <span class="nav-text-expanded truncate">Automations</span>
             </a>
 
-            <!-- WhatsApp Accounts (Devices) -->
+            <!-- WhatsApp Accounts (Configuration) -->
             <a href="{{ route('devices') }}" 
                wire:navigate
-               title="WhatsApp Cloud API Accounts"
+               title="WhatsApp Configuration"
                :class="sideNavCollapse ? 'justify-center p-0 w-11 h-11 mx-auto' : 'w-full px-3.5 py-2.5'"
-               class="menu-item menu-item-hoverable {{ request()->routeIs('devices') ? 'menu-item-active' : '' }}">
+               class="menu-item menu-item-hoverable {{ request()->is('devices*') ? 'menu-item-active' : '' }}">
                 <x-nav-icon name="devices" class="w-5 h-5 flex-shrink-0 text-xl" />
-                <span class="nav-text-expanded truncate">WhatsApp API</span>
+                <span class="nav-text-expanded truncate">Configuration</span>
             </a>
 
             <!-- Section 3: Administration -->
@@ -581,8 +581,8 @@
                     <span>Automations, Bot Flows & AI</span>
                 </a>
                 <a href="{{ route('devices') }}" wire:navigate @click="searchOpen = false" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <x-ph-icon name="whatsapp-logo" weight="fill" class="text-lg text-cyan-500 shrink-0" />
-                    <span>WhatsApp Cloud API Account Settings</span>
+                    <x-ph-icon name="whatsapp-logo" weight="fill" class="text-lg text-emerald-500 shrink-0" />
+                    <span>WhatsApp Configuration (QR & Meta API)</span>
                 </a>
             </div>
         </div>

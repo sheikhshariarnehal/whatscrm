@@ -20,7 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // CRM Modules
     Route::get('inbox', \App\Livewire\Inbox\InboxPage::class)->name('inbox');
-    Route::get('devices', \App\Livewire\Devices\DeviceManager::class)->name('devices');
+    Route::get('devices/{tab?}', \App\Livewire\Devices\DeviceManager::class)->name('devices');
     Route::get('crm', \App\Livewire\Crm\KanbanBoard::class)->name('crm');
     Route::get('contacts', \App\Livewire\Contacts\ContactTable::class)->name('contacts');
     Route::get('campaigns', \App\Livewire\Campaigns\CampaignManager::class)->name('campaigns');
