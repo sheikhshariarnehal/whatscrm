@@ -59,6 +59,17 @@
             </button>
         </div>
     @endif
+    @if(session('error'))
+        <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-semibold border border-rose-200 dark:border-rose-800/50 flex items-center justify-between gap-2 shadow-xs">
+            <div class="flex items-center gap-2">
+                <x-ph-icon name="warning-circle" weight="fill" class="text-lg text-rose-500" />
+                <span>{{ session('error') }}</span>
+            </div>
+            <button type="button" @click="$el.parentElement.remove()" class="text-rose-600 hover:text-rose-800">
+                <x-ph-icon name="x" weight="bold" class="text-xs" />
+            </button>
+        </div>
+    @endif
 
     <!-- Starter KPI Metric Cards with Phosphor Duotone Icons -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -441,12 +452,56 @@
 
                                 @if ($channelType === 'meta_api')
                                     <x-form-item label="Approved Meta WhatsApp Template" :required="true">
-                                        <x-select wire:model="templateName" prefixIcon="chat-circle-dots" placeholder="Choose an approved template...">
+                                        <x-select wire:model.live="templateName" prefixIcon="chat-circle-dots" placeholder="Choose an approved template...">
                                             @foreach($templates as $tmpl)
                                                 <option value="{{ $tmpl['name'] }}">{{ $tmpl['name'] }} ({{ $tmpl['category'] }} - {{ strtoupper($tmpl['language']) }})</option>
                                             @endforeach
                                         </x-select>
                                     </x-form-item>
+
+                                    @if ($selectedTemplate)
+                                        <div class="p-4 rounded-xl bg-gray-50/90 dark:bg-gray-800/80 border border-gray-200/80 dark:border-gray-700/80 space-y-3">
+                                            <div class="flex items-center justify-between text-xs">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-gray-900 dark:text-white">Template Preview</span>
+                                                    <x-tag color="primary" class="text-[9px] uppercase font-bold">{{ $selectedTemplate['category'] ?? 'UTILITY' }}</x-tag>
+                                                </div>
+                                                <span class="text-[11px] text-gray-500 font-mono">Language: <strong class="text-gray-800 dark:text-gray-200">{{ strtoupper($selectedTemplate['language'] ?? 'EN_US') }}</strong></span>
+                                            </div>
+
+                                            @if (!empty($selectedTemplate['header']['text']))
+                                                <div class="font-bold text-xs text-gray-800 dark:text-gray-200">
+                                                    {{ $selectedTemplate['header']['text'] }}
+                                                </div>
+                                            @elseif (!empty($selectedTemplate['header']['format']) && $selectedTemplate['header']['format'] !== 'TEXT')
+                                                <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-[10px] font-semibold text-gray-600 dark:text-gray-300">
+                                                    <x-ph-icon name="image" weight="bold" />
+                                                    <span>{{ $selectedTemplate['header']['format'] }} HEADER</span>
+                                                </div>
+                                            @endif
+
+                                            <div class="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed font-sans bg-white dark:bg-gray-900/50 p-3.5 rounded-lg border border-gray-100 dark:border-gray-800 shadow-2xs">
+                                                {{ $selectedTemplate['body'] ?? '' }}
+                                            </div>
+
+                                            @if (!empty($selectedTemplate['footer']))
+                                                <div class="text-[11px] text-gray-400 italic">
+                                                    {{ $selectedTemplate['footer'] }}
+                                                </div>
+                                            @endif
+
+                                            @if (!empty($selectedTemplate['buttons']))
+                                                <div class="flex flex-wrap gap-2 pt-1 border-t border-gray-100 dark:border-gray-800">
+                                                    @foreach($selectedTemplate['buttons'] as $btn)
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-700/80 text-[11px] font-medium text-gray-700 dark:text-gray-300">
+                                                            <x-ph-icon name="arrow-square-out" weight="bold" class="text-xs text-primary" />
+                                                            <span>{{ $btn['text'] ?? 'Action' }}</span>
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 @else
                                     <x-form-item label="Custom Message Body" :required="true" :error="$errors->first('customMessageText')">
                                         <textarea wire:model.live="customMessageText" rows="5" class="input text-xs w-full font-sans" placeholder="Hello @{{name}}, here is your exclusive promo update! Use coupon VIP2026 at checkout."></textarea>
@@ -505,24 +560,52 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Map template parameters to contact attributes.</p>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <x-form-item :label="'Parameter ' . '{' . '{1}' . '}'">
-                                        <x-select wire:model="templateVariables.1" prefixIcon="brackets-curly">
-                                            <option value="name">Contact Full Name</option>
-                                            <option value="first_name">Contact First Name</option>
-                                            <option value="phone">Phone Number</option>
-                                        </x-select>
-                                    </x-form-item>
+                                @if ($channelType === 'meta_api')
+                                    @php
+                                        $activeVars = $selectedTemplate['variables'] ?? [];
+                                    @endphp
 
-                                    <x-form-item :label="'Parameter ' . '{' . '{2}' . '}'">
-                                        <x-select wire:model="templateVariables.2" prefixIcon="brackets-curly">
-                                            <option value="phone">Phone Number</option>
-                                            <option value="name">Contact Full Name</option>
-                                            <option value="company_name">Company Name</option>
-                                            <option value="order_id">Order Reference</option>
-                                        </x-select>
-                                    </x-form-item>
-                                </div>
+                                    @if(empty($activeVars))
+                                        <div class="p-6 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-center space-y-2">
+                                            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto">
+                                                <x-ph-icon name="check-circle" weight="bold" class="text-xl" />
+                                            </div>
+                                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">No Dynamic Parameters Required</h4>
+                                            <p class="text-xs text-gray-500 max-w-sm mx-auto">This approved Meta WhatsApp template contains static text without variable tags. You can proceed directly to the launch step.</p>
+                                        </div>
+                                    @else
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            @foreach($activeVars as $v)
+                                                <x-form-item :label="'Parameter ' . '{{' . $v . '}}'">
+                                                    <x-select wire:model="templateVariables.{{ $v }}" prefixIcon="brackets-curly">
+                                                        <option value="name">Contact Full Name</option>
+                                                        <option value="first_name">Contact First Name</option>
+                                                        <option value="phone">Phone Number</option>
+                                                    </x-select>
+                                                </x-form-item>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <x-form-item :label="'Parameter ' . '{' . '{1}' . '}'">
+                                            <x-select wire:model="templateVariables.1" prefixIcon="brackets-curly">
+                                                <option value="name">Contact Full Name</option>
+                                                <option value="first_name">Contact First Name</option>
+                                                <option value="phone">Phone Number</option>
+                                            </x-select>
+                                        </x-form-item>
+
+                                        <x-form-item :label="'Parameter ' . '{' . '{2}' . '}'">
+                                            <x-select wire:model="templateVariables.2" prefixIcon="brackets-curly">
+                                                <option value="phone">Phone Number</option>
+                                                <option value="name">Contact Full Name</option>
+                                                <option value="company_name">Company Name</option>
+                                                <option value="order_id">Order Reference</option>
+                                            </x-select>
+                                        </x-form-item>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 
@@ -676,9 +759,11 @@
                     <h3 class="text-base font-bold text-gray-900 dark:text-white">Approved Meta WhatsApp Templates</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Pre-approved message templates verified through Meta WhatsApp Business Manager.</p>
                 </div>
-                <x-button wire:click="syncTemplates" variant="solid" size="sm">
-                    <x-ph-icon name="arrows-clockwise" weight="bold" class="text-sm mr-1.5" />
-                    <span>Sync Meta Templates</span>
+                <x-button wire:click="syncTemplates" wire:loading.attr="disabled" variant="solid" size="sm">
+                    <x-ph-icon wire:loading.remove wire:target="syncTemplates" name="arrows-clockwise" weight="bold" class="text-sm mr-1.5" />
+                    <x-ph-icon wire:loading wire:target="syncTemplates" name="spinner" weight="bold" class="text-sm mr-1.5 animate-spin" />
+                    <span wire:loading.remove wire:target="syncTemplates">Sync Meta Templates</span>
+                    <span wire:loading wire:target="syncTemplates">Syncing with Meta...</span>
                 </x-button>
             </div>
 
@@ -697,9 +782,48 @@
                                 </x-tag>
                             </div>
 
-                            <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 text-xs text-gray-700 dark:text-gray-300 leading-relaxed font-sans">
+                            @if (!empty($tmpl['header']['text']))
+                                <div class="font-bold text-xs text-gray-900 dark:text-white">
+                                    {{ $tmpl['header']['text'] }}
+                                </div>
+                            @elseif (!empty($tmpl['header']['format']) && $tmpl['header']['format'] !== 'TEXT')
+                                <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-semibold text-gray-600 dark:text-gray-300">
+                                    <x-ph-icon name="image" weight="bold" />
+                                    <span>{{ $tmpl['header']['format'] }} HEADER</span>
+                                </div>
+                            @endif
+
+                            <div class="p-4 rounded-xl bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 text-xs text-gray-700 dark:text-gray-300 leading-relaxed font-sans whitespace-pre-line">
                                 {{ $tmpl['body'] }}
                             </div>
+
+                            @if (!empty($tmpl['footer']))
+                                <div class="text-[11px] text-gray-400 italic">
+                                    {{ $tmpl['footer'] }}
+                                </div>
+                            @endif
+
+                            @if (!empty($tmpl['buttons']))
+                                <div class="flex flex-wrap gap-1.5 pt-1 border-t border-gray-100 dark:border-gray-800">
+                                    @foreach($tmpl['buttons'] as $btn)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700/80 text-[10px] font-medium text-gray-600 dark:text-gray-300">
+                                            <x-ph-icon name="arrow-square-out" weight="bold" class="text-xs text-primary" />
+                                            <span>{{ $btn['text'] ?? 'Action' }}</span>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if (!empty($tmpl['variables']))
+                                <div class="flex items-center gap-1.5 flex-wrap pt-1">
+                                    <span class="text-[10px] font-semibold text-gray-400">Parameters:</span>
+                                    @foreach($tmpl['variables'] as $v)
+                                        <span class="px-1.5 py-0.5 rounded bg-primary-subtle text-primary text-[10px] font-mono font-bold">
+                                            &#123;&#123;{{ $v }}&#125;&#125;
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
 
                         <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500">
@@ -707,7 +831,7 @@
                                 <x-ph-icon name="translate" weight="bold" class="text-xs" />
                                 <span>Language: <strong class="text-gray-800 dark:text-gray-200">{{ strtoupper($tmpl['language']) }}</strong></span>
                             </span>
-                            <x-button wire:click="$set('templateName', '{{ $tmpl['name'] }}'); setTab('create'); setWizardStep(3);" variant="default" size="xs">
+                            <x-button wire:click="selectTemplateForBroadcast('{{ $tmpl['name'] }}')" variant="default" size="xs">
                                 <x-ph-icon name="arrow-square-out" weight="bold" class="text-xs mr-1" />
                                 <span>Use in Broadcast</span>
                             </x-button>

@@ -146,6 +146,7 @@ class DeviceManager extends Component
             $this->metaPlatformType      = $settings['platform_type'] ?? 'CLOUD_API';
             $this->metaWebhookSubscribed = (bool) ($settings['webhook_subscribed'] ?? false);
             $this->metaLastSynced        = $settings['last_synced_at'] ?? null;
+            $this->metaTemplates         = $settings['templates'] ?? [];
             $this->metaConnected         = true;
         } else {
             $this->metaConnected = false;
@@ -700,6 +701,13 @@ class DeviceManager extends Component
         $displayPhone  = $metaData['display_phone_number'] ?: $this->display_phone_number;
         $qualityRating = $metaData['quality_rating'] ?: 'GREEN';
 
+        // Auto-detect matching WABA ID for the phone number if available
+        $detectedWaba = CloudApiService::findWabaForPhoneNumber($phoneNumberId, $token);
+        if ($detectedWaba && $detectedWaba !== $wabaId) {
+            $wabaId = $detectedWaba;
+            $this->waba_id = $detectedWaba;
+        }
+
         // 2. Auto-subscribe WABA to Webhooks
         $subRes = CloudApiService::subscribeWaba($wabaId, $token);
 
@@ -792,27 +800,20 @@ class DeviceManager extends Component
         $service = CloudApiService::forWorkspace($this->workspaceId);
 
         if ($service) {
-            $res = $service->getMessageTemplates();
+            $res = $service->syncAndSaveTemplates();
             if ($res['success'] ?? false) {
-                $templates = $res['data']['data'] ?? [];
-                $count = count($templates);
-
-                if ($this->credential) {
-                    $settings = $this->credential->settings ?? [];
-                    $settings['templates_count'] = $count;
-                    $settings['templates_last_synced'] = now()->toIso8601String();
-                    $this->credential->update(['settings' => $settings]);
-                    $this->metaTemplates = array_slice($templates, 0, 10);
-                }
-
+                $count = $res['count'] ?? 0;
+                $this->metaTemplates = $res['templates'] ?? [];
                 $this->sync_status = "Successfully synced {$count} template(s) directly from Meta Business Account.";
                 session()->flash('message', $this->sync_status);
+                return;
+            } else {
+                session()->flash('error', 'Failed to sync templates: ' . ($res['error'] ?? 'Unknown error'));
                 return;
             }
         }
 
-        $this->sync_status = 'Templates refreshed! Pre-approved standard business templates loaded into campaign builder.';
-        session()->flash('message', $this->sync_status);
+        session()->flash('error', 'No Meta Cloud API credentials connected for this workspace.');
     }
 
     public function simulateInboundWebhook()

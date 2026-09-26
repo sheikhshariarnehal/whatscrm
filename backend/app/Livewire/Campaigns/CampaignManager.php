@@ -7,6 +7,7 @@ use App\Models\Campaign;
 use App\Models\CampaignLog;
 use App\Models\Contact;
 use App\Models\Instance;
+use App\Models\MetaCredential;
 use App\Models\Phonebook;
 use App\Models\Tag;
 use App\Models\Workspace;
@@ -80,6 +81,15 @@ class CampaignManager extends Component
         if (!empty($paired)) {
             $this->qrDeviceId = $paired[0]['id'] ?? null;
         }
+
+        // Initialize template settings from live or synced Meta templates
+        $templates = $this->getTemplates();
+        if (!empty($templates)) {
+            $first = $templates[0];
+            $this->templateName = $first['name'];
+            $this->templateLanguage = $first['language'] ?? 'en_US';
+            $this->initTemplateVariables($first);
+        }
     }
 
     public function setTab(string $tab)
@@ -107,6 +117,56 @@ class CampaignManager extends Component
         if ($this->wizardStep > 1) {
             $this->wizardStep--;
         }
+    }
+
+    public function getTemplates(): array
+    {
+        $service = CloudApiService::forWorkspace($this->workspaceId);
+        if ($service) {
+            return $service->getCachedOrSavedTemplates();
+        }
+
+        $credential = MetaCredential::where('workspace_id', $this->workspaceId)->first();
+        if ($credential && !empty($credential->settings['templates'])) {
+            return $credential->settings['templates'];
+        }
+
+        return CloudApiService::getDefaultTemplates();
+    }
+
+    public function initTemplateVariables(array $template): void
+    {
+        $vars = $template['variables'] ?? [];
+        $defaults = ['1' => 'name', '2' => 'phone', '3' => 'first_name'];
+        $mapped = [];
+        foreach ($vars as $v) {
+            $mapped[$v] = $defaults[$v] ?? 'name';
+        }
+        $this->templateVariables = $mapped;
+    }
+
+    public function updatedTemplateName($value): void
+    {
+        $templates = $this->getTemplates();
+        $selected = collect($templates)->firstWhere('name', $value);
+        if ($selected) {
+            $this->templateLanguage = $selected['language'] ?? 'en_US';
+            $this->initTemplateVariables($selected);
+        }
+    }
+
+    public function selectTemplateForBroadcast(string $name): void
+    {
+        $templates = $this->getTemplates();
+        $selected = collect($templates)->firstWhere('name', $name);
+        if ($selected) {
+            $this->channelType = 'meta_api';
+            $this->templateName = $selected['name'];
+            $this->templateLanguage = $selected['language'] ?? 'en_US';
+            $this->initTemplateVariables($selected);
+        }
+        $this->activeTab = 'create';
+        $this->wizardStep = 3;
     }
 
     protected function validateCurrentStep(int $step)
@@ -326,16 +386,27 @@ class CampaignManager extends Component
 
     public function syncTemplates()
     {
-        $cloudService = CloudApiService::forWorkspace($this->workspaceId);
-        if ($cloudService) {
-            $res = $cloudService->getMessageTemplates();
+        $service = CloudApiService::forWorkspace($this->workspaceId);
+        if ($service) {
+            $res = $service->syncAndSaveTemplates();
             if ($res['success'] ?? false) {
-                $count = count($res['data']['data'] ?? []);
+                $count = $res['count'] ?? 0;
+                $templates = $res['templates'] ?? [];
+                if (!empty($templates)) {
+                    $selected = collect($templates)->firstWhere('name', $this->templateName) ?? $templates[0];
+                    $this->templateName = $selected['name'];
+                    $this->templateLanguage = $selected['language'] ?? 'en_US';
+                    $this->initTemplateVariables($selected);
+                }
                 session()->flash('success', "Meta approved templates synced successfully ({$count} found).");
+                return;
+            } else {
+                session()->flash('error', 'Failed to sync templates: ' . ($res['error'] ?? 'Unknown error'));
                 return;
             }
         }
-        session()->flash('success', 'Meta WhatsApp approved templates synchronized successfully.');
+
+        session()->flash('error', 'Meta Cloud API is not connected. Please configure your credentials under Configuration.');
     }
 
     public function exportLogsCsv(): StreamedResponse
@@ -405,29 +476,8 @@ class CampaignManager extends Component
         }
 
         // Sample & Synced Meta Templates
-        $templates = [
-            [
-                'name' => 'sample_promo_2026',
-                'language' => 'en',
-                'category' => 'MARKETING',
-                'status' => 'APPROVED',
-                'body' => 'Hello {{1}}, enjoy exclusive 20% off with promo code VIP2026. Reply STOP to opt out.',
-            ],
-            [
-                'name' => 'order_status_update',
-                'language' => 'en',
-                'category' => 'UTILITY',
-                'status' => 'APPROVED',
-                'body' => 'Hi {{1}}, your order #{{2}} is currently being packaged and will ship shortly!',
-            ],
-            [
-                'name' => 'service_appointment_reminder',
-                'language' => 'en',
-                'category' => 'UTILITY',
-                'status' => 'APPROVED',
-                'body' => 'Dear {{1}}, this is a friendly reminder for your appointment scheduled for {{2}}. Reply 1 to confirm.',
-            ],
-        ];
+        $templates = $this->getTemplates();
+        $selectedTemplate = collect($templates)->firstWhere('name', $this->templateName) ?? ($templates[0] ?? null);
 
         // Delivery Logs query with search & filter
         $logsQuery = CampaignLog::whereHas('campaign', fn($q) => $q->where('workspace_id', $this->workspaceId))
@@ -458,6 +508,7 @@ class CampaignManager extends Component
             'phonebooks' => $phonebooks,
             'tags' => $tags,
             'templates' => $templates,
+            'selectedTemplate' => $selectedTemplate,
             'logs' => $logs,
             'pairedDevices' => $pairedDevices,
             'hasActiveCampaigns' => $hasActiveCampaigns,

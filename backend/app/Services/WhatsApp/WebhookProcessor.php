@@ -11,6 +11,7 @@ use App\Models\Message;
 use App\Models\MetaCredential;
 use App\Scopes\WorkspaceScope;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class WebhookProcessor
@@ -60,7 +61,7 @@ class WebhookProcessor
                     $contactsMeta = collect($value['contacts'] ?? [])->keyBy('wa_id');
 
                     foreach ($value['messages'] as $messageData) {
-                        $this->handleInboundMessage($workspaceId, $messageData, $contactsMeta);
+                        $this->handleInboundMessage($workspaceId, $messageData, $contactsMeta, $credential);
                     }
                 }
 
@@ -74,10 +75,16 @@ class WebhookProcessor
         }
     }
 
-    protected function handleInboundMessage(int $workspaceId, array $msg, $contactsMeta): void
+    protected function handleInboundMessage(int $workspaceId, array $msg, $contactsMeta, ?MetaCredential $credential = null): void
     {
         $senderMobile = '+' . preg_replace('/[^0-9]/', '', $msg['from'] ?? '');
-        $senderName = $contactsMeta->get($msg['from'] ?? '')['profile']['name'] ?? $senderMobile;
+        $waId         = $msg['from'] ?? '';
+        $contactMeta  = $contactsMeta->get($waId) ?? [];
+        $senderName   = $contactMeta['profile']['name'] ?? $senderMobile;
+
+        // Extract profile photo directly from webhook payload (delivered on some API tiers)
+        $webhookProfilePicture = $contactMeta['profile']['picture'] ?? null;
+
         $messageId = $msg['id'] ?? null;
 
         // Prevent duplicate processing
@@ -89,7 +96,7 @@ class WebhookProcessor
         $contact = Contact::withoutGlobalScope(WorkspaceScope::class)->firstOrCreate(
             ['workspace_id' => $workspaceId, 'mobile' => $senderMobile],
             [
-                'name' => $senderName,
+                'name'   => $senderName,
                 'source' => 'whatsapp_inbound',
             ]
         );
@@ -98,13 +105,17 @@ class WebhookProcessor
         $conversation = Conversation::withoutGlobalScope(WorkspaceScope::class)->firstOrCreate(
             ['workspace_id' => $workspaceId, 'chat_id' => $senderMobile],
             [
-                'contact_id' => $contact->id,
-                'channel' => 'whatsapp_cloud',
-                'sender_name' => $senderName,
+                'contact_id'    => $contact->id,
+                'channel'       => 'whatsapp_cloud',
+                'sender_name'   => $senderName,
                 'sender_mobile' => $senderMobile,
-                'status' => 'open',
+                'status'        => 'open',
             ]
         );
+
+        // ── Sync WhatsApp Profile Photo ──────────────────────────────────────
+        $this->syncProfilePhoto($conversation, $contact, $webhookProfilePicture, $credential);
+        // ────────────────────────────────────────────────────────────────────
 
         // Determine message type & content
         $type = $msg['type'] ?? 'text';
@@ -185,6 +196,68 @@ class WebhookProcessor
         }
     }
 
+    /**
+     * Sync the WhatsApp profile photo for a conversation/contact.
+     *
+     * Priority order:
+     *  1. Photo URL delivered directly in the webhook payload contacts[].profile.picture
+     *  2. Photo fetched live from Meta Graph API (cached per-contact for 24 hours)
+     *
+     * The photo is only updated when:
+     *  - The conversation has no profile_url yet, OR
+     *  - A newer URL has been delivered via the webhook payload
+     *
+     * Uses a 24h cache key per contact number to avoid hammering the Graph API.
+     */
+    protected function syncProfilePhoto(
+        Conversation  $conversation,
+        Contact       $contact,
+        ?string       $webhookProfilePicture,
+        ?MetaCredential $credential
+    ): void {
+        $cacheKey = "wa_profile_photo_{$contact->mobile}";
+
+        // If the webhook delivered a photo URL, use it immediately
+        if ($webhookProfilePicture && filter_var($webhookProfilePicture, FILTER_VALIDATE_URL)) {
+            $conversation->update(['profile_url' => $webhookProfilePicture]);
+            $contact->update(['avatar_url' => $webhookProfilePicture]);
+            Cache::put($cacheKey, $webhookProfilePicture, now()->addHours(24));
+            return;
+        }
+
+        // Skip if the conversation already has a profile photo saved
+        if (!empty($conversation->profile_url)) {
+            return;
+        }
+
+        // Skip if we already tried and failed within the last 24 hours
+        if (Cache::has($cacheKey)) {
+            $cached = Cache::get($cacheKey);
+            if ($cached && !empty($conversation->profile_url)) {
+                return;
+            }
+        }
+
+        // Attempt to fetch live from Meta Graph API
+        if ($credential) {
+            try {
+                $service = new CloudApiService($credential);
+                $url = $service->fetchContactProfilePhotoUrl($contact->mobile);
+
+                // Cache result (even null = "we tried") for 24 hours to rate-limit API calls
+                Cache::put($cacheKey, $url ?? 'none', now()->addHours(24));
+
+                if ($url) {
+                    $conversation->update(['profile_url' => $url]);
+                    $contact->update(['avatar_url' => $url]);
+                    Log::info("Profile photo synced for {$contact->mobile}");
+                }
+            } catch (\Throwable $e) {
+                Log::debug('syncProfilePhoto failed: ' . $e->getMessage());
+            }
+        }
+    }
+
     protected function handleStatusUpdate(int $workspaceId, array $statusData): void
     {
         $messageId = $statusData['id'] ?? null;
@@ -203,7 +276,18 @@ class WebhookProcessor
             return;
         }
 
-        $message->update(['status' => $status]);
+        $updates = ['status' => $status];
+        if (!empty($statusData['errors'])) {
+            $existingMeta = $message->metadata ?? [];
+            $errorDetails = $statusData['errors'][0]['error_data']['details'] ?? $statusData['errors'][0]['message'] ?? 'Delivery failed';
+            $updates['metadata'] = array_merge($existingMeta, [
+                'errors' => $statusData['errors'],
+                'failed_reason' => $errorDetails,
+                'error' => $errorDetails,
+            ]);
+        }
+
+        $message->update($updates);
 
         event(new MessageStatusUpdated($message));
     }
