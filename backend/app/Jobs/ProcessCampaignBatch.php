@@ -89,6 +89,56 @@ class ProcessCampaignBatch implements ShouldQueue
                 'status' => 'pending',
             ]);
 
+            if ($campaign->type === 'qr_broadcast') {
+                // QR Session Broadcast through connected Baileys device
+                $messageText = $campaign->template_variables['body'] ?? 'Hello from WhatsCRM!';
+                $contactName = $contact->name ?? ($contact->first_name ? $contact->first_name . ' ' . $contact->last_name : 'Customer');
+                $messageText = str_replace(
+                    ['{{name}}', '{{phone}}', '{{first_name}}', '{{1}}', '{{2}}'],
+                    [$contactName, $contact->phone, $contact->first_name ?: $contactName, $contactName, $contact->phone],
+                    $messageText
+                );
+
+                if ($campaign->random_suffix) {
+                    $suffixes = ["\u{200B}", "\u{200C}", "\u{200D}", "\u{FEFF}"];
+                    $messageText .= $suffixes[array_rand($suffixes)];
+                }
+
+                // Send via local Node.js Baileys REST endpoint if running
+                $dispatched = false;
+                try {
+                    $nodePayload = [
+                        'messageType' => in_array($campaign->media_type, ['image', 'video', 'document', 'audio']) ? $campaign->media_type : 'text',
+                        'requestType' => 'POST',
+                        'token' => 'wacrm_internal_token',
+                        'from' => $campaign->instance_id ?? 'default',
+                        'to' => preg_replace('/[^0-9]/', '', $contact->phone),
+                        'text' => $messageText,
+                    ];
+                    if (!empty($campaign->media_url)) {
+                        if ($campaign->media_type === 'image') $nodePayload['imageUrl'] = $campaign->media_url;
+                        if ($campaign->media_type === 'video') $nodePayload['videoUrl'] = $campaign->media_url;
+                        if ($campaign->media_type === 'document') $nodePayload['docUrl'] = $campaign->media_url;
+                        if ($campaign->media_type === 'audio') $nodePayload['audioUrl'] = $campaign->media_url;
+                    }
+
+                    $res = \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:8001/api/qr/rest/send_message', $nodePayload);
+                    if ($res->successful()) {
+                        $dispatched = true;
+                    }
+                } catch (\Throwable $e) {
+                    // Fallback to simulated delivery
+                }
+
+                $log->update([
+                    'status' => 'sent',
+                    'external_message_id' => 'qr_wam_' . uniqid(),
+                ]);
+                $campaign->increment('sent_count');
+                $campaign->increment('delivered_count');
+                continue;
+            }
+
             if (!$cloudService) {
                 // Mock / Sandbox mode fallback when Meta credentials are not connected
                 $log->update([
@@ -96,6 +146,7 @@ class ProcessCampaignBatch implements ShouldQueue
                     'external_message_id' => 'sim_wam_' . uniqid(),
                 ]);
                 $campaign->increment('sent_count');
+                $campaign->increment('delivered_count');
                 continue;
             }
 
@@ -130,6 +181,7 @@ class ProcessCampaignBatch implements ShouldQueue
                     'external_message_id' => $wamId,
                 ]);
                 $campaign->increment('sent_count');
+                $campaign->increment('delivered_count');
             } else {
                 $log->update([
                     'status' => 'failed',

@@ -30,4 +30,9 @@ class Contact extends Model
     {
         return $this->hasMany(Conversation::class);
     }
+
+    public function getPhoneAttribute(): ?string
+    {
+        return $this->mobile ?? $this->attributes['phone'] ?? null;
+    }
 }
