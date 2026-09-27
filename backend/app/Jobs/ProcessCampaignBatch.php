@@ -39,14 +39,16 @@ class ProcessCampaignBatch implements ShouldQueue
             return;
         }
 
-        $campaign->update([
-            'status' => 'processing',
-            'started_at' => $campaign->started_at ?? now(),
-        ]);
+        if ($campaign->status !== 'processing') {
+            $campaign->update([
+                'status' => 'processing',
+                'started_at' => $campaign->started_at ?? now(),
+            ]);
+        }
 
         $cloudService = CloudApiService::forWorkspace($campaign->workspace_id);
 
-        // Fetch contacts based on target_type
+        // Fetch contacts query based on target_type
         $contactsQuery = Contact::withoutGlobalScopes()
             ->where('workspace_id', $campaign->workspace_id);
 
@@ -58,9 +60,9 @@ class ProcessCampaignBatch implements ShouldQueue
             });
         }
 
-        $contacts = $contactsQuery->get();
+        $totalContacts = (clone $contactsQuery)->count();
 
-        if ($contacts->isEmpty()) {
+        if ($totalContacts === 0) {
             $campaign->update([
                 'total_recipients' => 0,
                 'status' => 'completed',
@@ -69,108 +71,99 @@ class ProcessCampaignBatch implements ShouldQueue
             return;
         }
 
-        $campaign->update(['total_recipients' => $contacts->count()]);
+        if ($campaign->total_recipients !== $totalContacts) {
+            $campaign->update(['total_recipients' => $totalContacts]);
+        }
 
         // Prevent duplicate sends if campaign was paused and resumed
         $alreadyLoggedContactIds = CampaignLog::where('campaign_id', $campaign->id)
-            ->whereIn('status', ['sent', 'delivered', 'read'])
+            ->whereIn('status', ['sent', 'delivered', 'read', 'failed'])
             ->pluck('contact_id')
             ->toArray();
 
-        foreach ($contacts as $index => $contact) {
-            // Check if campaign was paused during processing
-            $freshStatus = Campaign::withoutGlobalScopes()->where('id', $campaign->id)->value('status');
-            if ($freshStatus === 'paused') {
-                break;
-            }
+        // Get the NEXT unsent contact in sequence
+        $nextContact = (clone $contactsQuery)
+            ->whereNotIn('id', $alreadyLoggedContactIds)
+            ->first();
 
-            if (in_array($contact->id, $alreadyLoggedContactIds)) {
-                continue;
-            }
-
-            // Anti-ban randomized delay between messages (after first contact)
-            if ($index > 0 && $campaign->delay_min > 0) {
-                $minSec = min($campaign->delay_min, $campaign->delay_max ?? $campaign->delay_min);
-                $maxSec = max($campaign->delay_min, $campaign->delay_max ?? $campaign->delay_min);
-                $delaySec = rand($minSec, $maxSec);
-                if ($delaySec > 0) {
-                    sleep($delaySec);
-                }
-            }
-
-            // Resolve dynamic variables
-            $variables = $this->resolveVariables($campaign->template_variables ?? [], $contact);
-
-            $log = CampaignLog::create([
-                'workspace_id' => $campaign->workspace_id,
-                'campaign_id' => $campaign->id,
-                'contact_id' => $contact->id,
-                'phone' => $contact->phone,
-                'variables_sent' => $variables,
-                'status' => 'pending',
+        if (!$nextContact) {
+            // All recipients have been processed
+            $campaign->update([
+                'status' => 'completed',
+                'completed_at' => now(),
             ]);
+            return;
+        }
 
-            if ($campaign->type === 'qr_broadcast') {
-                // QR Session Broadcast through connected Baileys device
-                $messageText = $campaign->template_variables['body'] ?? 'Hello from WhatsCRM!';
-                $contactName = $contact->name ?? ($contact->first_name ? $contact->first_name . ' ' . $contact->last_name : 'Customer');
-                $messageText = str_replace(
-                    ['{{name}}', '{{phone}}', '{{first_name}}', '{{1}}', '{{2}}'],
-                    [$contactName, $contact->phone, $contact->first_name ?: $contactName, $contactName, $contact->phone],
-                    $messageText
-                );
+        // Check if campaign was paused while this job was queued
+        $freshStatus = Campaign::withoutGlobalScopes()->where('id', $campaign->id)->value('status');
+        if ($freshStatus === 'paused') {
+            return;
+        }
 
-                if ($campaign->random_suffix) {
-                    $suffixes = ["\u{200B}", "\u{200C}", "\u{200D}", "\u{FEFF}"];
-                    $messageText .= $suffixes[array_rand($suffixes)];
-                }
+        // Resolve dynamic variables for this contact
+        $variables = $this->resolveVariables($campaign->template_variables ?? [], $nextContact);
 
-                // Send via local Node.js Baileys REST endpoint if running
-                $dispatched = false;
-                try {
-                    $nodePayload = [
-                        'messageType' => in_array($campaign->media_type, ['image', 'video', 'document', 'audio']) ? $campaign->media_type : 'text',
-                        'requestType' => 'POST',
-                        'token' => 'wacrm_internal_token',
-                        'from' => $campaign->instance_id ?? 'default',
-                        'to' => preg_replace('/[^0-9]/', '', $contact->phone),
-                        'text' => $messageText,
-                    ];
-                    if (!empty($campaign->media_url)) {
-                        if ($campaign->media_type === 'image') $nodePayload['imageUrl'] = $campaign->media_url;
-                        if ($campaign->media_type === 'video') $nodePayload['videoUrl'] = $campaign->media_url;
-                        if ($campaign->media_type === 'document') $nodePayload['docUrl'] = $campaign->media_url;
-                        if ($campaign->media_type === 'audio') $nodePayload['audioUrl'] = $campaign->media_url;
-                    }
+        $log = CampaignLog::create([
+            'workspace_id' => $campaign->workspace_id,
+            'campaign_id' => $campaign->id,
+            'contact_id' => $nextContact->id,
+            'phone' => $nextContact->phone,
+            'variables_sent' => $variables,
+            'status' => 'pending',
+        ]);
 
-                    $res = \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:8001/api/qr/rest/send_message', $nodePayload);
-                    if ($res->successful()) {
-                        $dispatched = true;
-                    }
-                } catch (\Throwable $e) {
-                    // Fallback to simulated delivery
-                }
+        if ($campaign->type === 'qr_broadcast') {
+            // QR Session Broadcast through connected Baileys device
+            $messageText = $campaign->template_variables['body'] ?? 'Hello from WhatsCRM!';
+            $contactName = $nextContact->name ?? ($nextContact->first_name ? $nextContact->first_name . ' ' . $nextContact->last_name : 'Customer');
+            $messageText = str_replace(
+                ['{{name}}', '{{phone}}', '{{first_name}}', '{{1}}', '{{2}}'],
+                [$contactName, $nextContact->phone, $nextContact->first_name ?: $contactName, $contactName, $nextContact->phone],
+                $messageText
+            );
 
-                $log->update([
-                    'status' => 'sent',
-                    'external_message_id' => 'qr_wam_' . uniqid(),
-                ]);
-                $campaign->increment('sent_count');
-                $campaign->increment('delivered_count');
-                continue;
+            if ($campaign->random_suffix) {
+                $suffixes = ["\u{200B}", "\u{200C}", "\u{200D}", "\u{FEFF}"];
+                $messageText .= $suffixes[array_rand($suffixes)];
             }
 
-            if (!$cloudService) {
-                // Mock / Sandbox mode fallback when Meta credentials are not connected
-                $log->update([
-                    'status' => 'sent',
-                    'external_message_id' => 'sim_wam_' . uniqid(),
-                ]);
-                $campaign->increment('sent_count');
-                $campaign->increment('delivered_count');
-                continue;
+            try {
+                $nodePayload = [
+                    'messageType' => in_array($campaign->media_type, ['image', 'video', 'document', 'audio']) ? $campaign->media_type : 'text',
+                    'requestType' => 'POST',
+                    'token' => 'wacrm_internal_token',
+                    'from' => $campaign->instance_id ?? 'default',
+                    'to' => preg_replace('/[^0-9]/', '', $nextContact->phone),
+                    'text' => $messageText,
+                ];
+                if (!empty($campaign->media_url)) {
+                    if ($campaign->media_type === 'image') $nodePayload['imageUrl'] = $campaign->media_url;
+                    if ($campaign->media_type === 'video') $nodePayload['videoUrl'] = $campaign->media_url;
+                    if ($campaign->media_type === 'document') $nodePayload['docUrl'] = $campaign->media_url;
+                    if ($campaign->media_type === 'audio') $nodePayload['audioUrl'] = $campaign->media_url;
+                }
+
+                \Illuminate\Support\Facades\Http::timeout(3)->post('http://127.0.0.1:8001/api/qr/rest/send_message', $nodePayload);
+            } catch (\Throwable $e) {
+                // Fallback to simulated delivery
             }
 
+            $log->update([
+                'status' => 'sent',
+                'external_message_id' => 'qr_wam_' . uniqid(),
+            ]);
+            $campaign->increment('sent_count');
+            $campaign->increment('delivered_count');
+        } elseif (!$cloudService) {
+            // Mock / Sandbox mode fallback when Meta credentials are not connected
+            $log->update([
+                'status' => 'sent',
+                'external_message_id' => 'sim_wam_' . uniqid(),
+            ]);
+            $campaign->increment('sent_count');
+            $campaign->increment('delivered_count');
+        } else {
             // Format Meta Cloud API template parameters
             $bodyParameters = [];
             foreach ($variables as $val) {
@@ -194,7 +187,7 @@ class ProcessCampaignBatch implements ShouldQueue
             }
 
             $result = $cloudService->sendTemplateMessage(
-                $contact->phone,
+                $nextContact->phone,
                 $campaign->template_name,
                 $campaign->template_language ?? 'en',
                 $components
@@ -209,17 +202,42 @@ class ProcessCampaignBatch implements ShouldQueue
                 $campaign->increment('sent_count');
                 $campaign->increment('delivered_count');
             } else {
+                $errorMsg = $result['error'] ?? 'API dispatch failed';
                 $log->update([
                     'status' => 'failed',
-                    'error_message' => $result['error'] ?? 'API dispatch failed',
+                    'error_message' => $errorMsg,
                 ]);
                 $campaign->increment('failed_count');
+
+                // Auto-pause campaign if Meta returns an invalid/expired token error
+                if (str_contains(strtolower($errorMsg), 'invalid oauth') || 
+                    str_contains(strtolower($errorMsg), 'access token') || 
+                    str_contains(strtolower($errorMsg), 'session has expired') ||
+                    str_contains(strtolower($errorMsg), 'code 190')) {
+                    Log::error("Campaign {$campaign->id} paused due to Meta Authentication error: {$errorMsg}");
+                    $campaign->update(['status' => 'paused']);
+                    return;
+                }
             }
         }
 
-        // Check if all finished
-        $freshStatus = Campaign::withoutGlobalScopes()->where('id', $campaign->id)->value('status');
-        if ($freshStatus !== 'paused') {
+        // Check if more contacts remain to be processed
+        $hasMore = (clone $contactsQuery)
+            ->whereNotIn('id', array_merge($alreadyLoggedContactIds, [$nextContact->id]))
+            ->exists();
+
+        if ($hasMore) {
+            // Re-verify not paused before scheduling next contact
+            $freshStatus = Campaign::withoutGlobalScopes()->where('id', $campaign->id)->value('status');
+            if ($freshStatus !== 'paused') {
+                $minSec = max(0, min($campaign->delay_min ?? 0, $campaign->delay_max ?? $campaign->delay_min ?? 0));
+                $maxSec = max(0, max($campaign->delay_min ?? 0, $campaign->delay_max ?? $campaign->delay_min ?? 0));
+                $delaySec = $maxSec > 0 ? rand($minSec, $maxSec) : 0;
+
+                self::dispatch($campaign->id)->delay(now()->addSeconds($delaySec));
+                \App\Livewire\Campaigns\CampaignManager::ensureQueueWorkerRunning();
+            }
+        } else {
             $campaign->update([
                 'status' => 'completed',
                 'completed_at' => now(),

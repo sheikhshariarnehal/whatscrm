@@ -398,9 +398,14 @@ class CampaignManager extends Component
 
             if (PHP_OS_FAMILY === 'Windows') {
                 $basePath = base_path();
-                pclose(popen("start /B php \"{$basePath}\\artisan\" queue:work --stop-when-empty > NUL 2>&1", "r"));
+                pclose(popen("start /B php \"{$basePath}\\artisan\" queue:work --max-time=55 --sleep=2 > NUL 2>&1", "r"));
             } else {
-                pclose(popen('php ' . base_path('artisan') . ' queue:work --stop-when-empty > /dev/null 2>&1 &', 'r'));
+                $php = defined('PHP_BINARY') && file_exists(PHP_BINARY) ? PHP_BINARY : 'php';
+                if (file_exists('/opt/cpanel/ea-php83/root/usr/bin/php')) {
+                    $php = '/opt/cpanel/ea-php83/root/usr/bin/php';
+                }
+                $artisan = base_path('artisan');
+                pclose(popen("{$php} \"{$artisan}\" queue:work --max-time=55 --sleep=2 > /dev/null 2>&1 &", 'r'));
             }
         } catch (\Throwable $e) {
             Log::warning('Could not auto-start queue worker: ' . $e->getMessage());
