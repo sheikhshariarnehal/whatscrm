@@ -509,7 +509,7 @@
         <!-- ========================================== -->
         <!-- 4. MAIN WORKSPACE CONTENT CONTAINER        -->
         <!-- ========================================== -->
-        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden relative">
+        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden relative [scrollbar-gutter:stable]" style="scrollbar-gutter: stable;">
             {{ $slot }}
         </main>
     </div>

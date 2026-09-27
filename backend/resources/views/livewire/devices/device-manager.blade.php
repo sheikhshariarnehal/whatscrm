@@ -105,7 +105,7 @@
     </div>
 
     <!-- Main Floating Card Container -->
-    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21] overflow-hidden">
+    <div class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21] overflow-hidden">
 
         <div class="p-6 flex-1 overflow-y-auto bg-white dark:bg-[#111b21]">
             <!-- ============================================================== -->

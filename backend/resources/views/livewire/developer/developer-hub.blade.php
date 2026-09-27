@@ -60,7 +60,7 @@
     </div>
 
     <!-- Main Floating Card Container -->
-    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21]">
+    <div class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21]">
 
         <!-- TAB 1: API KEYS -->
         @if($activeTab === 'tokens')
