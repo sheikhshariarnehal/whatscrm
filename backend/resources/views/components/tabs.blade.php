@@ -1,11 +1,12 @@
 @props([
-    'variant' => 'underline', // underline, pill
+    'variant' => 'folder', // folder, underline, pill
 ])
 
 @php
     $listClass = match($variant) {
         'pill' => 'tab-list tab-list-pill',
-        default => 'tab-list tab-list-underline',
+        'underline' => 'tab-list tab-list-underline',
+        default => 'tab-list tab-list-folder',
     };
 @endphp
 

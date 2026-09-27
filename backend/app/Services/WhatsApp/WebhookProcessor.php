@@ -190,7 +190,13 @@ class WebhookProcessor
 
         // Trigger Flow & Chatbot Automations
         try {
-            app(\App\Services\Automation\FlowExecutionService::class)->handleIncomingMessage($conversation, $message, $contact);
+            app(\App\Services\Automation\FlowExecutionService::class)->handleIncomingMessage(
+                $conversation,
+                $message,
+                $contact,
+                'meta',
+                $credential?->phone_number_id ?? 'META_CLOUD_API'
+            );
         } catch (\Throwable $e) {
             Log::error('Automation Flow Execution Error: ' . $e->getMessage());
         }

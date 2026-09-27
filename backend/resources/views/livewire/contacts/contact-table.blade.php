@@ -1,14 +1,8 @@
-<div class="p-4 sm:p-6 lg:p-8 space-y-6">
-    <!-- Header with Action Buttons -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="p-2 sm:p-2.5 md:p-3 bg-[#f0f2f5] dark:bg-[#0c1317] min-h-[calc(100vh-4rem)] flex flex-col font-sans">
+    <!-- Top Header with Action Buttons -->
+    <div class="px-2 pt-1 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <div class="flex items-center gap-2.5">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Contacts & Phonebook Directory</h1>
-                <x-tag color="primary" class="font-bold">{{ number_format($totalContacts) }} Contacts</x-tag>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Manage audience phonebooks, broadcast template variables, and opt-out registry.
-            </p>
+            <h1 class="text-2xl font-bold text-[#111b21] dark:text-[#e9edef] tracking-tight">Contacts</h1>
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
@@ -40,7 +34,7 @@
 
     <!-- Flash Message -->
     @if (session()->has('message'))
-        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 shadow-2xs">
+        <div class="mb-3 mx-2 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 shadow-2xs">
             <div class="flex items-center gap-2">
                 <x-ph-icon name="check-circle" weight="fill" class="text-base text-emerald-500 shrink-0" />
                 <span>{{ session('message') }}</span>
@@ -51,138 +45,67 @@
         </div>
     @endif
 
-    <!-- Sub-Navbar Tabs -->
-    <x-tabs>
-        <x-tab-item wire:click="setTab('contacts')" :active="$activeTab === 'contacts'">
-            <x-ph-icon name="users" weight="bold" class="text-base mr-1.5 shrink-0" />
-            <span>All Contacts ({{ number_format($totalContacts) }})</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('groups')" :active="$activeTab === 'groups'">
-            <x-ph-icon name="folder" weight="bold" class="text-base mr-1.5 shrink-0" />
-            <span>Contact Groups ({{ $phonebooks->count() }})</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('fields')" :active="$activeTab === 'fields'">
-            <x-ph-icon name="textbox" weight="bold" class="text-base mr-1.5 shrink-0" />
-            <span>Custom Fields ({{ count($customFields) }})</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('blacklist')" :active="$activeTab === 'blacklist'">
-            <x-ph-icon name="prohibit" weight="bold" class="text-base mr-1.5 shrink-0" />
-            <span>Blacklist & Opt-Out ({{ count($blacklist) }})</span>
-        </x-tab-item>
-    </x-tabs>
+    <!-- Folder Tabs Row (Flush with Content Card) -->
+    <div class="-mb-px relative z-10">
+        <x-tabs>
+            <x-tab-item wire:click="setTab('contacts')" :active="$activeTab === 'contacts'">
+                <x-ph-icon name="users" weight="bold" class="text-base mr-1.5 shrink-0" />
+                <span>All Contacts ({{ number_format($totalContacts) }})</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('groups')" :active="$activeTab === 'groups'">
+                <x-ph-icon name="folder" weight="bold" class="text-base mr-1.5 shrink-0" />
+                <span>Contact Groups ({{ $phonebooks->count() }})</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('fields')" :active="$activeTab === 'fields'">
+                <x-ph-icon name="textbox" weight="bold" class="text-base mr-1.5 shrink-0" />
+                <span>Custom Fields ({{ count($customFields) }})</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('blacklist')" :active="$activeTab === 'blacklist'">
+                <x-ph-icon name="prohibit" weight="bold" class="text-base mr-1.5 shrink-0" />
+                <span>Blacklist & Opt-Out ({{ count($blacklist) }})</span>
+            </x-tab-item>
+        </x-tabs>
+    </div>
 
-    <!-- ============================================================== -->
-    <!-- TAB 1: ALL CONTACTS DATA TABLE                                 -->
-    <!-- ============================================================== -->
-    @if ($activeTab === 'contacts')
-        <x-card gutterless class="overflow-hidden">
-            <!-- Table Toolbar (Search, Group Dropdown, Per-Page, Bulk Actions) -->
-            <div class="p-4 sm:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-800">
+    <!-- Main Contacts Content Card Container -->
+    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21]">
+        
+        <!-- ============================================================== -->
+        <!-- TAB 1: ALL CONTACTS DATA TABLE                                 -->
+        <!-- ============================================================== -->
+        @if ($activeTab === 'contacts')
+            <div wire:key="tab-panel-contacts" class="flex-1 flex flex-col bg-white dark:bg-[#111b21] rounded-tr-2xl rounded-b-2xl tab-pane">
+                <!-- Table Toolbar (Search, Group Dropdown, Per-Page, Bulk Actions) -->
+                <div class="p-4 sm:px-6 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#d1d7db] dark:border-[#222e35] bg-white dark:bg-[#111b21] rounded-tr-2xl">
                 <!-- Left Controls: Search Bar & Group Filter -->
                 <div class="flex flex-1 items-center gap-3 flex-wrap">
-                    <!-- Search Input -->
-                    <div class="relative w-full sm:w-80">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10">
-                            <x-ph-icon name="magnifying-glass" weight="bold" class="text-sm" />
-                        </div>
-                        <input wire:model.live.debounce.300ms="search" 
-                               type="text" 
-                               placeholder="Search name, phone, or variables..." 
-                               style="padding-left: 2.35rem; padding-right: 2rem;"
-                               class="input input-sm w-full">
-                        @if ($search)
-                            <button wire:click="$set('search', '')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 z-10" title="Clear search">
-                                <x-ph-icon name="x" weight="bold" class="text-xs" />
-                            </button>
-                        @endif
-                    </div>
+                    <!-- Search Input (Starter Template Design System) -->
+                    <x-input wire:model.live.debounce.300ms="search"
+                             size="sm"
+                             prefixIcon="magnifying-glass"
+                             :clearable="true"
+                             placeholder="Search name, phone, or variables..."
+                             class="w-full sm:w-72" />
 
-                    <!-- Phonebook Group Filter Custom Dropdown -->
-                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                        <button type="button" 
-                                @click="open = !open" 
-                                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/80 transition-all shadow-2xs">
-                            <x-ph-icon name="folder" weight="duotone" class="text-sm text-gray-400 shrink-0" />
-                            <span>
-                                @if($phonebookFilter && ($currentPb = $phonebooks->firstWhere('id', $phonebookFilter)))
-                                    {{ $currentPb->name }}
-                                @else
-                                    All Groups ({{ $phonebooks->count() }})
-                                @endif
-                            </span>
-                            <x-ph-icon name="caret-down" weight="bold" class="text-xs text-gray-400 transition-transform duration-150 shrink-0" ::class="open ? 'rotate-180' : ''" />
-                        </button>
+                    <!-- Phonebook Group Filter Dropdown -->
+                    <x-select wire:model.live="phonebookFilter"
+                              size="sm"
+                              prefixIcon="folder"
+                              class="w-auto min-w-[10.5rem]">
+                        <option value="">All Groups ({{ $phonebooks->count() }})</option>
+                        @foreach ($phonebooks as $pb)
+                            <option value="{{ $pb->id }}">{{ $pb->name }}</option>
+                        @endforeach
+                    </x-select>
 
-                        <div x-show="open" 
-                             x-transition:enter="transition ease-out duration-150"
-                             x-transition:enter-start="transform opacity-0 scale-95"
-                             x-transition:enter-end="transform opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-100"
-                             x-transition:leave-start="transform opacity-100 scale-100"
-                             x-transition:leave-end="transform opacity-0 scale-95"
-                             class="absolute left-0 mt-1.5 w-56 rounded-2xl bg-white dark:bg-gray-900 p-1.5 shadow-2xl border border-gray-100 dark:border-gray-800 z-30 focus:outline-none"
-                             style="display: none;">
-                            <button type="button" 
-                                    wire:click="$set('phonebookFilter', '')" 
-                                    @click="open = false" 
-                                    class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ empty($phonebookFilter) ? 'text-primary bg-primary-subtle font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
-                                <div class="flex items-center gap-2 truncate">
-                                    <x-ph-icon name="folder" weight="duotone" class="text-sm text-gray-400" />
-                                    <span>All Groups</span>
-                                </div>
-                                @if(empty($phonebookFilter))
-                                    <x-ph-icon name="check" weight="bold" class="text-xs text-primary shrink-0" />
-                                @endif
-                            </button>
-
-                            @foreach ($phonebooks as $pb)
-                                <button type="button" 
-                                        wire:click="$set('phonebookFilter', '{{ $pb->id }}')" 
-                                        @click="open = false" 
-                                        class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ $phonebookFilter == $pb->id ? 'text-primary bg-primary-subtle font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
-                                    <div class="flex items-center gap-2 truncate">
-                                        <x-ph-icon name="folder" weight="duotone" class="text-sm text-primary/70 shrink-0" />
-                                        <span class="truncate">{{ $pb->name }}</span>
-                                    </div>
-                                    @if($phonebookFilter == $pb->id)
-                                        <x-ph-icon name="check" weight="bold" class="text-xs text-primary shrink-0" />
-                                    @endif
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Per Page Limit Custom Dropdown (Fixed & Upgraded) -->
-                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                        <button type="button" 
-                                @click="open = !open" 
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/80 transition-all shadow-2xs cursor-pointer">
-                            <span>{{ $perPage }} / page</span>
-                            <x-ph-icon name="caret-down" weight="bold" class="text-xs text-gray-400 transition-transform duration-150 shrink-0" ::class="open ? 'rotate-180' : ''" />
-                        </button>
-
-                        <div x-show="open" 
-                             x-transition:enter="transition ease-out duration-150"
-                             x-transition:enter-start="transform opacity-0 scale-95"
-                             x-transition:enter-end="transform opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-100"
-                             x-transition:leave-start="transform opacity-100 scale-100"
-                             x-transition:leave-end="transform opacity-0 scale-95"
-                             class="absolute left-0 mt-1.5 w-36 rounded-2xl bg-white dark:bg-gray-900 p-1.5 shadow-2xl border border-gray-100 dark:border-gray-800 z-30 focus:outline-none"
-                             style="display: none;">
-                            @foreach ([15, 25, 50, 100] as $size)
-                                <button type="button" 
-                                        wire:click="$set('perPage', {{ $size }})" 
-                                        @click="open = false" 
-                                        class="w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition-colors {{ $perPage == $size ? 'text-primary bg-primary-subtle font-bold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
-                                    <span>{{ $size }} / page</span>
-                                    @if ($perPage == $size)
-                                        <x-ph-icon name="check" weight="bold" class="text-xs text-primary shrink-0" />
-                                    @endif
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
+                    <!-- Per Page Limit Dropdown -->
+                    <x-select wire:model.live="perPage"
+                              size="sm"
+                              class="w-auto min-w-[6.5rem]">
+                        @foreach ([15, 25, 50, 100] as $sz)
+                            <option value="{{ $sz }}">{{ $sz }} / page</option>
+                        @endforeach
+                    </x-select>
 
                     <!-- Reset Active Filters -->
                     @if ($search || $phonebookFilter)
@@ -269,14 +192,14 @@
                             </td>
 
                             <!-- Phone -->
-                            <td class="font-mono text-xs text-gray-800 dark:text-gray-200 whitespace-nowrap">
+                            <td class="font-mono text-xs text-gray-700 dark:text-gray-300 tabular-nums whitespace-nowrap">
                                 {{ $contact->mobile }}
                             </td>
 
                             <!-- Phonebook Group -->
                             <td class="text-xs whitespace-nowrap">
                                 @if ($contact->phonebook)
-                                    <x-tag color="primary" class="truncate max-w-[140px] inline-block">
+                                    <x-tag color="primary" class="truncate max-w-[140px] inline-block font-medium">
                                         {{ $contact->phonebook->name }}
                                     </x-tag>
                                 @else
@@ -320,8 +243,8 @@
 
                             <!-- Source -->
                             <td class="text-xs whitespace-nowrap">
-                                <x-tag color="gray" class="capitalize text-[11px]">
-                                    {{ $contact->source ?? 'manual' }}
+                                <x-tag color="gray" class="text-[11px] font-medium">
+                                    {{ ucwords(str_replace(['_', '-'], ' ', $contact->source ?? 'manual')) }}
                                 </x-tag>
                             </td>
 
@@ -347,8 +270,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-12 text-center text-gray-400 text-xs">
-                                No contacts found matching the filters. Add contacts or import a CSV file above.
+                            <td colspan="7" class="py-12 text-center text-gray-500 dark:text-gray-400 text-xs">
+                                No contacts found matching your filters. Add a new contact or import from CSV.
                             </td>
                         </tr>
                     @endforelse
@@ -356,211 +279,215 @@
             </x-table>
 
             <!-- Pagination Footer -->
-            <div class="p-4 border-t border-gray-100 dark:border-gray-800">
-                {{ $contacts->links() }}
-            </div>
-        </x-card>
-    @endif
-
-    <!-- ============================================================== -->
-    <!-- TAB 2: CONTACT GROUPS (PHONEBOOKS)                             -->
-    <!-- ============================================================== -->
-    @if ($activeTab === 'groups')
-        <div class="space-y-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Phonebook Groups</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Segment your audience for targeted broadcast campaigns and workflow automations.</p>
+            @if($contacts->hasPages())
+                <div class="p-4 border-t border-[#d1d7db] dark:border-[#222e35] bg-white dark:bg-[#111b21] rounded-b-2xl">
+                    {{ $contacts->links() }}
                 </div>
-                <x-button wire:click="openCreatePhonebookModal" variant="solid" size="md">
-                    <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
-                    <span>New Group</span>
-                </x-button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse ($phonebooks as $pb)
-                    <x-card bodyClass="p-6 flex flex-col justify-between h-full space-y-4">
-                        <div class="space-y-3">
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="w-10 h-10 rounded-2xl bg-primary-subtle dark:bg-primary/20 text-primary flex items-center justify-center shrink-0">
-                                    <x-ph-icon name="folder" weight="duotone" class="text-xl text-primary" />
-                                </div>
-                                <x-tag color="primary" class="font-bold text-xs">{{ $pb->contacts_count }} Contacts</x-tag>
-                            </div>
-
-                            <div>
-                                <h4 class="text-base font-bold text-gray-900 dark:text-white truncate">{{ $pb->name }}</h4>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                    Created {{ $pb->created_at ? $pb->created_at->format('M d, Y') : 'Recently' }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
-                            <button wire:click="$set('phonebookFilter', '{{ $pb->id }}'); setTab('contacts');" class="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer">
-                                <span>View Contacts</span>
-                                <x-ph-icon name="arrow-right" weight="bold" class="text-xs" />
-                            </button>
-
-                            <div class="flex items-center gap-1">
-                                <button wire:click="editPhonebook({{ $pb->id }})" class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 inline-flex items-center justify-center transition-colors cursor-pointer" title="Edit Group Name">
-                                    <x-ph-icon name="pencil-simple" weight="bold" class="text-sm" />
-                                </button>
-                                <button wire:click="confirmDeletePhonebook({{ $pb->id }})" class="p-1.5 text-rose-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 inline-flex items-center justify-center transition-colors cursor-pointer" title="Delete Group">
-                                    <x-ph-icon name="trash" weight="bold" class="text-sm" />
-                                </button>
-                            </div>
-                        </div>
-                    </x-card>
-                @empty
-                    <div class="col-span-full">
-                        <x-card bodyClass="p-12 text-center space-y-3">
-                            <div class="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto text-gray-400">
-                                <x-ph-icon name="folder-open" weight="duotone" class="text-3xl text-gray-400" />
-                            </div>
-                            <h4 class="text-base font-bold text-gray-900 dark:text-white">No Phonebook Groups Yet</h4>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Create targeted audience groups to organize your customer phone list.</p>
-                            <x-button wire:click="openCreatePhonebookModal" variant="solid" size="sm">
-                                <x-ph-icon name="plus" weight="bold" class="text-xs mr-1" />
-                                <span>Create First Group</span>
-                            </x-button>
-                        </x-card>
-                    </div>
-                @endforelse
-            </div>
+            @endif
         </div>
     @endif
 
-    <!-- ============================================================== -->
-    <!-- TAB 3: CUSTOM FIELDS MANAGER                                   -->
-    <!-- ============================================================== -->
-    @if ($activeTab === 'fields')
-        <div class="space-y-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Custom Broadcast Variables</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        Define dynamic custom contact parameters used for WhatsApp template variables (e.g. &#123;&#123;company_name&#125;&#125;, &#123;&#123;order_id&#125;&#125;).
-                    </p>
+        <!-- ============================================================== -->
+        <!-- TAB 2: CONTACT GROUPS (PHONEBOOKS)                             -->
+        <!-- ============================================================== -->
+        @if ($activeTab === 'groups')
+            <div wire:key="tab-panel-groups" class="p-6 space-y-6 flex-1 bg-white dark:bg-[#111b21] tab-pane">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Phonebook Groups</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Segment your audience for targeted broadcast campaigns and workflow automations.</p>
+                    </div>
+                    <x-button wire:click="openCreatePhonebookModal" variant="solid" size="md">
+                        <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
+                        <span>New Group</span>
+                    </x-button>
                 </div>
-                <x-button wire:click="openFieldModal" variant="solid" size="md">
-                    <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
-                    <span>New Custom Field</span>
-                </x-button>
-            </div>
 
-            <x-card gutterless class="overflow-hidden">
-                <x-table hoverable>
-                    <thead>
-                        <tr>
-                            <th class="min-w-[150px] whitespace-nowrap">Field Label</th>
-                            <th class="min-w-[130px] whitespace-nowrap">Variable Key</th>
-                            <th class="min-w-[100px] whitespace-nowrap">Data Type</th>
-                            <th class="min-w-[180px] whitespace-nowrap">Template Tag Syntax</th>
-                            <th class="min-w-[80px] text-right whitespace-nowrap">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($customFields as $field)
-                            <tr>
-                                <td class="font-bold text-gray-900 dark:text-white text-xs whitespace-nowrap">
-                                    {{ $field['label'] }}
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    <span class="font-mono text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                                        {{ $field['key'] }}
-                                    </span>
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    <x-tag color="blue" class="text-[10px] uppercase font-bold">{{ $field['type'] }}</x-tag>
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    <span class="font-mono text-xs text-primary font-bold">
-                                        &#123;&#123;{{ $field['key'] }}&#125;&#125;
-                                    </span>
-                                </td>
-                                <td class="text-right whitespace-nowrap">
-                                    <button wire:click="deleteCustomField('{{ $field['key'] }}')" wire:confirm="Delete this custom field variable?" class="p-1.5 text-rose-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 inline-flex items-center justify-center transition-colors cursor-pointer">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse ($phonebooks as $pb)
+                        <div class="rounded-xl border border-[#d1d7db] dark:border-[#222e35] shadow-2xs bg-[#fcfdfe] dark:bg-[#182229] p-5 flex flex-col justify-between h-full space-y-4">
+                            <div class="space-y-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="w-10 h-10 rounded-2xl bg-primary-subtle dark:bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                                        <x-ph-icon name="folder" weight="duotone" class="text-xl text-primary" />
+                                    </div>
+                                    <x-tag color="primary" class="font-bold text-xs">{{ $pb->contacts_count }} Contacts</x-tag>
+                                </div>
+
+                                <div>
+                                    <h4 class="text-base font-bold text-gray-900 dark:text-white truncate">{{ $pb->name }}</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        Created {{ $pb->created_at ? $pb->created_at->format('M d, Y') : 'Recently' }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
+                                <button wire:click="$set('phonebookFilter', '{{ $pb->id }}'); setTab('contacts');" class="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer">
+                                    <span>View Contacts</span>
+                                    <x-ph-icon name="arrow-right" weight="bold" class="text-xs" />
+                                </button>
+
+                                <div class="flex items-center gap-1">
+                                    <button wire:click="editPhonebook({{ $pb->id }})" class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 inline-flex items-center justify-center transition-colors cursor-pointer" title="Edit Group Name">
+                                        <x-ph-icon name="pencil-simple" weight="bold" class="text-sm" />
+                                    </button>
+                                    <button wire:click="confirmDeletePhonebook({{ $pb->id }})" class="p-1.5 text-rose-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 inline-flex items-center justify-center transition-colors cursor-pointer" title="Delete Group">
                                         <x-ph-icon name="trash" weight="bold" class="text-sm" />
                                     </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="py-8 text-center text-gray-400 text-xs">
-                                    No custom fields created yet.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </x-table>
-            </x-card>
-        </div>
-    @endif
-
-    <!-- ============================================================== -->
-    <!-- TAB 4: BLACKLIST / OPT-OUT REGISTRY                            -->
-    <!-- ============================================================== -->
-    @if ($activeTab === 'blacklist')
-        <div class="space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-base font-bold text-gray-900 dark:text-white">Blacklist & Opt-Out Registry</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        Contacts who have sent STOP or unsubscribed from outbound WhatsApp campaigns are excluded automatically.
-                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full">
+                            <div class="rounded-xl border border-[#d1d7db] dark:border-[#222e35] shadow-2xs bg-[#fcfdfe] dark:bg-[#182229] p-12 text-center space-y-3">
+                                <div class="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto text-gray-400">
+                                    <x-ph-icon name="folder-open" weight="duotone" class="text-3xl text-gray-400" />
+                                </div>
+                                <h4 class="text-base font-bold text-gray-900 dark:text-white">No Phonebook Groups Yet</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Create targeted audience groups to organize your customer phone list.</p>
+                                <x-button wire:click="openCreatePhonebookModal" variant="solid" size="sm">
+                                    <x-ph-icon name="plus" weight="bold" class="text-xs mr-1" />
+                                    <span>Create First Group</span>
+                                </x-button>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
-                <x-button wire:click="openBlacklistModal" variant="solid" size="md">
-                    <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
-                    <span>Add to Blacklist</span>
-                </x-button>
             </div>
+        @endif
 
-            <x-card gutterless class="overflow-hidden">
-                <x-table hoverable>
-                    <thead>
-                        <tr>
-                            <th class="min-w-[160px] whitespace-nowrap">Phone Number</th>
-                            <th class="min-w-[200px] whitespace-nowrap">Opt-Out Reason</th>
-                            <th class="min-w-[140px] whitespace-nowrap">Registered Date</th>
-                            <th class="min-w-[90px] whitespace-nowrap">Status</th>
-                            <th class="min-w-[100px] text-right whitespace-nowrap">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($blacklist as $item)
+        <!-- ============================================================== -->
+        <!-- TAB 3: CUSTOM FIELDS MANAGER                                   -->
+        <!-- ============================================================== -->
+        @if ($activeTab === 'fields')
+            <div wire:key="tab-panel-fields" class="p-6 space-y-6 flex-1 bg-white dark:bg-[#111b21] tab-pane">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Custom Broadcast Variables</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Define dynamic custom contact parameters used for WhatsApp template variables (e.g. &#123;&#123;company_name&#125;&#125;, &#123;&#123;order_id&#125;&#125;).
+                        </p>
+                    </div>
+                    <x-button wire:click="openFieldModal" variant="solid" size="md">
+                        <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
+                        <span>New Custom Field</span>
+                    </x-button>
+                </div>
+
+                <div class="rounded-xl border border-[#d1d7db] dark:border-[#222e35] overflow-hidden">
+                    <x-table hoverable>
+                        <thead>
                             <tr>
-                                <td class="font-mono font-bold text-xs text-gray-900 dark:text-white whitespace-nowrap">
-                                    {{ $item['number'] }}
-                                </td>
-                                <td class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $item['reason'] }}
-                                </td>
-                                <td class="text-xs text-gray-400 font-mono whitespace-nowrap">
-                                    {{ $item['added_at'] ?? 'N/A' }}
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    <x-tag color="rose" class="text-[10px] font-bold">Blocked</x-tag>
-                                </td>
-                                <td class="text-right whitespace-nowrap">
-                                    <button wire:click="removeFromBlacklist('{{ $item['number'] }}')" class="text-xs font-semibold text-primary hover:underline">
-                                        Unblock Number
-                                    </button>
-                                </td>
+                                <th class="min-w-[150px] whitespace-nowrap">Field Label</th>
+                                <th class="min-w-[130px] whitespace-nowrap">Variable Key</th>
+                                <th class="min-w-[100px] whitespace-nowrap">Data Type</th>
+                                <th class="min-w-[180px] whitespace-nowrap">Template Tag Syntax</th>
+                                <th class="min-w-[80px] text-right whitespace-nowrap">Action</th>
                             </tr>
-                        @empty
+                        </thead>
+                        <tbody>
+                            @forelse ($customFields as $field)
+                                <tr>
+                                    <td class="font-bold text-gray-900 dark:text-white text-xs whitespace-nowrap">
+                                        {{ $field['label'] }}
+                                    </td>
+                                    <td class="whitespace-nowrap">
+                                        <span class="font-mono text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                                            {{ $field['key'] }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap">
+                                        <x-tag color="blue" class="text-[10px] uppercase font-bold">{{ $field['type'] }}</x-tag>
+                                    </td>
+                                    <td class="whitespace-nowrap">
+                                        <span class="font-mono text-xs text-primary font-bold">
+                                            &#123;&#123;{{ $field['key'] }}&#125;&#125;
+                                        </span>
+                                    </td>
+                                    <td class="text-right whitespace-nowrap">
+                                        <button wire:click="deleteCustomField('{{ $field['key'] }}')" wire:confirm="Delete this custom field variable?" class="p-1.5 text-rose-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 inline-flex items-center justify-center transition-colors cursor-pointer">
+                                            <x-ph-icon name="trash" weight="bold" class="text-sm" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="py-10 text-center text-gray-500 dark:text-gray-400 text-xs">
+                                        No custom fields defined yet. Create a custom field to use dynamic placeholders in templates.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </x-table>
+                </div>
+            </div>
+        @endif
+
+        <!-- ============================================================== -->
+        <!-- TAB 4: BLACKLIST / OPT-OUT REGISTRY                            -->
+        <!-- ============================================================== -->
+        @if ($activeTab === 'blacklist')
+            <div wire:key="tab-panel-blacklist" class="p-6 space-y-6 flex-1 bg-white dark:bg-[#111b21] tab-pane">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Blacklist & Opt-Out Registry</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Contacts who have sent STOP or unsubscribed from outbound WhatsApp campaigns are excluded automatically.
+                        </p>
+                    </div>
+                    <x-button wire:click="openBlacklistModal" variant="solid" size="md">
+                        <x-ph-icon name="plus" weight="bold" class="text-base mr-1.5" />
+                        <span>Add to Blacklist</span>
+                    </x-button>
+                </div>
+
+                <div class="rounded-xl border border-[#d1d7db] dark:border-[#222e35] overflow-hidden">
+                    <x-table hoverable>
+                        <thead>
                             <tr>
-                                <td colspan="5" class="py-8 text-center text-gray-400 text-xs">
-                                    Blacklist is currently empty.
-                                </td>
+                                <th class="min-w-[160px] whitespace-nowrap">Phone Number</th>
+                                <th class="min-w-[200px] whitespace-nowrap">Opt-Out Reason</th>
+                                <th class="min-w-[140px] whitespace-nowrap">Registered Date</th>
+                                <th class="min-w-[90px] whitespace-nowrap">Status</th>
+                                <th class="min-w-[100px] text-right whitespace-nowrap">Action</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </x-table>
-            </x-card>
-        </div>
-    @endif
+                        </thead>
+                        <tbody>
+                            @forelse ($blacklist as $item)
+                                <tr>
+                                    <td class="font-mono font-bold text-xs text-gray-900 dark:text-white whitespace-nowrap">
+                                        {{ $item['number'] }}
+                                    </td>
+                                    <td class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $item['reason'] }}
+                                    </td>
+                                    <td class="text-xs text-gray-400 font-mono whitespace-nowrap">
+                                        {{ $item['added_at'] ?? 'N/A' }}
+                                    </td>
+                                    <td class="whitespace-nowrap">
+                                        <x-tag color="rose" class="text-[10px] font-bold">Blocked</x-tag>
+                                    </td>
+                                    <td class="text-right whitespace-nowrap">
+                                        <button wire:click="removeFromBlacklist('{{ $item['number'] }}')" class="text-xs font-semibold text-primary hover:underline">
+                                            Unblock Number
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="py-10 text-center text-gray-500 dark:text-gray-400 text-xs">
+                                        No numbers in blacklist. Contacts who request to opt out will automatically appear here.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </x-table>
+                </div>
+            </div>
+        @endif
+
+    </div>
 
     <!-- ============================================================== -->
     <!-- MODAL: ADD / EDIT CONTACT                                      -->
@@ -600,11 +527,11 @@
                     </x-select>
                 </x-form-item>
 
-                <!-- Broadcast Custom Variables (WhatsCRM v6.1.0 var1–var5) -->
+                <!-- Custom Template Variables -->
                 <div class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-3">
                     <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">Broadcast Variables (Template Placeholders)</h4>
-                        <span class="text-[11px] text-gray-400">Used for &#123;&#123;1&#125;&#125;, &#123;&#123;2&#125;&#125; substitutions</span>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">Custom Variables</h4>
+                        <span class="text-[11px] text-gray-400">Used for dynamic template message placeholders</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -704,8 +631,8 @@
                     <label class="p-3.5 rounded-xl border flex items-start gap-3 cursor-pointer {{ $deletePhonebookMode === 'purge' ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-950/20 text-rose-900 dark:text-rose-200' : 'border-gray-200 dark:border-gray-700' }}">
                         <input type="radio" wire:model.live="deletePhonebookMode" value="purge" class="mt-0.5">
                         <div>
-                            <span class="font-bold text-rose-600 dark:text-rose-400 block">Permanently Delete Contacts (WhatsCRM v6.1.0 Behavior)</span>
-                            <span class="text-gray-500 dark:text-gray-400 text-[11px]">All contacts currently assigned to this phonebook group will be deleted.</span>
+                            <span class="font-bold text-rose-600 dark:text-rose-400 block">Permanently Delete Contacts</span>
+                            <span class="text-gray-500 dark:text-gray-400 text-[11px]">All contacts currently assigned to this group will be deleted from your workspace.</span>
                         </div>
                     </label>
                 </div>
@@ -730,7 +657,7 @@
             <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
                 <div>
                     <h3 class="font-bold text-base text-gray-900 dark:text-white">Import Contacts from CSV</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Supports WhatsCRM v6.1.0 format with custom variables (var1–var5).</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Upload a CSV file containing phone numbers and optional custom variables.</p>
                 </div>
                 <button wire:click="$set('showImportModal', false)" x-on:click="$dispatch('close-modal', 'import-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                     <x-ph-icon name="x" weight="bold" class="text-lg" />
@@ -794,7 +721,7 @@
                 >
                     <!-- 1. Selected File Preview Card -->
                     @if ($csvPreview)
-                        <div class="p-4 rounded-2xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/30 space-y-3 shadow-xs">
+                        <div class="p-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-800/50 space-y-3 shadow-xs">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
@@ -822,26 +749,38 @@
                             </div>
 
                             <!-- Detected Headers Tags -->
-                            <div class="pt-2 border-t border-emerald-200/60 dark:border-emerald-800/60">
+                            <div class="pt-2 border-t border-gray-200/70 dark:border-gray-700">
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 block mb-1.5">Detected Columns Mapping:</span>
                                 <div class="flex flex-wrap gap-1.5">
                                     @foreach ($csvPreview['headers'] as $col)
-                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-medium {{ in_array($col, ['mobile', 'phone', 'whatsapp', 'number', 'phone number', 'contact']) ? 'bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200 font-bold border border-emerald-400' : (str_starts_with($col, 'var') ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300') }}">
-                                            {{ $col }}
-                                            @if (in_array($col, ['mobile', 'phone', 'whatsapp', 'number', 'phone number', 'contact']))
+                                        @php
+                                            $isPhoneCol = in_array(strtolower($col), ['mobile', 'phone', 'whatsapp', 'number', 'phone number', 'contact']);
+                                            $isVarCol = str_starts_with(strtolower($col), 'var');
+                                        @endphp
+                                        @if ($isPhoneCol)
+                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                                                {{ $col }}
                                                 <x-ph-icon name="check" weight="bold" class="text-xs inline ml-0.5 text-emerald-700 dark:text-emerald-300" />
-                                            @endif
-                                        </span>
+                                            </span>
+                                        @elseif ($isVarCol)
+                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-medium bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                                                {{ $col }}
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                                                {{ $col }}
+                                            </span>
+                                        @endif
                                     @endforeach
                                 </div>
                             </div>
 
                             @if (!empty($csvPreview['sample_rows']))
-                                <div class="pt-2 border-t border-emerald-200/60 dark:border-emerald-800/60">
+                                <div class="pt-2 border-t border-gray-200/70 dark:border-gray-700">
                                     <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 block mb-1">First Rows Preview:</span>
                                     <div class="space-y-1">
                                         @foreach ($csvPreview['sample_rows'] as $sRow)
-                                            <div class="text-[11px] font-mono text-gray-600 dark:text-gray-300 bg-white/70 dark:bg-gray-900/60 px-2 py-0.5 rounded truncate border border-emerald-100 dark:border-emerald-900">
+                                            <div class="text-[11px] font-mono text-gray-600 dark:text-gray-300 bg-white/80 dark:bg-gray-900/60 px-2 py-0.5 rounded truncate border border-gray-200/80 dark:border-gray-700">
                                                 {{ implode(' | ', array_filter($sRow)) }}
                                             </div>
                                         @endforeach
@@ -860,7 +799,7 @@
                         <!-- 2. Live Uploading Progress Indicator (Only when uploading and no preview yet) -->
                         <div x-show="isUploading" class="p-6 rounded-2xl border-2 border-dashed border-primary bg-primary-subtle/30 flex flex-col items-center justify-center text-center space-y-3 transition-all" style="display: none;">
                             <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-md">
-                                <x-ph-icon name="cloud-arrow-up" weight="duotone" class="text-2xl animate-bounce" />
+                                <x-ph-icon name="cloud-arrow-up" weight="duotone" class="text-2xl animate-pulse" />
                             </div>
                             <div class="space-y-1">
                                 <p class="text-xs font-bold text-gray-900 dark:text-white">Uploading & Analyzing CSV File...</p>
@@ -960,8 +899,8 @@
 
             @if ($activeInstances->isEmpty())
                 <div class="p-6 text-center rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-xs space-y-2">
-                    <p class="font-bold">No Active WhatsApp QR Sessions</p>
-                    <p class="text-gray-500 dark:text-gray-400">Link a WhatsApp device in Devices to enable 1-click contact synchronization.</p>
+                    <p class="font-bold">No Active WhatsApp Devices Connected</p>
+                    <p class="text-gray-500 dark:text-gray-400">Connect a WhatsApp device in Channels to enable 1-click contact synchronization.</p>
                     <a href="{{ route('devices') }}" class="inline-block mt-2 px-3 py-1.5 rounded-full bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700">Go to Devices</a>
                 </div>
             @else

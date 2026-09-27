@@ -17,6 +17,9 @@ class FlowSession extends Model
     {
         return [
             'session_data' => 'array',
+            'variables' => 'array',
+            'visited_nodes' => 'array',
+            'auto_reply_disabled_until' => 'datetime',
         ];
     }
 

@@ -1,4 +1,4 @@
-<div class="p-4 sm:p-6 lg:p-8 space-y-6" 
+<div class="p-2 sm:p-2.5 md:p-3 bg-[#f0f2f5] dark:bg-[#0c1317] min-h-[calc(100vh-4rem)] flex flex-col font-sans" 
      @if($showPairModal) wire:poll.2s="pollQrStatus" @endif
      x-data="{
          init() {
@@ -34,29 +34,9 @@
          }
      ">
     <!-- Page Header & Top Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="px-2 pt-1 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <div class="flex flex-wrap items-center gap-2.5">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">WhatsApp Devices & Channels</h1>
-                <x-tag color="primary" class="font-bold">
-                    <x-ph-icon name="devices" weight="bold" class="text-xs mr-1" />
-                    {{ count($pairedDevices) }} Linked Devices
-                </x-tag>
-                @if ($metaConnected)
-                    <x-tag color="emerald" :prefix="true" class="font-bold">
-                        Cloud API Live
-                    </x-tag>
-                @endif
-                @if ($warmerEngineRunning)
-                    <x-tag color="amber" class="font-bold">
-                        <x-ph-icon name="flame" weight="fill" class="text-xs mr-1 text-amber-500" />
-                        Warmer Active ({{ $activeWarmerCount }} Lines)
-                    </x-tag>
-                @endif
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Manage Baileys QR pairings, official Meta Cloud API credentials, and the automated Number Warmer engine.
-            </p>
+            <h1 class="text-2xl font-bold text-[#111b21] dark:text-[#e9edef] tracking-tight">WhatsApp Devices</h1>
         </div>
 
         <div class="flex items-center gap-3 shrink-0">
@@ -67,76 +47,9 @@
         </div>
     </div>
 
-    <!-- Top KPI Telemetry Ribbon -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- KPI 1: Total Channels -->
-        <x-card bodyClass="p-5 flex items-center justify-between">
-            <div class="space-y-1">
-                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Total Active Channels</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $totalChannels }}</span>
-                    <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">{{ count($pairedDevices) }} QR + {{ $metaConnected ? '1 Meta' : '0 Meta' }}</span>
-                </div>
-            </div>
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                <x-ph-icon name="whatsapp-logo" weight="fill" class="text-2xl" />
-            </div>
-        </x-card>
-
-        <!-- KPI 2: Meta Cloud API Status -->
-        <x-card bodyClass="p-5 flex items-center justify-between">
-            <div class="space-y-1">
-                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Meta Cloud API</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-base font-bold text-gray-900 dark:text-white">
-                        {{ $metaConnected ? 'Live & Connected' : 'Unconfigured' }}
-                    </span>
-                </div>
-                <p class="text-[11px] font-mono text-gray-400 truncate max-w-[160px]">
-                    {{ $display_phone_number ?: ($metaConnected ? 'ID: ' . substr($phone_number_id, -6) : 'Setup in Meta tab') }}
-                </p>
-            </div>
-            <div class="w-12 h-12 rounded-2xl {{ $metaConnected ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-400' }} flex items-center justify-center shrink-0">
-                <x-ph-icon name="lightning" weight="duotone" class="text-2xl" />
-            </div>
-        </x-card>
-
-        <!-- KPI 3: Messages Dispatched Today -->
-        <x-card bodyClass="p-5 flex items-center justify-between">
-            <div class="space-y-1">
-                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Dispatched Today</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ number_format($totalMessagesToday) }}</span>
-                    <span class="text-xs font-medium text-gray-400">messages</span>
-                </div>
-            </div>
-            <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                <x-ph-icon name="paper-plane-tilt" weight="duotone" class="text-2xl" />
-            </div>
-        </x-card>
-
-        <!-- KPI 4: Number Warmer Loop -->
-        <x-card bodyClass="p-5 flex items-center justify-between">
-            <div class="space-y-1">
-                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Number Warmer Loop</span>
-                <div class="flex items-baseline gap-2">
-                    <span class="text-base font-bold text-gray-900 dark:text-white">
-                        {{ $warmerEngineRunning ? 'Engine Active' : 'Engine Paused' }}
-                    </span>
-                </div>
-                <p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
-                    {{ $activeWarmerCount }} Peer Lines Warming
-                </p>
-            </div>
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                <x-ph-icon name="flame" weight="duotone" class="text-2xl" />
-            </div>
-        </x-card>
-    </div>
-
     <!-- Alert Notifications / Feedback Messages -->
     @if (session()->has('message'))
-        <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-3 shadow-xs">
+        <div class="mb-3 mx-2 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-3 shadow-2xs">
             <div class="flex items-center gap-2.5">
                 <x-ph-icon name="check-circle" weight="fill" class="text-lg text-emerald-500 shrink-0" />
                 <span>{{ session('message') }}</span>
@@ -148,7 +61,7 @@
     @endif
 
     @if (session()->has('error'))
-        <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center justify-between gap-3 shadow-xs">
+        <div class="mb-3 mx-2 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center justify-between gap-3 shadow-2xs">
             <div class="flex items-center gap-2.5">
                 <x-ph-icon name="warning-circle" weight="fill" class="text-lg text-rose-500 shrink-0" />
                 <span>{{ session('error') }}</span>
@@ -159,41 +72,114 @@
         </div>
     @endif
 
-    <!-- Navigation Tabs Bar -->
-    <x-tabs>
-        <x-tab-item href="{{ route('devices', 'qr') }}" wire:click.prevent="setTab('qr')" :active="$activeTab === 'qr'">
-            <x-ph-icon name="qr-code" weight="duotone" class="text-lg shrink-0" />
-            <span>Paired Sessions (QR)</span>
-            <x-tag color="primary" class="ml-1 text-[10px] font-bold py-0.5 px-2">{{ count($pairedDevices) }}</x-tag>
-        </x-tab-item>
-        <x-tab-item href="{{ route('devices', 'meta') }}" wire:click.prevent="setTab('meta')" :active="$activeTab === 'meta'">
-            <x-ph-icon name="cloud-check" weight="duotone" class="text-lg shrink-0" />
-            <span>Meta Cloud API</span>
-            @if ($metaConnected)
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-1"></span>
-            @endif
-        </x-tab-item>
-        <x-tab-item href="{{ route('devices', 'warmer') }}" wire:click.prevent="setTab('warmer')" :active="$activeTab === 'warmer'">
-            <x-ph-icon name="flame" weight="duotone" class="text-lg shrink-0" />
-            <span>Number Warmer Engine</span>
-            @if ($activeWarmerCount > 0)
-                <x-tag color="amber" class="ml-1 text-[10px] font-bold py-0.5 px-2">{{ $activeWarmerCount }}</x-tag>
-            @endif
-        </x-tab-item>
-        <x-tab-item href="{{ route('devices', 'social') }}" wire:click.prevent="setTab('social')" :active="$activeTab === 'social'">
-            <x-ph-icon name="share-network" weight="duotone" class="text-lg shrink-0" />
-            <span>Telegram & Social Channels</span>
-            @if ($telegramConnected || $instagramConnected || $messengerConnected)
-                <x-tag color="emerald" class="ml-1 text-[10px] font-bold py-0.5 px-2">Active</x-tag>
-            @endif
-        </x-tab-item>
-    </x-tabs>
+    <!-- Navigation Tabs Bar (Flush with Content Card) -->
+    <div class="-mb-px relative z-10">
+        <x-tabs>
+            <x-tab-item href="{{ route('devices', 'qr') }}" wire:click.prevent="setTab('qr')" :active="$activeTab === 'qr'">
+                <x-ph-icon name="qr-code" weight="duotone" class="text-lg shrink-0" />
+                <span>Paired Sessions (QR)</span>
+                <x-tag color="primary" class="ml-1 text-[10px] font-bold py-0.5 px-2">{{ count($pairedDevices) }}</x-tag>
+            </x-tab-item>
+            <x-tab-item href="{{ route('devices', 'meta') }}" wire:click.prevent="setTab('meta')" :active="$activeTab === 'meta'">
+                <x-ph-icon name="cloud-check" weight="duotone" class="text-lg shrink-0" />
+                <span>Meta Cloud API</span>
+                @if ($metaConnected)
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-1"></span>
+                @endif
+            </x-tab-item>
+            <x-tab-item href="{{ route('devices', 'warmer') }}" wire:click.prevent="setTab('warmer')" :active="$activeTab === 'warmer'">
+                <x-ph-icon name="flame" weight="duotone" class="text-lg shrink-0" />
+                <span>Number Warmer Engine</span>
+                @if ($activeWarmerCount > 0)
+                    <x-tag color="amber" class="ml-1 text-[10px] font-bold py-0.5 px-2">{{ $activeWarmerCount }}</x-tag>
+                @endif
+            </x-tab-item>
+            <x-tab-item href="{{ route('devices', 'social') }}" wire:click.prevent="setTab('social')" :active="$activeTab === 'social'">
+                <x-ph-icon name="share-network" weight="duotone" class="text-lg shrink-0" />
+                <span>Telegram & Social Channels</span>
+                @if ($telegramConnected || $instagramConnected || $messengerConnected)
+                    <x-tag color="emerald" class="ml-1 text-[10px] font-bold py-0.5 px-2">Active</x-tag>
+                @endif
+            </x-tab-item>
+        </x-tabs>
+    </div>
 
-    <!-- ============================================================== -->
-    <!-- TAB 1: PAIRED SESSIONS (QR / BAILEYS ENGINE)                   -->
-    <!-- ============================================================== -->
-    @if ($activeTab === 'qr')
+    <!-- Main Floating Card Container -->
+    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21] overflow-hidden">
+
+        <div class="p-6 flex-1 overflow-y-auto bg-white dark:bg-[#111b21]">
+            <!-- ============================================================== -->
+            <!-- TAB 1: PAIRED SESSIONS (QR / BAILEYS ENGINE)                   -->
+            <!-- ============================================================== -->
+            @if ($activeTab === 'qr')
+                <div wire:key="tab-panel-devices-qr" class="tab-pane">
         <div class="space-y-6">
+            <!-- Top KPI Telemetry Ribbon inside Tab 1 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- KPI 1: Total Channels -->
+                <x-card bodyClass="p-5 flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Total Active Channels</span>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $totalChannels }}</span>
+                            <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">{{ count($pairedDevices) }} QR + {{ $metaConnected ? '1 Meta' : '0 Meta' }}</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                        <x-ph-icon name="whatsapp-logo" weight="fill" class="text-2xl" />
+                    </div>
+                </x-card>
+
+                <!-- KPI 2: Meta Cloud API Status -->
+                <x-card bodyClass="p-5 flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Meta Cloud API</span>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-base font-bold text-gray-900 dark:text-white">
+                                {{ $metaConnected ? 'Live & Connected' : 'Unconfigured' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] font-mono text-gray-400 truncate max-w-[160px]">
+                            {{ $display_phone_number ?: ($metaConnected ? 'ID: ' . substr($phone_number_id, -6) : 'Setup in Meta tab') }}
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl {{ $metaConnected ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-400' }} flex items-center justify-center shrink-0">
+                        <x-ph-icon name="lightning" weight="duotone" class="text-2xl" />
+                    </div>
+                </x-card>
+
+                <!-- KPI 3: Messages Dispatched Today -->
+                <x-card bodyClass="p-5 flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Dispatched Today</span>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-2xl font-black text-gray-900 dark:text-white">{{ number_format($totalMessagesToday) }}</span>
+                            <span class="text-xs font-medium text-gray-400">messages</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                        <x-ph-icon name="paper-plane-tilt" weight="duotone" class="text-2xl" />
+                    </div>
+                </x-card>
+
+                <!-- KPI 4: Number Warmer Loop -->
+                <x-card bodyClass="p-5 flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Number Warmer Loop</span>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-base font-bold text-gray-900 dark:text-white">
+                                {{ $warmerEngineRunning ? 'Engine Active' : 'Engine Paused' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                            {{ $activeWarmerCount }} Peer Lines Warming
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                        <x-ph-icon name="flame" weight="duotone" class="text-2xl" />
+                    </div>
+                </x-card>
+            </div>
 
 
             <!-- Device Cards Grid -->
@@ -309,13 +295,15 @@
                 @endforelse
             </div>
         </div>
+                </div>
     @endif
 
     <!-- ============================================================== -->
     <!-- TAB 2: META CLOUD API CONFIGURATION                            -->
     <!-- ============================================================== -->
     @if ($activeTab === 'meta')
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div wire:key="tab-panel-devices-meta" class="tab-pane">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left 2 Cols: Credentials Form & Diagnostics Sandbox -->
             <div class="lg:col-span-2 space-y-6">
                 @if ($metaConnected)
@@ -633,13 +621,15 @@
                 </x-card>
             </div>
         </div>
+                </div>
     @endif
 
     <!-- ============================================================== -->
     <!-- TAB 3: NUMBER WARMER ENGINE                                    -->
     <!-- ============================================================== -->
     @if ($activeTab === 'warmer')
-        <div class="space-y-6">
+        <div wire:key="tab-panel-devices-warmer" class="tab-pane">
+            <div class="space-y-6">
             <!-- Stage Progression Metrics Banner -->
             <x-card bodyClass="p-6 space-y-5">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-800 pb-4">
@@ -847,13 +837,15 @@
                 </div>
             </x-card>
         </div>
+                </div>
     @endif
 
     <!-- ============================================================== -->
     <!-- TAB 4: TELEGRAM & SOCIAL CHANNELS                              -->
     <!-- ============================================================== -->
     @if ($activeTab === 'social')
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div wire:key="tab-panel-devices-social" class="tab-pane">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Telegram Bot API Card -->
             <x-card bodyClass="p-6 sm:p-8 space-y-5">
                 <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
@@ -935,15 +927,13 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end pt-3 border-t border-gray-100 dark:border-gray-800">
-                    <x-button wire:click="saveSocialSettings" variant="solid" size="md">
-                        <x-ph-icon name="check-circle" weight="bold" class="text-sm mr-1.5" />
-                        <span>Save Social Integrations</span>
-                    </x-button>
                 </div>
             </x-card>
         </div>
+                </div>
     @endif
+    </div>
+</div>
 
     <!-- ============================================================== -->
     <!-- MODAL: QR CODE PAIRING DIALOG                                  -->

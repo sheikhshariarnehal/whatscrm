@@ -213,6 +213,78 @@ class CloudApiService
     }
 
     /**
+     * Send interactive quick reply buttons to a WhatsApp number.
+     */
+    public function sendInteractiveButtons(string $to, string $bodyText, array $buttons, ?string $headerText = null, ?string $footerText = null): array
+    {
+        $formattedButtons = [];
+        foreach (array_slice($buttons, 0, 3) as $idx => $btn) {
+            $id = $btn['id'] ?? ($btn['reply_id'] ?? ('btn_' . $idx));
+            $title = mb_substr($btn['title'] ?? ($btn['text'] ?? ('Option ' . ($idx + 1))), 0, 20);
+            $formattedButtons[] = [
+                'type' => 'reply',
+                'reply' => [
+                    'id' => (string) $id,
+                    'title' => $title,
+                ],
+            ];
+        }
+
+        $interactive = [
+            'type' => 'button',
+            'body' => ['text' => $bodyText],
+            'action' => ['buttons' => $formattedButtons],
+        ];
+        if ($headerText) {
+            $interactive['header'] = ['type' => 'text', 'text' => $headerText];
+        }
+        if ($footerText) {
+            $interactive['footer'] = ['text' => $footerText];
+        }
+
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $this->cleanPhoneNumber($to),
+            'type' => 'interactive',
+            'interactive' => $interactive,
+        ];
+
+        return $this->post("/{$this->credential->phone_number_id}/messages", $payload);
+    }
+
+    /**
+     * Send interactive menu list to a WhatsApp number.
+     */
+    public function sendInteractiveList(string $to, string $bodyText, string $buttonText, array $sections, ?string $headerText = null, ?string $footerText = null): array
+    {
+        $interactive = [
+            'type' => 'list',
+            'body' => ['text' => $bodyText],
+            'action' => [
+                'button' => mb_substr($buttonText ?: 'Select an option', 0, 20),
+                'sections' => $sections,
+            ],
+        ];
+        if ($headerText) {
+            $interactive['header'] = ['type' => 'text', 'text' => $headerText];
+        }
+        if ($footerText) {
+            $interactive['footer'] = ['text' => $footerText];
+        }
+
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $this->cleanPhoneNumber($to),
+            'type' => 'interactive',
+            'interactive' => $interactive,
+        ];
+
+        return $this->post("/{$this->credential->phone_number_id}/messages", $payload);
+    }
+
+    /**
      * Send pre-approved WhatsApp Cloud template message.
      */
     public function sendTemplateMessage(string $to, string $templateName, string $languageCode = 'en', array $components = []): array

@@ -25,7 +25,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('contacts', \App\Livewire\Contacts\ContactTable::class)->name('contacts');
     Route::get('campaigns', \App\Livewire\Campaigns\CampaignManager::class)->name('campaigns');
     Route::get('automations', \App\Livewire\Automations\AutomationHub::class)->name('automations');
+    Route::get('automations/builder/{id}', \App\Livewire\Automations\FlowBuilder::class)->name('automations.builder');
+    Route::get('automations/api/flows/{id}', [\App\Http\Controllers\Api\FlowBuilderApiController::class, 'show'])->name('automations.api.flows.show');
+    Route::put('automations/api/flows/{id}', [\App\Http\Controllers\Api\FlowBuilderApiController::class, 'update'])->name('automations.api.flows.update');
+    Route::post('automations/api/flows/{id}/toggle-active', [\App\Http\Controllers\Api\FlowBuilderApiController::class, 'toggleActive'])->name('automations.api.flows.toggle-active');
     Route::get('team', \App\Livewire\Team\TeamManager::class)->name('team');
+
+
     Route::get('developer', \App\Livewire\Developer\DeveloperHub::class)->name('developer');
     Route::get('settings', \App\Livewire\Settings\WorkspaceSettings::class)->name('settings');
 

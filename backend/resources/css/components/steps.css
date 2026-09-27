@@ -28,11 +28,11 @@
     }
 
     &.step-item-icon-current {
-      @apply border-2 border-primary text-primary bg-primary-subtle ring-4 ring-primary-subtle shadow-sm font-bold;
+      @apply border-2 border-primary text-primary bg-white dark:bg-gray-800 font-bold;
     }
 
     &.step-item-icon-complete {
-      @apply bg-primary text-white border-2 border-primary shadow-sm font-bold;
+      @apply bg-primary text-white border-2 border-primary font-bold;
     }
 
     &.step-item-icon-error {

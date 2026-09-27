@@ -1,10 +1,10 @@
 @layer components {
   .input {
     @apply border
-      border-gray-200 
+      border-gray-100 
       dark:border-gray-700
-      bg-gray-50 
-      dark:bg-gray-900 
+      bg-gray-100 
+      dark:bg-gray-700 
       rounded-xl 
       w-full 
       py-2 px-3.5
@@ -12,14 +12,14 @@
       focus:ring-1 
       focus:ring-primary
       focus:border-primary
-      focus:bg-white
-      focus:dark:bg-gray-800
+      focus:bg-transparent
+      focus:dark:bg-transparent
       appearance-none 
       transition 
       duration-150 
-      text-gray-900
+      text-gray-800
       dark:text-gray-100
-      font-medium
+      font-semibold
       text-xs
       ease-in-out;
 
@@ -40,7 +40,7 @@
     }
 
     &.input-invalid {
-      @apply border-rose-400 dark:border-rose-600 focus:ring-rose-500 focus:border-rose-500;
+      @apply border-rose-400 dark:border-rose-600 focus:ring-rose-500 focus:border-rose-500 bg-rose-50/20;
     }
   }
 
@@ -71,27 +71,26 @@
 
   .select {
     @apply border
-      border-gray-200 
+      border-gray-100 
       dark:border-gray-700
-      bg-gray-50 
-      dark:bg-gray-800 
+      bg-gray-100 
+      dark:bg-gray-700 
       rounded-xl 
       py-2 pl-3.5 pr-10
       focus:outline-none 
       focus:ring-1 
       focus:ring-primary
       focus:border-primary
-      focus:bg-white
-      focus:dark:bg-gray-800
+      focus:bg-transparent
+      focus:dark:bg-transparent
       transition 
       duration-150 
-      text-gray-900
+      text-gray-800
       dark:text-gray-100
       font-semibold
       text-xs
       cursor-pointer
       w-full
-      shadow-sm
       ease-in-out;
 
     appearance: none;
@@ -124,11 +123,11 @@
   }
 
   .input-affix-left {
-    padding-left: 2.5rem !important;
+    padding-left: 2.35rem !important;
   }
 
   .input-affix-right {
-    padding-right: 2.5rem !important;
+    padding-right: 2.35rem !important;
   }
 
   .input-wrapper {
@@ -136,10 +135,10 @@
   }
 
   .input-icon-prefix {
-    @apply absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10;
+    @apply absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 z-10;
   }
 
   .input-icon-suffix {
-    @apply absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer z-10;
+    @apply absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer z-10;
   }
 }

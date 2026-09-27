@@ -1,6 +1,6 @@
 @props([
     'active' => false,
-    'variant' => 'underline', // underline, pill
+    'variant' => 'folder', // folder, underline, pill
     'icon' => null,
     'badge' => null,
     'badgeColor' => 'primary',
@@ -8,8 +8,13 @@
 ])
 
 @php
-    $baseClass = 'tab-nav ' . 
-        ($variant === 'pill' ? 'tab-nav-pill ' : 'tab-nav-underline ') . 
+    $variantClass = match($variant) {
+        'pill' => 'tab-nav-pill ',
+        'underline' => 'tab-nav-underline ',
+        default => 'tab-nav-folder ',
+    };
+    $baseClass = 'tab-nav outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 select-none ' . 
+        $variantClass . 
         ($active ? 'tab-nav-active ' : '') . 
         ($disabled ? 'tab-nav-disabled ' : '');
     $tag = $attributes->has('href') ? 'a' : 'button';
@@ -18,6 +23,7 @@
 <{{ $tag }} 
     @if ($tag === 'button') type="button" @endif
     @if ($disabled) disabled @endif
+    style="outline: none !important;"
     {{ $attributes->merge(['class' => trim($baseClass)]) }}>
     @if ($icon)
         <x-nav-icon :name="$icon" class="tab-nav-icon w-4 h-4 shrink-0" />

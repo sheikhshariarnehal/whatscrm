@@ -1,26 +1,15 @@
-<div class="p-4 sm:p-6 lg:p-8 space-y-6" @if($hasActiveCampaigns) wire:poll.3s @endif>
+<div class="p-2 sm:p-2.5 md:p-3 bg-[#f0f2f5] dark:bg-[#0c1317] min-h-[calc(100vh-4rem)] flex flex-col font-sans" @if($hasActiveCampaigns) wire:poll.3s @endif>
     <!-- Page Header & Action -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="px-2 pt-1 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-xl bg-primary-subtle text-primary flex items-center justify-center shrink-0">
-                    <x-ph-icon name="broadcast" weight="duotone" class="text-2xl" />
-                </div>
-                <div>
-                    <div class="flex items-center gap-2.5">
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Broadcast Campaigns</h1>
-                        <x-tag color="primary" class="font-bold">{{ $campaigns->total() }} Campaigns</x-tag>
-                        @if($hasActiveCampaigns)
-                            <x-tag color="emerald" class="font-bold animate-pulse">
-                                <x-ph-icon name="lightning" weight="fill" class="text-xs mr-1 inline" />
-                                Broadcast In Progress
-                            </x-tag>
-                        @endif
-                    </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                        High-throughput outreach via Official WhatsApp Meta Cloud API or Paired Web Baileys lines.
-                    </p>
-                </div>
+                <h1 class="text-2xl font-bold text-[#111b21] dark:text-[#e9edef] tracking-tight">Campaigns</h1>
+                @if($hasActiveCampaigns)
+                    <x-tag color="emerald" class="font-semibold text-xs animate-pulse">
+                        <x-ph-icon name="lightning" weight="fill" class="text-xs mr-1 inline" />
+                        Active
+                    </x-tag>
+                @endif
             </div>
         </div>
         <div class="flex items-center gap-2.5 flex-wrap">
@@ -38,126 +27,133 @@
 
     <!-- Flash message -->
     @if(session('success'))
-        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800/50 flex items-center justify-between gap-2 shadow-xs">
+        <div class="mb-3 mx-2 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800/50 flex items-center justify-between gap-2 shadow-2xs">
             <div class="flex items-center gap-2">
                 <x-ph-icon name="check-circle" weight="fill" class="text-lg text-emerald-500" />
                 <span>{{ session('success') }}</span>
             </div>
-            <button type="button" @click="$el.parentElement.remove()" class="text-emerald-600 hover:text-emerald-800">
+            <button type="button" @click="$el.parentElement.remove()" class="text-emerald-600 hover:text-emerald-800 p-1 rounded-lg">
                 <x-ph-icon name="x" weight="bold" class="text-xs" />
             </button>
         </div>
     @endif
     @if(session('info'))
-        <div class="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200 dark:border-blue-800/50 flex items-center justify-between gap-2 shadow-xs">
+        <div class="mb-3 mx-2 p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200 dark:border-blue-800/50 flex items-center justify-between gap-2 shadow-2xs">
             <div class="flex items-center gap-2">
                 <x-ph-icon name="info" weight="fill" class="text-lg text-blue-500" />
                 <span>{{ session('info') }}</span>
             </div>
-            <button type="button" @click="$el.parentElement.remove()" class="text-blue-600 hover:text-blue-800">
+            <button type="button" @click="$el.parentElement.remove()" class="text-blue-600 hover:text-blue-800 p-1 rounded-lg">
                 <x-ph-icon name="x" weight="bold" class="text-xs" />
             </button>
         </div>
     @endif
     @if(session('error'))
-        <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-semibold border border-rose-200 dark:border-rose-800/50 flex items-center justify-between gap-2 shadow-xs">
+        <div class="mb-3 mx-2 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-semibold border border-rose-200 dark:border-rose-800/50 flex items-center justify-between gap-2 shadow-2xs">
             <div class="flex items-center gap-2">
                 <x-ph-icon name="warning-circle" weight="fill" class="text-lg text-rose-500" />
                 <span>{{ session('error') }}</span>
             </div>
-            <button type="button" @click="$el.parentElement.remove()" class="text-rose-600 hover:text-rose-800">
+            <button type="button" @click="$el.parentElement.remove()" class="text-rose-600 hover:text-rose-800 p-1 rounded-lg">
                 <x-ph-icon name="x" weight="bold" class="text-xs" />
             </button>
         </div>
     @endif
 
-    <!-- Starter KPI Metric Cards with Phosphor Duotone Icons -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Total Campaigns</span>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($totalCampaigns) }}</h3>
-                    <span class="text-[11px] text-gray-400 mt-1 block">Scheduled & Executed</span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-primary-subtle text-primary flex items-center justify-center shrink-0">
-                    <x-ph-icon name="megaphone" weight="duotone" class="text-2xl" />
-                </div>
-            </div>
-        </x-card>
-
-        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Total Outbound Sent</span>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($totalSent) }}</h3>
-                    <span class="text-[11px] text-gray-400 mt-1 block">Messages Dispatched</span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center shrink-0">
-                    <x-ph-icon name="paper-plane-tilt" weight="duotone" class="text-2xl" />
-                </div>
-            </div>
-        </x-card>
-
-        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Delivered Messages</span>
-                    <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ number_format($totalDelivered) }}</h3>
-                    <span class="text-[11px] text-gray-400 mt-1 block">{{ $deliveryRate }}% Delivery Success Rate</span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center shrink-0">
-                    <x-ph-icon name="checks" weight="duotone" class="text-2xl" />
-                </div>
-            </div>
-        </x-card>
-
-        <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Active Queue Broadcasts</span>
-                    <div class="flex items-center gap-2 mt-1">
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $activeBroadcasts }}</h3>
-                        @if($activeBroadcasts > 0)
-                            <x-tag color="primary" class="animate-pulse text-[10px]">Processing</x-tag>
-                        @else
-                            <x-tag color="gray" class="text-[10px]">Idle</x-tag>
-                        @endif
-                    </div>
-                    <span class="text-[11px] text-gray-400 mt-1 block">Real-time worker pool</span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center shrink-0">
-                    <x-ph-icon name="lightning" weight="duotone" class="text-2xl" />
-                </div>
-            </div>
-        </x-card>
+    <!-- Folder Tabs Row (Flush with Content Card) -->
+    <div class="-mb-px relative z-10">
+        <x-tabs>
+            <x-tab-item wire:click="setTab('all')" :active="$activeTab === 'all'">
+                <x-ph-icon name="broadcast" weight="bold" class="text-base mr-1.5" />
+                <span>All Campaigns ({{ $campaigns->total() }})</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('create')" :active="$activeTab === 'create'">
+                <x-ph-icon name="magic-wand" weight="bold" class="text-base mr-1.5" />
+                <span>Campaign Wizard</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('templates')" :active="$activeTab === 'templates'">
+                <x-ph-icon name="chats-circle" weight="bold" class="text-base mr-1.5" />
+                <span>Message Templates ({{ count($templates) }})</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('logs')" :active="$activeTab === 'logs'">
+                <x-ph-icon name="list-checks" weight="bold" class="text-base mr-1.5" />
+                <span>Delivery Logs</span>
+            </x-tab-item>
+        </x-tabs>
     </div>
 
-    <!-- Sub-Navbar Tabs with Phosphor Icons -->
-    <x-tabs variant="underline">
-        <x-tab-item wire:click="setTab('all')" :active="$activeTab === 'all'">
-            <x-ph-icon name="broadcast" weight="bold" class="text-base mr-1.5" />
-            <span>All Campaigns ({{ $campaigns->total() }})</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('create')" :active="$activeTab === 'create'">
-            <x-ph-icon name="magic-wand" weight="bold" class="text-base mr-1.5" />
-            <span>Campaign Wizard</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('templates')" :active="$activeTab === 'templates'">
-            <x-ph-icon name="chats-circle" weight="bold" class="text-base mr-1.5" />
-            <span>Message Templates ({{ count($templates) }})</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('logs')" :active="$activeTab === 'logs'">
-            <x-ph-icon name="list-checks" weight="bold" class="text-base mr-1.5" />
-            <span>Delivery Logs</span>
-        </x-tab-item>
-    </x-tabs>
+    <!-- Main Floating Card Container -->
+    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21]">
 
     <!-- ============================================================== -->
     <!-- TAB 1: ALL CAMPAIGNS                                           -->
     <!-- ============================================================== -->
     @if($activeTab === 'all')
-        <x-card gutterless class="overflow-hidden">
+        <div wire:key="tab-panel-campaigns-all" class="flex-1 flex flex-col bg-white dark:bg-[#111b21] tab-pane">
+            <!-- Starter KPI Metric Cards inside Tab 1 -->
+            <div class="p-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Total Campaigns</span>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($totalCampaigns) }}</h3>
+                                <span class="text-[11px] text-gray-400 mt-1 block">Scheduled & Executed</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-primary-subtle text-primary flex items-center justify-center shrink-0">
+                                <x-ph-icon name="megaphone" weight="duotone" class="text-2xl" />
+                            </div>
+                        </div>
+                    </x-card>
+
+                    <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Total Outbound Sent</span>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($totalSent) }}</h3>
+                                <span class="text-[11px] text-gray-400 mt-1 block">Messages Dispatched</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center shrink-0">
+                                <x-ph-icon name="paper-plane-tilt" weight="duotone" class="text-2xl" />
+                            </div>
+                        </div>
+                    </x-card>
+
+                    <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Delivered Messages</span>
+                                <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ number_format($totalDelivered) }}</h3>
+                                <span class="text-[11px] text-gray-400 mt-1 block">{{ $deliveryRate }}% Delivery Success Rate</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center shrink-0">
+                                <x-ph-icon name="checks" weight="duotone" class="text-2xl" />
+                            </div>
+                        </div>
+                    </x-card>
+
+                    <x-card bordered class="shadow-xs hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider block">Active Queue Broadcasts</span>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $activeBroadcasts }}</h3>
+                                    @if($activeBroadcasts > 0)
+                                        <x-tag color="primary" class="animate-pulse text-[10px]">Processing</x-tag>
+                                    @else
+                                        <x-tag color="gray" class="text-[10px]">Idle</x-tag>
+                                    @endif
+                                </div>
+                                <span class="text-[11px] text-gray-400 mt-1 block">Real-time worker pool</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center shrink-0">
+                                <x-ph-icon name="lightning" weight="duotone" class="text-2xl" />
+                            </div>
+                        </div>
+                    </x-card>
+                </div>
+            </div>
+
             @if($campaigns->isEmpty())
                 <div class="p-12 text-center space-y-3">
                     <div class="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto">
@@ -301,20 +297,22 @@
                         @endforeach
                     </tbody>
                 </x-table>
-                <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-800">
-                    {{ $campaigns->links() }}
-                </div>
+                @if($campaigns->hasPages())
+                    <div class="px-6 py-4 border-t border-[#d1d7db] dark:border-[#222e35]">
+                        {{ $campaigns->links() }}
+                    </div>
+                @endif
             @endif
-        </x-card>
+        </div>
     @endif
 
     <!-- ============================================================== -->
     <!-- TAB 2: 5-STEP CREATE CAMPAIGN WIZARD                           -->
     <!-- ============================================================== -->
     @if($activeTab === 'create')
-        <div class="space-y-6">
+        <div wire:key="tab-panel-campaigns-create" class="p-6 space-y-6 flex-1 bg-white dark:bg-[#111b21] overflow-y-auto tab-pane">
             <!-- 5-Step Interactive Wizard Header Breadcrumbs using Elstar Steps component -->
-            <x-card class="bg-white dark:bg-gray-800 shadow-xs border border-gray-200/80 dark:border-gray-700" bodyClass="p-4 sm:p-5">
+            <div class="px-2 py-1">
                 <x-steps>
                     <x-step-item :step="1" :status="$wizardStep > 1 ? 'complete' : ($wizardStep === 1 ? 'in_progress' : 'pending')" title="Channel & Title" wire:click="setWizardStep(1)" class="cursor-pointer" />
                     <x-step-item :step="2" :status="$wizardStep > 2 ? 'complete' : ($wizardStep === 2 ? 'in_progress' : 'pending')" title="Target Audience" wire:click="setWizardStep(2)" class="cursor-pointer" />
@@ -322,7 +320,7 @@
                     <x-step-item :step="4" :status="$wizardStep > 4 ? 'complete' : ($wizardStep === 4 ? 'in_progress' : 'pending')" title="Variables Mapping" wire:click="setWizardStep(4)" class="cursor-pointer" />
                     <x-step-item :step="5" :status="$wizardStep === 5 ? 'in_progress' : 'pending'" :isLast="true" title="Pacing & Launch" wire:click="setWizardStep(5)" class="cursor-pointer" />
                 </x-steps>
-            </x-card>
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left 2 Cols: Step Content -->
@@ -333,7 +331,6 @@
                             <div class="space-y-5">
                                 <div>
                                     <h3 class="text-base font-bold text-gray-900 dark:text-white">Step 1: Campaign Title & Delivery Channel</h3>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Select between official Meta Cloud API or your paired WhatsApp Web lines.</p>
                                 </div>
 
                                 <x-form-item label="Campaign Title" :required="true" :error="$errors->first('name')">
@@ -753,11 +750,10 @@
     <!-- TAB 3: MESSAGE TEMPLATES EXPLORER                              -->
     <!-- ============================================================== -->
     @if($activeTab === 'templates')
-        <div class="space-y-6">
+        <div wire:key="tab-panel-campaigns-templates" class="p-6 space-y-6 flex-1 bg-white dark:bg-[#111b21] overflow-y-auto tab-pane">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-base font-bold text-gray-900 dark:text-white">Approved Meta WhatsApp Templates</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Pre-approved message templates verified through Meta WhatsApp Business Manager.</p>
                 </div>
                 <x-button wire:click="syncTemplates" wire:loading.attr="disabled" variant="solid" size="sm">
                     <x-ph-icon wire:loading.remove wire:target="syncTemplates" name="arrows-clockwise" weight="bold" class="text-sm mr-1.5" />
@@ -807,7 +803,7 @@
                                 <div class="flex flex-wrap gap-1.5 pt-1 border-t border-gray-100 dark:border-gray-800">
                                     @foreach($tmpl['buttons'] as $btn)
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700/80 text-[10px] font-medium text-gray-600 dark:text-gray-300">
-                                            <x-ph-icon name="arrow-square-out" weight="bold" class="text-xs text-primary" />
+                                             <x-ph-icon name="arrow-square-out" weight="bold" class="text-xs text-primary" />
                                             <span>{{ $btn['text'] ?? 'Action' }}</span>
                                         </span>
                                     @endforeach
@@ -846,9 +842,9 @@
     <!-- TAB 4: GRANULAR DELIVERY LOGS                                  -->
     <!-- ============================================================== -->
     @if($activeTab === 'logs')
-        <x-card gutterless class="overflow-hidden">
+        <div wire:key="tab-panel-campaigns-logs" class="flex-1 flex flex-col bg-white dark:bg-[#111b21] tab-pane">
             <!-- Filter Toolbar -->
-            <div class="p-4 sm:px-6 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800">
+            <div class="p-4 sm:px-6 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#d1d7db] dark:border-[#222e35] bg-white dark:bg-[#111b21]">
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 flex-wrap">
                     <div class="w-full sm:w-64">
                         <x-input 
@@ -953,10 +949,13 @@
                         @endforeach
                     </tbody>
                 </x-table>
-                <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-800">
-                    {{ $logs->links() }}
-                </div>
+                @if($logs->hasPages())
+                    <div class="px-6 py-4 border-t border-[#d1d7db] dark:border-[#222e35]">
+                        {{ $logs->links() }}
+                    </div>
+                @endif
             @endif
-        </x-card>
+        </div>
     @endif
+    </div>
 </div>

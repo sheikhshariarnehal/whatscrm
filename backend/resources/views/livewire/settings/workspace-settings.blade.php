@@ -1,47 +1,48 @@
-<div class="p-4 sm:p-6 lg:p-8 space-y-6">
+<div class="p-2 sm:p-2.5 md:p-3 bg-[#f0f2f5] dark:bg-[#0c1317] min-h-[calc(100vh-4rem)] flex flex-col font-sans">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="px-2 pt-1 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <div class="flex items-center gap-2.5">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Workspace Settings</h1>
-                <x-tag color="primary" class="font-bold">{{ $workspace->name ?? 'Workspace' }}</x-tag>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Manage company preferences, security credentials, sound alerts, and subscription tier.
-            </p>
+            <h1 class="text-2xl font-bold text-[#111b21] dark:text-[#e9edef] tracking-tight">Settings</h1>
         </div>
     </div>
 
     <!-- Flash message -->
     @if(session('success'))
-        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-2">
+        <div class="mb-3 mx-2 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-2 shadow-2xs">
             <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
             <span>{{ session('success') }}</span>
         </div>
     @endif
 
-    <!-- Sub-Navbar Tabs -->
-    <x-tabs>
-        <x-tab-item wire:click="setTab('company')" :active="$activeTab === 'company'">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-            <span>Company Profile</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('security')" :active="$activeTab === 'security'">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-            <span>Security & Password</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('notifications')" :active="$activeTab === 'notifications'">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-            <span>Notifications & Sounds</span>
-        </x-tab-item>
-        <x-tab-item wire:click="setTab('billing')" :active="$activeTab === 'billing'">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-            <span>Billing & Quotas</span>
-        </x-tab-item>
-    </x-tabs>
+    <!-- Folder Tabs Row (Flush with Content Card) -->
+    <div class="-mb-px relative z-10">
+        <x-tabs>
+            <x-tab-item wire:click="setTab('company')" :active="$activeTab === 'company'">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                <span>Company Profile</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('security')" :active="$activeTab === 'security'">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <span>Security & Password</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('notifications')" :active="$activeTab === 'notifications'">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                <span>Notifications & Sounds</span>
+            </x-tab-item>
+            <x-tab-item wire:click="setTab('billing')" :active="$activeTab === 'billing'">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                <span>Billing & Quotas</span>
+            </x-tab-item>
+        </x-tabs>
+    </div>
 
-    <!-- TAB 1: COMPANY PROFILE -->
-    @if($activeTab === 'company')
+    <!-- Main Floating Card Container -->
+    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="flex-1 flex flex-col rounded-2xl rounded-tl-none border border-[#d1d7db] dark:border-[#222e35] shadow-xs bg-white dark:bg-[#111b21] overflow-hidden">
+
+        <div class="p-6 flex-1 overflow-y-auto bg-white dark:bg-[#111b21]">
+            <!-- TAB 1: COMPANY PROFILE -->
+            @if($activeTab === 'company')
+                <div wire:key="tab-panel-settings-company" class="tab-pane">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left Column: Workspace Overview Card -->
             <div class="space-y-6">
@@ -154,10 +155,12 @@
                 </x-card>
             </div>
         </div>
+                </div>
     @endif
 
     <!-- TAB 2: SECURITY & PASSWORD -->
     @if($activeTab === 'security')
+        <div wire:key="tab-panel-settings-security" class="tab-pane">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Password Update Card -->
             <x-card bodyClass="p-6 sm:p-8 space-y-5">
@@ -232,11 +235,13 @@
                 </x-card>
             </div>
         </div>
+                </div>
     @endif
 
     <!-- TAB 3: NOTIFICATIONS & SOUNDS -->
     @if($activeTab === 'notifications')
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div wire:key="tab-panel-settings-notifications" class="tab-pane">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Audio Preferences -->
             <x-card bodyClass="p-6 sm:p-8 space-y-6">
                 <div>
@@ -300,11 +305,13 @@
                 </div>
             </x-card>
         </div>
+                </div>
     @endif
 
     <!-- TAB 4: BILLING & QUOTAS -->
     @if($activeTab === 'billing')
-        <div class="space-y-6">
+        <div wire:key="tab-panel-settings-billing" class="tab-pane">
+            <div class="space-y-6">
             <!-- Active Plan & Usage Bars -->
             <x-card bodyClass="p-6 sm:p-8">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -408,6 +415,9 @@
                 @endforeach
             </div>
         </div>
+                </div>
     @endif
+        </div>
+    </div>
 </div>
 

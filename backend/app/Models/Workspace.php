@@ -95,4 +95,19 @@ class Workspace extends Model
     {
         return $this->hasMany(WebhookEndpoint::class);
     }
+
+    public function botBindings(): HasMany
+    {
+        return $this->hasMany(BotBinding::class);
+    }
+
+    public function waForms(): HasMany
+    {
+        return $this->hasMany(WaForm::class);
+    }
+
+    public function waFormSubmissions(): HasMany
+    {
+        return $this->hasMany(WaFormSubmission::class);
+    }
 }

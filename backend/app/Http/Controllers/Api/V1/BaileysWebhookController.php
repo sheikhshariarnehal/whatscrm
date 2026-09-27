@@ -81,6 +81,19 @@ class BaileysWebhookController extends Controller
                 'unread_count'    => $conversation->unread_count + 1,
             ]);
 
+            // Trigger Flow & Chatbot Automations for Baileys QR channel
+            try {
+                app(\App\Services\Automation\FlowExecutionService::class)->handleIncomingMessage(
+                    $conversation,
+                    $msg,
+                    $contact,
+                    'qr',
+                    $uniqueId
+                );
+            } catch (\Throwable $e) {
+                Log::error("[BaileysWebhookController] Automation execution error: " . $e->getMessage());
+            }
+
             return response()->json(['success' => true, 'message_id' => $msg->id]);
         } catch (\Throwable $e) {
             Log::error("[BaileysWebhookController] Failed to record incoming message: {$e->getMessage()}");

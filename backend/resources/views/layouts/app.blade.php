@@ -48,8 +48,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Scripts and Styles -->
+    @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @stack('styles')
 </head>
 <body x-data="{ 
           darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
@@ -589,5 +591,6 @@
     </div>
 
     @livewireScripts
+    @stack('scripts')
 </body>
 </html>

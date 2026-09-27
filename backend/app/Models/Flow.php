@@ -26,4 +26,9 @@ class Flow extends Model
     {
         return $this->hasMany(FlowSession::class);
     }
+
+    public function bindings(): HasMany
+    {
+        return $this->hasMany(BotBinding::class);
+    }
 }

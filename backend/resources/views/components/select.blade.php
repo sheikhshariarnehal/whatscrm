@@ -1,5 +1,5 @@
 @props([
-    'placeholder' => 'Select an option...',
+    'placeholder' => null,
     'options' => [],
     'size' => 'md',
     'prefixIcon' => null,
@@ -7,26 +7,44 @@
     'invalid' => false,
     'searchable' => null, // auto-detected if >= 6 options
     'clearable' => false,
+    'align' => 'left', // left, right
+    'menuClass' => '',
 ])
 
 @php
-    $sizeClasses = match($size) {
-        'sm' => 'py-1.5 px-3 text-xs h-9',
-        'lg' => 'py-2.5 px-4 text-sm h-11',
-        default => 'py-2 px-3.5 text-xs h-10',
+    $sizeClass = match($size) {
+        'sm' => 'select-sm',
+        'lg' => 'select-lg',
+        default => 'select-md',
     };
 
     $wireModel = $attributes->wire('model')->value();
+    $alignClass = $align === 'right' ? 'right-0' : 'left-0';
+
+    // Map common icon aliases to Phosphor icon names
+    $normalizeIcon = function($icon) {
+        if (!$icon) return null;
+        return match($icon) {
+            'search' => 'magnifying-glass',
+            'contacts' => 'address-book',
+            'settings' => 'gear',
+            'team' => 'users',
+            'inbox' => 'chat',
+            default => $icon,
+        };
+    };
+
+    $resolvedPrefixIcon = $normalizeIcon($prefixIcon);
 @endphp
 
 <div {{ $attributes->only(['class', 'style'])->merge(['class' => 'select-wrapper select-none']) }}
      x-data="{
          open: false,
-         value: @if($wireModel) @entangle($attributes->wire('model')) @else '' @endif,
+         value: @if($wireModel) @entangle($attributes->wire('model')) @else '{{ addslashes($attributes->get('value', '')) }}' @endif,
          search: '',
          optionsList: [],
          selectedLabel: '',
-         placeholder: '{{ $placeholder }}',
+         placeholder: '{{ addslashes($placeholder ?? '') }}',
          disabled: {{ $disabled ? 'true' : 'false' }},
 
          init() {
@@ -83,9 +101,8 @@
 
          syncSelectedLabel() {
              if (this.value === null || this.value === undefined || this.value === '') {
-                 // Check if there is an empty-value placeholder option
                  const emptyOpt = this.optionsList.find(o => o.value === '');
-                 this.selectedLabel = emptyOpt ? emptyOpt.label : this.placeholder;
+                 this.selectedLabel = emptyOpt ? emptyOpt.label : (this.placeholder || 'Select...');
                  return;
              }
 
@@ -93,7 +110,7 @@
              if (found) {
                  this.selectedLabel = found.label;
              } else {
-                 this.selectedLabel = this.placeholder;
+                 this.selectedLabel = this.placeholder || 'Select...';
              }
          },
 
@@ -141,7 +158,7 @@
             aria-hidden="true"
             {{ $disabled ? 'disabled' : '' }}
             {{ $attributes->whereDoesntStartWith(['class']) }}>
-        @if(!empty($placeholder))
+        @if(!empty($placeholder) && empty($slot->toHtml()))
             <option value="">{{ $placeholder }}</option>
         @endif
         @if(!empty($options))
@@ -153,27 +170,28 @@
     </select>
 
     <!-- Custom Select Trigger Button matching Starter Design System -->
-    <div @click="if(!disabled) { open = !open; if(open && showSearch) $nextTick(() => $refs.searchInput?.focus()); }"
-         :class="{
-             'focused': open,
-             'invalid': {{ $invalid ? 'true' : 'false' }},
-             'disabled': disabled
-         }"
-         class="select-trigger {{ $sizeClasses }}">
+    <button type="button" 
+            @click="if(!disabled) { open = !open; if(open && showSearch) $nextTick(() => $refs.searchInput?.focus()); }"
+            :class="{
+                'focused': open,
+                'invalid': {{ $invalid ? 'true' : 'false' }},
+                'disabled': disabled
+            }"
+            class="select-trigger {{ $sizeClass }}">
         
-        <div class="flex items-center gap-2.5 truncate flex-1 min-w-0">
-            @if($prefixIcon)
-                <x-ph-icon :name="$prefixIcon" weight="duotone" class="text-base text-gray-400 shrink-0" />
+        <div class="flex items-center gap-2 truncate flex-1 min-w-0">
+            @if($resolvedPrefixIcon)
+                <x-ph-icon :name="$resolvedPrefixIcon" weight="duotone" class="text-sm text-gray-400 shrink-0" />
             @endif
             <span x-text="selectedLabel || placeholder" 
                   :class="(value === '' || value === null || value === undefined) ? 'text-gray-400 font-normal' : 'text-gray-900 dark:text-gray-100 font-semibold'"
                   class="truncate text-xs"></span>
         </div>
 
-        <div class="flex items-center gap-1.5 shrink-0 ml-1.5">
+        <div class="flex items-center gap-1 shrink-0 ml-1.5">
             <x-ph-icon name="caret-down" weight="bold" class="text-xs text-gray-400 transition-transform duration-150" ::class="open ? 'rotate-180 text-primary' : ''" />
         </div>
-    </div>
+    </button>
 
     <!-- Custom Floating Select Dropdown Menu -->
     <div x-show="open"
@@ -183,7 +201,7 @@
          x-transition:leave="transition ease-in duration-100"
          x-transition:leave-start="opacity-100 scale-100 translate-y-0"
          x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
-         class="select-menu"
+         class="select-menu {{ $alignClass }} {{ $menuClass }}"
          style="display: none;">
         
         <!-- Optional Search Filter -->
@@ -196,7 +214,7 @@
                            x-model="search"
                            @click.stop
                            placeholder="Search..."
-                           class="w-full pl-7 pr-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                           class="w-full pl-7 pr-3 py-1.5 text-xs rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
                 </div>
             </div>
         </template>
@@ -210,9 +228,14 @@
                          'disabled': opt.disabled
                      }"
                      class="select-option">
-                    <span x-text="opt.label" class="truncate"></span>
+                    <div class="flex items-center gap-2 truncate flex-1 min-w-0">
+                        @if($resolvedPrefixIcon)
+                            <x-ph-icon :name="$resolvedPrefixIcon" weight="duotone" class="text-sm shrink-0" ::class="isSelected(opt) ? 'text-primary' : 'text-gray-400'" />
+                        @endif
+                        <span x-text="opt.label" class="truncate"></span>
+                    </div>
                     <template x-if="isSelected(opt)">
-                        <x-ph-icon name="check" weight="bold" class="text-sm text-primary shrink-0 ml-2" />
+                        <x-ph-icon name="check" weight="bold" class="text-xs text-primary shrink-0 ml-2" />
                     </template>
                 </div>
             </template>
