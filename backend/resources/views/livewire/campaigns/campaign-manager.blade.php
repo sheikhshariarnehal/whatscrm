@@ -929,10 +929,17 @@
                                             Sent
                                         </x-tag>
                                     @elseif($log->status === 'failed')
-                                        <x-tag color="rose" class="text-[10px] font-bold">
-                                            <x-ph-icon name="warning-circle" weight="bold" class="text-[11px] mr-1 inline" />
-                                            Failed
-                                        </x-tag>
+                                        <div class="flex flex-col items-start gap-1">
+                                            <x-tag color="rose" class="text-[10px] font-bold">
+                                                <x-ph-icon name="warning-circle" weight="bold" class="text-[11px] mr-1 inline" />
+                                                Failed
+                                            </x-tag>
+                                            @if(!empty($log->error_message))
+                                                <span class="text-[10px] text-rose-600 dark:text-rose-400 font-medium max-w-[220px] truncate" title="{{ $log->error_message }}">
+                                                    {{ $log->error_message }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     @else
                                         <x-tag color="default" class="text-[10px] capitalize">{{ $log->status }}</x-tag>
                                     @endif

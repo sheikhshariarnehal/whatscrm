@@ -273,29 +273,60 @@ class WebhookProcessor
             return;
         }
 
+        $errorDetails = null;
+        if (!empty($statusData['errors'])) {
+            $errorDetails = $statusData['errors'][0]['error_data']['details'] 
+                ?? $statusData['errors'][0]['message'] 
+                ?? 'Delivery failed';
+        }
+
+        // 1. Process Message status update (Inbox & 1-on-1 chats)
         $message = Message::withoutGlobalScope(WorkspaceScope::class)
             ->where('workspace_id', $workspaceId)
             ->where('external_id', $messageId)
             ->first();
 
-        if (! $message) {
-            return;
+        if ($message) {
+            $updates = ['status' => $status];
+            if (!empty($statusData['errors'])) {
+                $existingMeta = $message->metadata ?? [];
+                $updates['metadata'] = array_merge($existingMeta, [
+                    'errors' => $statusData['errors'],
+                    'failed_reason' => $errorDetails,
+                    'error' => $errorDetails,
+                ]);
+            }
+            $message->update($updates);
+            event(new MessageStatusUpdated($message));
         }
 
-        $updates = ['status' => $status];
-        if (!empty($statusData['errors'])) {
-            $existingMeta = $message->metadata ?? [];
-            $errorDetails = $statusData['errors'][0]['error_data']['details'] ?? $statusData['errors'][0]['message'] ?? 'Delivery failed';
-            $updates['metadata'] = array_merge($existingMeta, [
-                'errors' => $statusData['errors'],
-                'failed_reason' => $errorDetails,
-                'error' => $errorDetails,
-            ]);
+        // 2. Process CampaignLog status update (Bulk Campaigns)
+        $campaignLog = \App\Models\CampaignLog::withoutGlobalScope(WorkspaceScope::class)
+            ->where('workspace_id', $workspaceId)
+            ->where('external_message_id', $messageId)
+            ->first();
+
+        if ($campaignLog) {
+            $prevStatus = $campaignLog->status;
+            $logUpdates = ['status' => $status];
+            if ($errorDetails) {
+                $logUpdates['error_message'] = $errorDetails;
+            }
+            $campaignLog->update($logUpdates);
+
+            if ($campaign = $campaignLog->campaign) {
+                if ($status === 'delivered' && $prevStatus !== 'delivered') {
+                    $campaign->increment('delivered_count');
+                } elseif ($status === 'read' && $prevStatus !== 'read') {
+                    $campaign->increment('read_count');
+                } elseif ($status === 'failed' && $prevStatus !== 'failed') {
+                    $campaign->increment('failed_count');
+                    if ($campaign->delivered_count > 0 && $prevStatus === 'delivered') {
+                        $campaign->decrement('delivered_count');
+                    }
+                }
+            }
         }
-
-        $message->update($updates);
-
-        event(new MessageStatusUpdated($message));
     }
 
     protected function handleTemplateStatusUpdate(?string $wabaId, array $value): void

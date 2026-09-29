@@ -1,0 +1,53 @@
+.apexcharts-tooltip {
+  @apply !shadow-xl !rounded-xl;
+
+  &.apexcharts-theme-light {
+    @apply !border !border-gray-200 dark:!border-gray-700 !bg-white dark:!bg-gray-800;
+
+    .apexcharts-tooltip-title {
+      @apply !border-b-0 !bg-transparent !font-semibold text-gray-900 dark:text-white;
+    }
+  }
+
+  &.apexcharts-theme-dark {
+    @apply !border !border-gray-700 !bg-gray-900 text-white;
+  }
+}
+
+.apexcharts-canvas {
+  @apply mx-auto;
+}
+
+.apexcharts-datalabel-label {
+  @apply !fill-gray-900 dark:!fill-gray-100 text-2xl font-bold;
+}
+
+.apexcharts-datalabel-value {
+  @apply !fill-gray-500 dark:!fill-gray-400 text-base;
+}
+
+.apexcharts-tooltip-title {
+  @apply !mb-0;
+}
+
+.apexcharts-gridline {
+  @apply stroke-gray-100 dark:stroke-gray-800;
+}
+
+.apexcharts-text {
+  tspan {
+    @apply !fill-gray-400 dark:!fill-gray-500 text-[11px];
+  }
+}
+
+.apexcharts-menu-item {
+  @apply text-left;
+}
+
+.apexcharts-xaxistooltip {
+  @apply !opacity-0;
+}
+
+.apexcharts-legend-text {
+  @apply !text-gray-500 dark:!text-gray-400 !text-xs !font-medium;
+}

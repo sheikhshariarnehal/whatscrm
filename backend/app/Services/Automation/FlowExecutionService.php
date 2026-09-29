@@ -121,6 +121,17 @@ class FlowExecutionService
         // Clean up any stale sessions
         FlowSession::where('conversation_id', $conversation->id)->delete();
 
+        // Auto-detect the actual start node ID — supports both legacy 'initialNode'
+        // and the visual builder's 'start' node type, regardless of the node's id value.
+        $flowNodes = $flow->flow_data['nodes'] ?? [];
+        $startNode = collect($flowNodes)->first(function ($n) {
+            $t = strtolower($n['type'] ?? '');
+            return in_array($t, ['start', 'initial']) || ($n['id'] ?? '') === 'initialNode';
+        }) ?? ($flowNodes[0] ?? null);
+        $startNodeId = $startNode['id'] ?? 'initialNode';
+
+        Log::info("[FlowEngine] Starting flow #{$flow->id} from node '{$startNodeId}'");
+
         $session = FlowSession::create([
             'workspace_id' => $conversation->workspace_id,
             'flow_id' => $flow->id,
@@ -128,7 +139,7 @@ class FlowExecutionService
             'contact_id' => $contact->id,
             'channel_type' => $channel,
             'channel_id' => $channelId,
-            'current_node_id' => 'initialNode',
+            'current_node_id' => $startNodeId,
             'session_data' => ['started_at' => now()->toIso8601String()],
             'variables' => [
                 'name' => $contact->name ?? 'Customer',
@@ -139,7 +150,7 @@ class FlowExecutionService
             'status' => 'running',
         ]);
 
-        $this->executeNodeSequence($session, 'initialNode', $initialInput);
+        $this->executeNodeSequence($session, $startNodeId, $initialInput);
 
         return $session;
     }

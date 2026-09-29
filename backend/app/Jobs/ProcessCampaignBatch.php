@@ -200,7 +200,6 @@ class ProcessCampaignBatch implements ShouldQueue
                     'external_message_id' => $wamId,
                 ]);
                 $campaign->increment('sent_count');
-                $campaign->increment('delivered_count');
             } else {
                 $errorMsg = $result['error'] ?? 'API dispatch failed';
                 $log->update([

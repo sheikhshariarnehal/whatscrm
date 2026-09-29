@@ -15,6 +15,7 @@
 @import './components/menu.css';
 @import './components/steps.css';
 @import './components/select.css';
+@import './components/apex-chart.css';
 
 @tailwind base;
 @tailwind components;

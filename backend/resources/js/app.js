@@ -1,5 +1,7 @@
 import './bootstrap';
 import './echo';
+import ApexCharts from 'apexcharts';
+window.ApexCharts = ApexCharts;
 import '@phosphor-icons/web/regular';
 import '@phosphor-icons/web/bold';
 import '@phosphor-icons/web/duotone';
