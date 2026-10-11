@@ -9,7 +9,9 @@ vendor/
 .env.*
 !.env.example
 *.key
+*.sql
 auth.json
+
 
 # Builds & Caches
 .phpunit.result.cache
